@@ -1,6 +1,6 @@
 // ────────────────────────────────────────────────────────────────────────────
 // src/pages/Landing.tsx
-// CleanFlow AI landing page — FULLY RESPONSIVE VERSION WITH GRADIENT GLOW FIX
+// CleanFlow AI landing page — FINAL PRODUCTION READY VERSION WITH ALL FIXES
 // ────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react"
@@ -82,7 +82,8 @@ function HeroGrid() {
     return () => clearInterval(id)
   }, [])
 
-  const rows = phase === "dirty" ? DIRTY_ROWS
+  const rows = phase === "dirty" 
+    ? DIRTY_ROWS 
     : phase === "transitioning"
       ? DIRTY_ROWS.map((r, i) => i < cleanedCount ? { ...CLEAN_ROWS[i], status: "clean" as const } : r).filter((_, i) => !(i >= 4 && cleanedCount >= 4))
       : CLEAN_ROWS
@@ -96,12 +97,13 @@ function HeroGrid() {
         <span className="w-2.5 h-2.5 rounded-full bg-[#f59e0b]/70 shrink-0" />
         <span className="w-2.5 h-2.5 rounded-full bg-[#22c55e]/70 shrink-0" />
         <span className="ml-2 sm:ml-3 text-[10px] sm:text-[11px] text-[#334155] font-mono truncate">
-          customers.csv — 5 rows · 5 cols
+          customers.csv — {rows.length} rows · 5 cols
         </span>
         <div className="ml-auto flex items-center gap-2 shrink-0">
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             {phase === "transitioning" && (
               <motion.span
+                key="cleaning-badge"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }}
@@ -117,6 +119,7 @@ function HeroGrid() {
             )}
             {phase === "clean" && (
               <motion.span
+                key="clean-badge"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }}
@@ -141,19 +144,19 @@ function HeroGrid() {
             ))}
           </div>
 
-          {/* Rows */}
-          <div className="divide-y divide-[#1e2130]/60 min-h-[180px]">
-            <AnimatePresence mode="popLayout">
-              {rows.map(row => (
+          {/* ─── FIXED HEIGHT CONTAINER PREVENTS JUMPING ─── */}
+          <div className="divide-y divide-[#1e2130]/60 h-[195px] relative overflow-hidden bg-transparent">
+            <AnimatePresence mode="popLayout" initial={false}>
+              {rows.map((row, idx) => (
                 <motion.div
-                  key={`${row.id}-${row.status}`}
-                  layout
-                  initial={{ opacity: 0, backgroundColor: "rgba(99,102,241,0.08)" }}
-                  animate={{ opacity: 1, backgroundColor: "rgba(0,0,0,0)" }}
-                  exit={{ opacity: 0, height: 0, overflow: "hidden" }}
-                  transition={{ duration: 0.35 }}
-                  className={`grid grid-cols-5 px-4 py-2.5 relative ${
-                    row.status === "clean" && phase === "transitioning" ? "bg-green-500/[0.04]" : ""
+                  key={`row-id-${row.id}-status-${row.status}-idx-${idx}`}
+                  layout="position"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.15 } }}
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  className={`grid grid-cols-5 px-4 py-2.5 relative items-center h-[38px] ${
+                    row.status === "clean" && phase === "transitioning" ? "bg-green-500/[0.03]" : ""
                   }`}
                 >
                   {[row.name, row.email, row.age, row.country, row.revenue].map((v, i) => (
@@ -163,8 +166,8 @@ function HeroGrid() {
                   ))}
                   {row.status === "clean" && phase === "transitioning" && (
                     <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-green-400 text-[10px] font-medium"
                     >
                       ✓
@@ -181,14 +184,26 @@ function HeroGrid() {
       <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 px-4 py-3 border-t border-[#1e2130] bg-[#0d0f14]">
         <AnimatePresence mode="wait">
           {phase === "dirty" && (
-            <motion.div key="dirty-stats" exit={{ opacity: 0 }} className="flex flex-wrap gap-x-3 gap-y-1">
+            <motion.div 
+              key="dirty-stats" 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }} 
+              className="flex flex-wrap gap-x-3 gap-y-1"
+            >
               <span className="text-[10px] text-red-400/70">3 missing values</span>
               <span className="text-[10px] text-amber-400/70">1 outlier</span>
               <span className="text-[10px] text-orange-400/70">1 duplicate</span>
             </motion.div>
           )}
           {phase !== "dirty" && (
-            <motion.div key="clean-stats" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-wrap gap-x-3 gap-y-1">
+            <motion.div 
+              key="clean-stats" 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }}
+              className="flex flex-wrap gap-x-3 gap-y-1"
+            >
               <span className="text-[10px] text-green-400/70">0 missing values</span>
               <span className="text-[10px] text-green-400/70">0 outliers</span>
               <span className="text-[10px] text-green-400/70">duplicates removed</span>
@@ -199,8 +214,8 @@ function HeroGrid() {
           <span className="text-[10px] text-[#334155]">Quality score</span>
           <AnimatePresence mode="wait">
             {phase === "dirty"
-              ? <motion.span key="low" exit={{ opacity: 0 }} className="text-[10px] font-bold text-red-400">42</motion.span>
-              : <motion.span key="high" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[10px] font-bold text-green-400">96</motion.span>
+              ? <motion.span key="low" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-[10px] font-bold text-red-400">42</motion.span>
+              : <motion.span key="high" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-[10px] font-bold text-green-400">96</motion.span>
             }
           </AnimatePresence>
           <span className="text-[10px] text-[#334155]">/ 100</span>
@@ -245,7 +260,7 @@ const Icon = {
   ),
   Chart: () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" h1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
     </svg>
   ),
   Check: () => (
@@ -339,7 +354,6 @@ function StatPill({ value, label }: { value: string; label: string }) {
   )
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
 export default function Landing() {
   const navigate = useNavigate()
 
@@ -402,9 +416,19 @@ export default function Landing() {
             <span className="text-[11px] text-indigo-300 font-medium tracking-wide">AI-powered data cleaning</span>
           </div>
 
-          {/* ── Fixed High-Contrast Robust Text Gradient Architecture ── */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-normal select-none">
-            Messy Datasets, <span className="inline-block bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent filter drop-shadow-[0_2px_8px_rgba(99,102,241,0.3)]">Cleaned.</span>
+          {/* ── INLINE WEBKIT CLIPPING PATCH FOR DARK READER COMPLIANCE ── */}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight">
+            Messy Datasets,{' '}
+            <span 
+              className="inline-block font-extrabold"
+              style={{
+                background: 'linear-gradient(to right, #818cf8, #c084fc, #f472b6)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent'
+              }}
+            >
+              Cleaned.
+            </span>
           </h1>
 
           <p className="text-[14px] sm:text-[16px] text-[#94a3b8] leading-relaxed max-w-md mx-auto lg:mx-0">
