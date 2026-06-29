@@ -5,6 +5,7 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import Response
 from pydantic import BaseModel
 from typing import Optional
+import numpy as np  # Imported for NaN/Inf sanitation
 
 from app.core.session import get
 from app.services.exporter import (
@@ -39,7 +40,12 @@ def export_dataset(
         media_type   = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         filename     = f"cleanflow_export_{session_id[:8]}.xlsx"
     elif format == "json":
-        content      = to_json(df)
+        # ─── SANITIZE FOR JSON COMPLIANCE ─────────────────────────────────────
+        # Replaces raw float Inf/-Inf with Python None (null in JSON)
+        # Replaces NaN values with None so the JSON parser doesn't crash
+        df_sanitized = df.replace([np.inf, -np.inf], None).fillna(None)
+        
+        content      = to_json(df_sanitized)
         media_type   = "application/json"
         filename     = f"cleanflow_export_{session_id[:8]}.json"
     else:
