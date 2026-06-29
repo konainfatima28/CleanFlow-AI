@@ -1,7 +1,7 @@
+// ────────────────────────────────────────────────────────────────────────────
 // src/components/AnalyticsPanel.tsx
-// Visual analytics: distributions, missing heatmap, correlation matrix,
-// outlier summary, and before/after quality comparison.
-// Requires: recharts, framer-motion
+// Visual analytics — FULLY RESPONSIVE VERSION
+// ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -85,17 +85,12 @@ interface Props {
 // ─── Palette constants ────────────────────────────────────────────────────────
 const INDIGO   = "#6366f1"
 const VIOLET   = "#8b5cf6"
-// const GREEN    = "#22c55e"
 const AMBER    = "#f59e0b"
 const RED      = "#ef4444"
-// const MUTED    = "#334155"
 const CARD_BG  = "#13151f"
 const BORDER   = "rgba(255,255,255,0.05)"
 
-// const CORR_COLORS = [RED, "#f97316", AMBER, "#84cc16", GREEN]
-
 function corrColor(v: number): string {
-  // -1 → red,  0 → neutral,  +1 → green
   if (v >= 0.7)  return "#22c55e"
   if (v >= 0.3)  return "#86efac"
   if (v >= -0.3) return "#334155"
@@ -103,7 +98,6 @@ function corrColor(v: number): string {
   return "#ef4444"
 }
 
-// ─── Shared tooltip style ─────────────────────────────────────────────────────
 const TT_STYLE = {
   background: "#1a1d27",
   border: "1px solid rgba(255,255,255,0.08)",
@@ -112,7 +106,6 @@ const TT_STYLE = {
   color: "#94a3b8",
 }
 
-// ─── Skeleton loader ──────────────────────────────────────────────────────────
 function Skeleton({ h = 160 }: { h?: number }) {
   return (
     <div
@@ -122,7 +115,6 @@ function Skeleton({ h = 160 }: { h?: number }) {
   )
 }
 
-// ─── Section wrapper ──────────────────────────────────────────────────────────
 function Section({ title, sub, children }: {
   title: string; sub?: string; children: React.ReactNode
 }) {
@@ -154,58 +146,60 @@ function DistributionCharts({ data }: { data: DistColumn[] }) {
       title="Column distributions"
       sub="Histogram for numeric columns, frequency bars for text"
     >
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {visible.map((col, i) => (
           <motion.div
             key={col.column}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.06 }}
-            className="rounded-xl border p-4 space-y-2"
+            className="rounded-xl border p-4 space-y-2 min-w-0"
             style={{ background: CARD_BG, borderColor: BORDER }}
           >
             <div className="flex items-start justify-between gap-2">
               <p className="text-[12px] font-mono font-medium text-white truncate">
                 {col.column}
               </p>
-              <span className={`text-[10px] px-2 py-0.5 rounded-full border font-mono shrink-0
-                ${col.type === "histogram"
+              <span className={`text-[10px] px-2 py-0.5 rounded-full border font-mono shrink-0 ${
+                col.type === "histogram"
                   ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20"
-                  : "bg-amber-500/10 text-amber-400 border-amber-500/20"}`}>
+                  : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+              }`}>
                 {col.type === "histogram" ? "numeric" : "text"}
               </span>
             </div>
 
-            <ResponsiveContainer width="100%" height={110}>
-              <BarChart data={col.data} margin={{ top: 4, right: 0, left: -28, bottom: 0 }}>
-                <XAxis
-                  dataKey="label"
-                  tick={{ fontSize: 9, fill: "#475569" }}
-                  tickLine={false}
-                  axisLine={false}
-                  interval="preserveStartEnd"
-                />
-                <YAxis tick={{ fontSize: 9, fill: "#475569" }} tickLine={false} axisLine={false} />
-                <Tooltip
-                  contentStyle={TT_STYLE}
-                  cursor={{ fill: "rgba(255,255,255,0.03)" }}
-                  formatter={(value) => [value as number, "Count"]}
-                />
-                <Bar dataKey="count" radius={[3, 3, 0, 0]} maxBarSize={32}>
-                  {col.data.map((_, idx) => (
-                    <Cell
-                      key={idx}
-                      fill={col.type === "histogram" ? INDIGO : VIOLET}
-                      fillOpacity={0.7 + (idx / col.data.length) * 0.3}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="w-full h-[110px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={col.data} margin={{ top: 4, right: 0, left: -28, bottom: 0 }}>
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fontSize: 9, fill: "#475569" }}
+                    tickLine={false}
+                    axisLine={false}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis tick={{ fontSize: 9, fill: "#475569" }} tickLine={false} axisLine={false} />
+                  <Tooltip
+                    contentStyle={TT_STYLE}
+                    cursor={{ fill: "rgba(255,255,255,0.03)" }}
+                    formatter={(value) => [value as number, "Count"]}
+                  />
+                  <Bar dataKey="count" radius={[3, 3, 0, 0]} maxBarSize={32}>
+                    {col.data.map((_, idx) => (
+                      <Cell
+                        key={idx}
+                        fill={col.type === "histogram" ? INDIGO : VIOLET}
+                        fillOpacity={0.7 + (idx / col.data.length) * 0.3}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
 
-            {/* Inline stats */}
             {col.type === "histogram" ? (
-              <div className="flex gap-3 flex-wrap">
+              <div className="flex gap-x-3 gap-y-1 flex-wrap">
                 {["mean", "median", "std"].map(k => (
                   col.stats[k] !== undefined && (
                     <span key={k} className="text-[10px] text-gray-600">
@@ -216,7 +210,7 @@ function DistributionCharts({ data }: { data: DistColumn[] }) {
                 ))}
               </div>
             ) : (
-              <p className="text-[10px] text-gray-600">
+              <p className="text-[10px] text-gray-600 truncate">
                 {col.stats.unique} unique · top:{" "}
                 <span className="text-gray-400 font-mono">"{col.stats.top}"</span>
               </p>
@@ -225,14 +219,12 @@ function DistributionCharts({ data }: { data: DistColumn[] }) {
         ))}
       </div>
 
-      {/* Pagination */}
       {total > 1 && (
-        <div className="flex items-center justify-center gap-2 pt-1">
+        <div className="flex items-center justify-center gap-2 pt-2">
           <button
             onClick={() => setPage(p => Math.max(0, p - 1))}
             disabled={page === 0}
-            className="px-3 py-1 text-[12px] rounded-lg border border-white/5
-              text-gray-500 hover:text-gray-300 disabled:opacity-30 transition-colors"
+            className="px-3 py-1 text-[12px] rounded-lg border border-white/5 text-gray-500 hover:text-gray-300 disabled:opacity-30 transition-colors"
           >
             ← Prev
           </button>
@@ -242,8 +234,7 @@ function DistributionCharts({ data }: { data: DistColumn[] }) {
           <button
             onClick={() => setPage(p => Math.min(total - 1, p + 1))}
             disabled={page === total - 1}
-            className="px-3 py-1 text-[12px] rounded-lg border border-white/5
-              text-gray-500 hover:text-gray-300 disabled:opacity-30 transition-colors"
+            className="px-3 py-1 text-[12px] rounded-lg border border-white/5 text-gray-500 hover:text-gray-300 disabled:opacity-30 transition-colors"
           >
             Next →
           </button>
@@ -258,8 +249,7 @@ function MissingHeatmap({ data }: { data: MissingData }) {
   if (data.per_col.length === 0) {
     return (
       <Section title="Missing values" sub="Distribution across your dataset">
-        <div className="rounded-xl border p-10 text-center"
-          style={{ background: CARD_BG, borderColor: BORDER }}>
+        <div className="rounded-xl border p-10 text-center" style={{ background: CARD_BG, borderColor: BORDER }}>
           <p className="text-2xl mb-2">✓</p>
           <p className="text-sm text-gray-500">No missing values detected</p>
         </div>
@@ -267,7 +257,6 @@ function MissingHeatmap({ data }: { data: MissingData }) {
     )
   }
 
-  // Build a cell grid: rows × cols, mark missing cells
   const missingSet = new Set(data.cells.map(c => `${c.row}-${c.col}`))
   const CELL_SIZE = Math.max(6, Math.min(14, Math.floor(360 / data.cols)))
 
@@ -276,52 +265,53 @@ function MissingHeatmap({ data }: { data: MissingData }) {
       title="Missing values"
       sub={`${data.cells.length} missing cells across a ${data.rows}×${data.cols} sample`}
     >
-      <div className="grid lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Grid heatmap */}
-        <div className="rounded-xl border p-4 space-y-3"
-          style={{ background: CARD_BG, borderColor: BORDER }}>
+        <div className="rounded-xl border p-4 space-y-3 min-w-0" style={{ background: CARD_BG, borderColor: BORDER }}>
           <p className="text-[11px] text-gray-600 uppercase tracking-widest font-semibold">
             Cell map (sample)
           </p>
 
-          {/* Column labels */}
-          <div className="flex gap-px overflow-x-auto pb-1">
-            {data.col_names.map((name, i) => (
-              <div
-                key={i}
-                style={{ width: CELL_SIZE, minWidth: CELL_SIZE }}
-                className="text-[7px] text-gray-700 truncate text-center"
-                title={name}
-              >
-                {name.slice(0, 2)}
+          <div className="w-full overflow-x-auto pb-2 paths-scroll-touch">
+            <div className="min-w-max">
+              {/* Column labels */}
+              <div className="flex gap-px overflow-x-auto pb-1">
+                {data.col_names.map((name, i) => (
+                  <div
+                    key={i}
+                    style={{ width: CELL_SIZE, minWidth: CELL_SIZE }}
+                    className="text-[7px] text-gray-700 truncate text-center"
+                    title={name}
+                  >
+                    {name.slice(0, 2)}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* Grid */}
-          <div className="space-y-px overflow-x-auto">
-            {Array.from({ length: data.rows }).map((_, r) => (
-              <div key={r} className="flex gap-px">
-                {Array.from({ length: data.cols }).map((_, c) => {
-                  const isMissing = missingSet.has(`${r}-${c}`)
-                  return (
-                    <div
-                      key={c}
-                      style={{
-                        width: CELL_SIZE,
-                        height: CELL_SIZE,
-                        minWidth: CELL_SIZE,
-                        backgroundColor: isMissing
-                          ? "rgba(239,68,68,0.7)"
-                          : "rgba(99,102,241,0.15)",
-                        borderRadius: 1,
-                      }}
-                      title={isMissing ? `Missing: row ${r}, col ${data.col_names[c]}` : ""}
-                    />
-                  )
-                })}
+              {/* Grid */}
+              <div className="space-y-px">
+                {Array.from({ length: data.rows }).map((_, r) => (
+                  <div key={r} className="flex gap-px">
+                    {Array.from({ length: data.cols }).map((_, c) => {
+                      const isMissing = missingSet.has(`${r}-${c}`)
+                      return (
+                        <div
+                          key={c}
+                          style={{
+                            width: CELL_SIZE,
+                            height: CELL_SIZE,
+                            minWidth: CELL_SIZE,
+                            backgroundColor: isMissing ? "rgba(239,68,68,0.7)" : "rgba(99,102,241,0.15)",
+                            borderRadius: 1,
+                          }}
+                          title={isMissing ? `Missing: row ${r}, col ${data.col_names[c]}` : ""}
+                        />
+                      )
+                    })}
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
 
           <div className="flex items-center gap-3 pt-1">
@@ -335,48 +325,49 @@ function MissingHeatmap({ data }: { data: MissingData }) {
         </div>
 
         {/* Bar chart */}
-        <div className="rounded-xl border p-4 space-y-3"
-          style={{ background: CARD_BG, borderColor: BORDER }}>
+        <div className="rounded-xl border p-4 space-y-3 min-w-0" style={{ background: CARD_BG, borderColor: BORDER }}>
           <p className="text-[11px] text-gray-600 uppercase tracking-widest font-semibold">
             By column
           </p>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart
-              data={data.per_col.slice(0, 12)}
-              layout="vertical"
-              margin={{ left: 0, right: 20, top: 0, bottom: 0 }}
-            >
-              <XAxis
-                type="number"
-                tick={{ fontSize: 10, fill: "#475569" }}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={v => `${v}%`}
-                domain={[0, 100]}
-              />
-              <YAxis
-                type="category"
-                dataKey="column"
-                tick={{ fontSize: 10, fill: "#94a3b8" }}
-                width={80}
-                tickLine={false}
-                axisLine={false}
-              />
-              <Tooltip
-                contentStyle={TT_STYLE}
-                cursor={{ fill: "rgba(255,255,255,0.03)" }}
-                formatter={(value) => [`${value}%`, "Missing"]}
-              />
-              <Bar dataKey="pct" radius={[0, 4, 4, 0]} maxBarSize={12}>
-                {data.per_col.slice(0, 12).map((entry, i) => (
-                  <Cell
-                    key={i}
-                    fill={entry.pct > 30 ? RED : entry.pct > 10 ? AMBER : INDIGO}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="w-full h-[200px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={data.per_col.slice(0, 12)}
+                layout="vertical"
+                margin={{ left: -10, right: 20, top: 0, bottom: 0 }}
+              >
+                <XAxis
+                  type="number"
+                  tick={{ fontSize: 10, fill: "#475569" }}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={v => `${v}%`}
+                  domain={[0, 100]}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="column"
+                  tick={{ fontSize: 10, fill: "#94a3b8" }}
+                  width={80}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <Tooltip
+                  contentStyle={TT_STYLE}
+                  cursor={{ fill: "rgba(255,255,255,0.03)" }}
+                  formatter={(value) => [`${value}%`, "Missing"]}
+                />
+                <Bar dataKey="pct" radius={[0, 4, 4, 0]} maxBarSize={12}>
+                  {data.per_col.slice(0, 12).map((entry, i) => (
+                    <Cell
+                      key={i}
+                      fill={entry.pct > 30 ? RED : entry.pct > 10 ? AMBER : INDIGO}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
     </Section>
@@ -388,8 +379,7 @@ function CorrelationMatrix({ data }: { data: CorrData }) {
   if (data.columns.length < 2) {
     return (
       <Section title="Correlation matrix" sub="Pearson correlation between numeric columns">
-        <div className="rounded-xl border p-8 text-center"
-          style={{ background: CARD_BG, borderColor: BORDER }}>
+        <div className="rounded-xl border p-8 text-center" style={{ background: CARD_BG, borderColor: BORDER }}>
           <p className="text-sm text-gray-500">
             Need at least 2 numeric columns to compute correlations.
           </p>
@@ -406,66 +396,66 @@ function CorrelationMatrix({ data }: { data: CorrData }) {
       title="Correlation matrix"
       sub="Pearson r between numeric columns — green = positive, red = negative"
     >
-      <div className="rounded-xl border p-5 overflow-auto"
-        style={{ background: CARD_BG, borderColor: BORDER }}>
-        {/* Column headers */}
-        <div className="flex" style={{ marginLeft: 80 }}>
-          {data.columns.map((col, i) => (
-            <div
-              key={i}
-              style={{ width: CELL, minWidth: CELL }}
-              className="text-[9px] text-gray-600 text-center truncate px-0.5"
-              title={col}
-            >
-              {col.slice(0, 6)}
+      <div className="rounded-xl border p-4 sm:p-5 overflow-x-auto overflow-y-hidden paths-scroll-touch" style={{ background: CARD_BG, borderColor: BORDER }}>
+        <div className="min-w-max">
+          {/* Column headers */}
+          <div className="flex" style={{ marginLeft: 80 }}>
+            {data.columns.map((col, i) => (
+              <div
+                key={i}
+                style={{ width: CELL, minWidth: CELL }}
+                className="text-[9px] text-gray-600 text-center truncate px-0.5"
+                title={col}
+              >
+                {col.slice(0, 6)}
+              </div>
+            ))}
+          </div>
+
+          {/* Rows */}
+          {data.columns.map((rowCol, r) => (
+            <div key={r} className="flex items-center">
+              {/* Row label */}
+              <div
+                style={{ width: 80, minWidth: 80 }}
+                className="text-[10px] text-gray-500 truncate pr-2 text-right"
+                title={rowCol}
+              >
+                {rowCol.slice(0, 10)}
+              </div>
+
+              {/* Cells */}
+              {data.columns.map((_, c) => {
+                const cell = data.cells.find(x => x.x === c && x.y === r)
+                const val  = cell?.value ?? 0
+                const bg   = corrColor(val)
+                const isDiag = r === c
+
+                return (
+                  <motion.div
+                    key={c}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: (r * n + c) * 0.008 }}
+                    style={{
+                      width: CELL,
+                      height: CELL,
+                      minWidth: CELL,
+                      backgroundColor: isDiag ? "rgba(99,102,241,0.3)" : bg,
+                      opacity: isDiag ? 1 : 0.5 + Math.abs(val) * 0.5,
+                    }}
+                    className="flex items-center justify-center m-px rounded-sm cursor-default transition-opacity hover:opacity-100"
+                    title={`${rowCol} × ${data.columns[c]}: ${val.toFixed(2)}`}
+                  >
+                    <span className="text-[8px] font-mono text-white/70 select-none">
+                      {isDiag ? "1" : val.toFixed(1)}
+                    </span>
+                  </motion.div>
+                )
+              })}
             </div>
           ))}
         </div>
-
-        {/* Rows */}
-        {data.columns.map((rowCol, r) => (
-          <div key={r} className="flex items-center">
-            {/* Row label */}
-            <div
-              style={{ width: 80, minWidth: 80 }}
-              className="text-[10px] text-gray-500 truncate pr-2 text-right"
-              title={rowCol}
-            >
-              {rowCol.slice(0, 10)}
-            </div>
-
-            {/* Cells */}
-            {data.columns.map((_, c) => {
-              const cell = data.cells.find(x => x.x === c && x.y === r)
-              const val  = cell?.value ?? 0
-              const bg   = corrColor(val)
-              const isDiag = r === c
-
-              return (
-                <motion.div
-                  key={c}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: (r * n + c) * 0.008 }}
-                  style={{
-                    width: CELL,
-                    height: CELL,
-                    minWidth: CELL,
-                    backgroundColor: isDiag ? "rgba(99,102,241,0.3)" : bg,
-                    opacity: isDiag ? 1 : 0.5 + Math.abs(val) * 0.5,
-                  }}
-                  className="flex items-center justify-center m-px rounded-sm
-                    cursor-default transition-opacity hover:opacity-100"
-                  title={`${rowCol} × ${data.columns[c]}: ${val.toFixed(2)}`}
-                >
-                  <span className="text-[8px] font-mono text-white/70 select-none">
-                    {isDiag ? "1" : val.toFixed(1)}
-                  </span>
-                </motion.div>
-              )
-            })}
-          </div>
-        ))}
 
         {/* Legend */}
         <div className="flex items-center gap-2 mt-4 justify-end">
@@ -491,8 +481,7 @@ function OutlierSummary({ data }: { data: OutlierRow[] }) {
   if (data.length === 0) {
     return (
       <Section title="Outliers" sub="IQR-based detection across numeric columns">
-        <div className="rounded-xl border p-8 text-center"
-          style={{ background: CARD_BG, borderColor: BORDER }}>
+        <div className="rounded-xl border p-8 text-center" style={{ background: CARD_BG, borderColor: BORDER }}>
           <p className="text-2xl mb-2">✓</p>
           <p className="text-sm text-gray-500">No outliers detected</p>
         </div>
@@ -505,15 +494,12 @@ function OutlierSummary({ data }: { data: OutlierRow[] }) {
       title="Outliers"
       sub="Columns with values outside 1.5× IQR — flagged, not auto-deleted"
     >
-      <div className="rounded-xl border overflow-hidden"
-        style={{ background: CARD_BG, borderColor: BORDER }}>
-        <table className="w-full text-left">
+      <div className="rounded-xl border overflow-x-auto paths-scroll-touch" style={{ background: CARD_BG, borderColor: BORDER }}>
+        <table className="w-full text-left min-w-[500px]">
           <thead>
             <tr className="border-b" style={{ borderColor: BORDER }}>
               {["Column", "Outliers", "% of rows", "Safe range"].map(h => (
-                <th key={h}
-                  className="px-4 py-2.5 text-[10px] uppercase tracking-widest
-                    text-gray-600 font-semibold">
+                <th key={h} className="px-4 py-2.5 text-[10px] uppercase tracking-widest text-gray-600 font-semibold">
                   {h}
                 </th>
               ))}
@@ -528,7 +514,7 @@ function OutlierSummary({ data }: { data: OutlierRow[] }) {
                 transition={{ delay: i * 0.04 }}
                 className="hover:bg-white/[0.02] transition-colors"
               >
-                <td className="px-4 py-3 font-mono text-[12px] text-white">
+                <td className="px-4 py-3 font-mono text-[12px] text-white truncate max-w-[140px]">
                   {row.column}
                 </td>
                 <td className="px-4 py-3">
@@ -538,7 +524,7 @@ function OutlierSummary({ data }: { data: OutlierRow[] }) {
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-20 h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div className="w-16 sm:w-20 h-1 bg-white/5 rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full bg-amber-500/70"
                         style={{ width: `${Math.min(row.pct, 100)}%` }}
@@ -547,7 +533,7 @@ function OutlierSummary({ data }: { data: OutlierRow[] }) {
                     <span className="text-[11px] text-gray-500 tabular-nums">{row.pct}%</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-[11px] font-mono text-gray-500">
+                <td className="px-4 py-3 text-[11px] font-mono text-gray-500 whitespace-nowrap">
                   [{row.lower?.toFixed(2)} → {row.upper?.toFixed(2)}]
                 </td>
               </motion.tr>
@@ -561,224 +547,84 @@ function OutlierSummary({ data }: { data: OutlierRow[] }) {
 
 // ─── 5. Before / After Comparison ────────────────────────────────────────────
 function BeforeAfter({ data }: { data: CompareData }) {
-
-  const scoreColor =
-    data.score_change >= 0
-      ? "text-green-400"
-      : "text-red-400"
+  const scoreColor = data.score_change >= 0 ? "text-green-400" : "text-red-400"
 
   return (
-    <Section
-      title="Before vs After"
-      sub="Overall improvement after cleaning"
-    >
-
+    <Section title="Before vs After" sub="Overall improvement after cleaning">
       <div className="space-y-6">
-
         {/* Score Card */}
-
-        <div
-          className="rounded-xl border p-6"
-          style={{ background: CARD_BG, borderColor: BORDER }}
-        >
-
-          <div className="flex items-center justify-between">
-
+        <div className="rounded-xl border p-4 sm:p-6" style={{ background: CARD_BG, borderColor: BORDER }}>
+          <p className="text-gray-500 text-sm">Quality Score</p>
+          <div className="flex flex-wrap items-end gap-x-6 gap-y-4 mt-3 sm:mt-4">
             <div>
-
-              <p className="text-gray-500 text-sm">
-                Quality Score
-              </p>
-
-              <div className="flex items-end gap-6 mt-4">
-
-                <div>
-
-                  <p className="text-xs text-gray-500">
-                    Before
-                  </p>
-
-                  <h2 className="text-5xl font-bold text-red-400">
-                    {data.before_score}
-                  </h2>
-
-                </div>
-
-                <div className={scoreColor}>
-                  <p className="text-2xl font-bold">
-                    +{data.score_change}
-                  </p>
-                </div>
-
-                <div>
-
-                  <p className="text-xs text-gray-500">
-                    After
-                  </p>
-
-                  <h2 className="text-5xl font-bold text-green-400">
-                    {data.after_score}
-                  </h2>
-
-                </div>
-
-              </div>
-
+              <p className="text-xs text-gray-500">Before</p>
+              <h2 className="text-4xl sm:text-5xl font-bold text-red-400">{data.before_score}</h2>
             </div>
-
+            <div className={`${scoreColor} pb-1`}>
+              <p className="text-xl sm:text-2xl font-bold">+{data.score_change}</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500">After</p>
+              <h2 className="text-4xl sm:text-5xl font-bold text-green-400">{data.after_score}</h2>
+            </div>
           </div>
-
         </div>
 
-        {/* KPI Cards */}
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-
+        {/* KPI Cards Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {[
-            {
-              title: "Missing Fixed",
-              value: data.summary.missing_fixed,
-            },
-            {
-              title: "Duplicates Removed",
-              value: data.summary.duplicates_removed,
-            },
-            {
-              title: "Memory Saved (KB)",
-              value: data.summary.memory_saved_kb,
-            },
-            {
-              title: "Rows Removed",
-              value: data.summary.rows_removed,
-            },
+            { title: "Missing Fixed", value: data.summary.missing_fixed },
+            { title: "Duplicates Removed", value: data.summary.duplicates_removed },
+            { title: "Memory Saved (KB)", value: data.summary.memory_saved_kb },
+            { title: "Rows Removed", value: data.summary.rows_removed },
           ].map(card => (
-
-            <div
-              key={card.title}
-              className="rounded-xl border p-5"
-              style={{
-                background: CARD_BG,
-                borderColor: BORDER,
-              }}
-            >
-
-              <p className="text-gray-500 text-xs uppercase">
-                {card.title}
-              </p>
-
-              <h3 className="text-3xl font-bold text-white mt-2">
-                {card.value}
-              </h3>
-
+            <div key={card.title} className="rounded-xl border p-4 sm:p-5 min-w-0" style={{ background: CARD_BG, borderColor: BORDER }}>
+              <p className="text-gray-500 text-[10px] sm:text-xs uppercase tracking-tight truncate">{card.title}</p>
+              <h3 className="text-2xl sm:text-3xl font-bold text-white mt-1 sm:mt-2 tabular-nums">{card.value}</h3>
             </div>
-
           ))}
-
         </div>
 
         {/* Comparison Table */}
-
-        <div
-          className="rounded-xl border overflow-hidden"
-          style={{
-            background: CARD_BG,
-            borderColor: BORDER,
-          }}
-        >
-
-          <table className="w-full">
-
+        <div className="rounded-xl border overflow-x-auto paths-scroll-touch" style={{ background: CARD_BG, borderColor: BORDER }}>
+          <table className="w-full min-w-[480px]">
             <thead>
-
               <tr className="border-b border-white/5">
-
-                <th className="text-left px-4 py-3 text-xs uppercase text-gray-500">
-                  Metric
-                </th>
-
-                <th className="text-center text-xs uppercase text-gray-500">
-                  Before
-                </th>
-
-                <th className="text-center text-xs uppercase text-gray-500">
-                  After
-                </th>
-
-                <th className="text-center text-xs uppercase text-gray-500">
-                  Improvement
-                </th>
-
+                <th className="text-left px-4 py-3 text-xs uppercase text-gray-500">Metric</th>
+                <th className="text-center text-xs uppercase text-gray-500 px-2">Before</th>
+                <th className="text-center text-xs uppercase text-gray-500 px-2">After</th>
+                <th className="text-center text-xs uppercase text-gray-500 px-2">Improvement</th>
               </tr>
-
             </thead>
-
             <tbody>
-
               {data.metrics.map(metric => (
-
-                <tr
-                  key={metric.label}
-                  className="border-b border-white/5"
-                >
-
-                  <td className="px-4 py-3">
-                    {metric.label}
-                  </td>
-
-                  <td className="text-center">
-                    {metric.before}
-                  </td>
-
-                  <td className="text-center text-green-400 font-semibold">
-                    {metric.after}
-                  </td>
-
-                  <td className="text-center">
-
-                    <span
-                      className={
-                        metric.improvement >= 0
-                          ? "text-green-400"
-                          : "text-red-400"
-                      }
-                    >
-
+                <tr key={metric.label} className="border-b border-white/5 last:border-0">
+                  <td className="px-4 py-3 text-sm text-gray-300 truncate max-w-[160px]">{metric.label}</td>
+                  <td className="text-center text-sm tabular-nums px-2">{metric.before}</td>
+                  <td className="text-center text-sm text-green-400 font-semibold tabular-nums px-2">{metric.after}</td>
+                  <td className="text-center text-sm tabular-nums px-2">
+                    <span className={metric.improvement >= 0 ? "text-green-400" : "text-red-400"}>
                       {metric.improvement >= 0 ? "+" : ""}
                       {metric.improvement}
-
                     </span>
-
                   </td>
-
                 </tr>
-
               ))}
-
             </tbody>
-
           </table>
-
         </div>
-
       </div>
-
     </Section>
   )
-
 }
 
-// ─── Tabs ─────────────────────────────────────────────────────────────────────
-type TabKey =
-  | "distributions"
-  | "missing"
-  | "correlation"
-  | "outliers"
-  | "comparison";
+// ─── Tabs Configuration ───────────────────────────────────────────────────────
+type TabKey = "distributions" | "missing" | "correlation" | "outliers" | "comparison"
 
 interface TabItem {
-  key: TabKey;
-  label: string;
-  needsCleaned?: boolean;
+  key: TabKey
+  label: string
+  needsCleaned?: boolean
 }
 
 const TABS: TabItem[] = [
@@ -786,14 +632,8 @@ const TABS: TabItem[] = [
   { key: "missing", label: "Missing" },
   { key: "correlation", label: "Correlation" },
   { key: "outliers", label: "Outliers" },
-  {
-    key: "comparison",
-    label: "Before/After",
-    needsCleaned: true,
-  },
-];
-
-// type TabKey = typeof TABS[number]["key"]
+  { key: "comparison", label: "Before/After", needsCleaned: true },
+]
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function AnalyticsPanel({ sessionId, cleanedSessionId }: Props) {
@@ -820,7 +660,7 @@ export default function AnalyticsPanel({ sessionId, cleanedSessionId }: Props) {
 
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 w-full">
         <div className="flex items-center gap-2">
           <motion.div
             animate={{ rotate: 360 }}
@@ -836,15 +676,14 @@ export default function AnalyticsPanel({ sessionId, cleanedSessionId }: Props) {
 
   if (error || !analytics) {
     return (
-      <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6 text-center">
+      <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6 text-center w-full">
         <p className="text-sm text-red-400">{error || "No data available."}</p>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6 w-full">
-
+    <div className="space-y-6 w-full min-w-0">
       {/* Header */}
       <div>
         <h2 className="text-xl font-semibold text-white">Visual analytics</h2>
@@ -853,15 +692,15 @@ export default function AnalyticsPanel({ sessionId, cleanedSessionId }: Props) {
         </p>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 border-b border-white/5 overflow-x-auto">
+      {/* Tabs Layout */}
+      <div className="flex gap-1 border-b border-white/5 overflow-x-auto paths-scroll-touch scrollbar-none">
         {TABS.filter(t => !t.needsCleaned || cleanedSessionId).map(t => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`relative px-4 py-2.5 text-[13px] font-medium whitespace-nowrap
-              transition-colors shrink-0
-              ${tab === t.key ? "text-white" : "text-gray-500 hover:text-gray-300"}`}
+            className={`relative px-4 py-2.5 text-[13px] font-medium whitespace-nowrap transition-colors shrink-0 ${
+              tab === t.key ? "text-white" : "text-gray-500 hover:text-gray-300"
+            }`}
           >
             {t.label}
             {tab === t.key && (
@@ -874,40 +713,42 @@ export default function AnalyticsPanel({ sessionId, cleanedSessionId }: Props) {
         ))}
       </div>
 
-      {/* Tab content */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={tab}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          {tab === "distributions" && (
-            <DistributionCharts data={analytics.distributions} />
-          )}
-          {tab === "missing" && (
-            <MissingHeatmap data={analytics.missing} />
-          )}
-          {tab === "correlation" && (
-            <CorrelationMatrix data={analytics.correlation} />
-          )}
-          {tab === "outliers" && (
-            <OutlierSummary data={analytics.outliers} />
-          )}
-          {tab === "comparison" && comparison && (
-            <BeforeAfter data={comparison} />
-          )}
-          {tab === "comparison" && !comparison && (
-            <div className="rounded-xl border border-white/5 p-10 text-center"
-              style={{ background: CARD_BG }}>
-              <p className="text-sm text-gray-500">
-                Apply cleaning operations first to see a before/after comparison.
-              </p>
-            </div>
-          )}
-        </motion.div>
-      </AnimatePresence>
+      {/* Tab content panel */}
+      <div className="w-full">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={tab}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="w-full min-w-0"
+          >
+            {tab === "distributions" && (
+              <DistributionCharts data={analytics.distributions} />
+            )}
+            {tab === "missing" && (
+              <MissingHeatmap data={analytics.missing} />
+            )}
+            {tab === "correlation" && (
+              <CorrelationMatrix data={analytics.correlation} />
+            )}
+            {tab === "outliers" && (
+              <OutlierSummary data={analytics.outliers} />
+            )}
+            {tab === "comparison" && comparison && (
+              <BeforeAfter data={comparison} />
+            )}
+            {tab === "comparison" && !comparison && (
+              <div className="rounded-xl border border-white/5 p-10 text-center" style={{ background: CARD_BG }}>
+                <p className="text-sm text-gray-500">
+                  Apply cleaning operations first to see a before/after comparison.
+                </p>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   )
 }
