@@ -9,6 +9,7 @@ import textwrap
 from datetime import datetime
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 
@@ -40,20 +41,15 @@ def to_xlsx(df: pd.DataFrame) -> bytes:
 # ─── JSON ─────────────────────────────────────────────────────────────────────
 
 def to_json(df: pd.DataFrame) -> bytes:
+    df = df.replace([np.inf, -np.inf], None)
+    df = df.where(pd.notnull(df), None)
 
-    df = (
-        df.replace([np.inf, -np.inf], None)
-          .astype(object)
-          .where(df.notna(), None)
-    )
-
-    return df.to_json(
-        orient="records",
+    return json.dumps(
+        df.to_dict(orient="records"),
+        default=str,
+        ensure_ascii=False,
         indent=2,
-        force_ascii=False,
-        date_format="iso",
     ).encode("utf-8")
-
 
 # ─── Pandas script ────────────────────────────────────────────────────────────
 
