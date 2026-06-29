@@ -1,6 +1,6 @@
 // ────────────────────────────────────────────────────────────────────────────
 // src/components/ExportPanel.tsx
-// Download panel shown after cleaning is complete — FULLY RESPONSIVE VERSION
+// Download panel shown after cleaning is complete — DEFENSIVE DOWNLOAD VERSION
 // ────────────────────────────────────────────────────────────────────────────
 
 import { useState } from "react"
@@ -173,22 +173,28 @@ export default function ExportPanel({
       let filename: string
 
       if (key === "csv" || key === "xlsx" || key === "json") {
-        const { data } = await api.get(
+        const response = await api.get(
           `/export/${cleanedSessionId}?format=${key}`,
           { responseType: "blob" }
         )
-        blob     = data
+        
+        // Intercept string structural error messages hiding inside standard Blobs
+        if (response.data.type === "application/json") {
+          throw new Error("API validation failed inside binary parser thread.")
+        }
+
+        blob     = response.data
         filename = `cleanflow_${key}_${cleanedSessionId.slice(0, 8)}.${key}`
       } else if (key === "script") {
-        const { data } = await api.post(
+        const response = await api.post(
           `/export/script/${cleanedSessionId}`,
           { original_filename: originalFilename, operations },
           { responseType: "blob" }
         )
-        blob     = data
+        blob     = response.data
         filename = `cleanflow_script_${cleanedSessionId.slice(0, 8)}.py`
       } else {
-        const { data } = await api.post(
+        const response = await api.post(
           `/export/report/${cleanedSessionId}`,
           {
             original_session_id: sessionId,
@@ -198,14 +204,15 @@ export default function ExportPanel({
           },
           { responseType: "blob" }
         )
-        blob     = data
+        blob     = response.data
         filename = `cleanflow_report_${cleanedSessionId.slice(0, 8)}.md`
       }
 
       triggerDownload(blob, filename)
       setState(key, "done")
       setTimeout(() => setState(key, "idle"), 3000)
-    } catch {
+    } catch (err) {
+      console.error(`Export download handler exception for format [${key}]:`, err)
       setState(key, "error")
       setTimeout(() => setState(key, "idle"), 3000)
     }
