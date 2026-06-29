@@ -1,6 +1,6 @@
 // ────────────────────────────────────────────────────────────────────────────
 // src/pages/Landing.tsx
-// CleanFlow AI landing page — FINAL PRODUCTION READY VERSION WITH ALL FIXES
+// CleanFlow AI landing page — THEME-MATCHED EXPERT MINIMALIST PRODUCTION VERSION
 // ────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react"
@@ -144,7 +144,7 @@ function HeroGrid() {
             ))}
           </div>
 
-          {/* ─── FIXED HEIGHT CONTAINER PREVENTS JUMPING ─── */}
+          {/* ─── STABLE DIMENSION LAYOUT ROW BOX PREVENTS SNAPPING ─── */}
           <div className="divide-y divide-[#1e2130]/60 h-[195px] relative overflow-hidden bg-transparent">
             <AnimatePresence mode="popLayout" initial={false}>
               {rows.map((row, idx) => (
@@ -260,7 +260,7 @@ const Icon = {
   ),
   Chart: () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" h1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
     </svg>
   ),
   Check: () => (
@@ -416,18 +416,11 @@ export default function Landing() {
             <span className="text-[11px] text-indigo-300 font-medium tracking-wide">AI-powered data cleaning</span>
           </div>
 
-          {/* ── INLINE WEBKIT CLIPPING PATCH FOR DARK READER COMPLIANCE ── */}
+          {/* ── THEME BALANCED CLEAN DESIGN ARCHITECTURE ── */}
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight">
             Messy Datasets,{' '}
-            <span 
-              className="inline-block font-extrabold"
-              style={{
-                background: 'linear-gradient(to right, #818cf8, #c084fc, #f472b6)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent'
-              }}
-            >
-              Cleaned.
+            <span className="inline-block text-indigo-400 drop-shadow-[0_2px_12px_rgba(129,140,248,0.25)] font-extrabold transition-all duration-300">
+              cleaned.
             </span>
           </h1>
 
