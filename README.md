@@ -1,267 +1,414 @@
-<div align="center">
-
 # 🚀 CleanFlow AI
 
-### Intelligent Data Cleaning & Analytics Platform
+<div align="center">
 
-Transform messy datasets into clean, analysis-ready data using automated profiling, intelligent cleaning recommendations, interactive visual analytics, and reproducible export pipelines.
+![Python](https://img.shields.io/badge/Python-3.12-blue?style=for-the-badge&logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?style=for-the-badge&logo=fastapi)
+![React](https://img.shields.io/badge/React-Frontend-61DAFB?style=for-the-badge&logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript)
+![Vite](https://img.shields.io/badge/Vite-Build-646CFF?style=for-the-badge&logo=vite)
+![Pandas](https://img.shields.io/badge/Pandas-Data%20Processing-150458?style=for-the-badge&logo=pandas)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-<p>
+### AI-powered Data Cleaning & Analytics Platform
 
-<img src="https://img.shields.io/badge/Python-3.12-blue?style=for-the-badge&logo=python"/>
-<img src="https://img.shields.io/badge/FastAPI-Backend-009688?style=for-the-badge&logo=fastapi"/>
-<img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react"/>
-<img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript"/>
-<img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite"/>
-<img src="https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas"/>
-<img src="https://img.shields.io/badge/License-MIT-success?style=for-the-badge"/>
-
-</p>
-
-**Live Demo:** *(Coming Soon)*
-
-**Documentation:** *(Coming Soon)*
-
-**Report Issues:** GitHub Issues
+Upload any CSV or Excel dataset, automatically detect data quality issues, apply intelligent cleaning operations, visualize analytics, and export cleaned datasets with reproducible Python scripts.
 
 </div>
 
 ---
 
-# 📖 Overview
+# ✨ Features
 
-CleanFlow AI is an end-to-end data preprocessing platform designed to automate one of the most time-consuming stages of every data science, machine learning, and analytics project: **data cleaning**.
+## 📂 Dataset Upload
 
-Real-world datasets are rarely clean. They often contain missing values, duplicate rows, inconsistent formatting, invalid data types, whitespace issues, outliers, and other quality problems that directly impact downstream analysis and model performance.
-
-CleanFlow AI provides an intelligent workflow that enables users to:
-
-- Upload CSV and Excel datasets
-- Generate detailed data quality profiles
-- Detect common data quality issues automatically
-- Receive AI-inspired cleaning recommendations
-- Apply one-click cleaning operations
-- Compare dataset quality before and after cleaning
-- Visualize distributions, missing values, correlations, and outliers
-- Export cleaned datasets and reproducible Python scripts
-
-The platform combines a modern React frontend with a FastAPI backend and the Pandas ecosystem to provide a responsive, interactive, and scalable data cleaning experience.
-
----
-
-# ✨ Why CleanFlow AI?
-
-Data preparation typically consumes **60–80%** of the total time spent on data science projects.
-
-Instead of manually writing preprocessing scripts, analysts can upload a dataset and allow CleanFlow AI to:
-
-✔ Profile the data
-
-✔ Detect quality issues
-
-✔ Recommend cleaning operations
-
-✔ Execute transformations
-
-✔ Generate analytics
-
-✔ Export reproducible cleaning pipelines
-
-This significantly reduces manual effort while improving transparency and reproducibility.
-
----
-
-# 🎯 Key Features
-
-## 📂 Smart Dataset Upload
-
-CleanFlow AI supports both CSV and Microsoft Excel datasets.
-
-Features include:
-
-- Drag-and-drop upload
-- Session-based processing
-- Large dataset handling
+- Upload CSV and Excel files
+- Large dataset support
+- Secure session-based processing
 - Automatic schema detection
-- File validation
-- Secure temporary storage
 
 ---
 
-## 📊 Intelligent Dataset Profiling
+## 📊 Dataset Profiling
 
-Immediately after upload, the platform generates a comprehensive profile containing:
+Generate a complete dataset profile including:
 
-- Number of rows
-- Number of columns
-- Memory usage
+- Dataset dimensions
+- Data types
 - Missing values
-- Missing percentage
 - Duplicate rows
-- Numeric vs categorical columns
-- Data completeness
-- Overall quality score
-- Per-column statistics
-
-For numerical data:
-
-- Minimum
-- Maximum
-- Mean
-- Median
-- Standard deviation
-
-For categorical data:
-
-- Unique values
-- Top occurring values
-- Frequency distribution
+- Memory usage
+- Completeness score
+- Quality score
+- Numeric statistics
+- Top categorical values
 
 ---
 
 ## 🤖 AI Cleaning Suggestions
 
-Instead of blindly cleaning the dataset, CleanFlow AI first analyzes it and generates ranked recommendations.
-
-Each recommendation contains:
-
-- Problem detected
-- Reason
-- Expected impact
-- Number of affected rows
-- Preview examples
-- Suggested cleaning operation
-
-Current supported recommendations include:
+Automatically detects:
 
 - Missing values
 - Duplicate rows
-- Duplicate columns
 - Empty columns
 - Empty rows
+- Mixed data types
 - Invalid numeric values
-- Invalid dates
-- Mixed capitalization
-- Whitespace inconsistencies
-- Outlier detection
-- Type conversion
-- Memory optimization
+- Date inconsistencies
+- Capitalization issues
+- Whitespace problems
+- Outliers
+- Duplicate column names
+
+Each suggestion includes:
+
+- Priority
+- Reason
+- Expected impact
+- Preview
+- Rows affected
 
 ---
 
 ## 🧹 One-Click Cleaning
 
-Users may apply:
+Supports automatic cleaning operations:
 
-- Individual operations
-- Multiple operations
-- Entire cleaning pipeline
-
-Each operation is logged and can later be exported as a reproducible Pandas script.
+- Fill missing values
+- Remove duplicates
+- Trim whitespace
+- Standardize text
+- Convert data types
+- Remove empty rows
+- Remove empty columns
+- Rename duplicate columns
+- Handle outliers
+- Format dates
+- Normalize categorical values
 
 ---
 
-## 📈 Interactive Analytics Dashboard
+## 📈 Interactive Analytics
 
-The analytics engine transforms cleaned datasets into visual insights.
+Includes beautiful dashboards powered by Recharts.
 
-Available visualizations include:
+### Dataset Distribution
 
 - Histograms
-- Frequency distributions
-- Missing-value heatmaps
-- Correlation matrix
-- Outlier summary
-- Before/After comparison
-- Dataset quality improvements
+- Bar charts
+- Numeric summaries
+
+### Missing Value Heatmap
+
+- Missing cells visualization
+- Missing values by column
+
+### Correlation Matrix
+
+- Pearson correlation
+- Heatmap visualization
+
+### Outlier Analysis
+
+- IQR detection
+- Outlier percentage
+- Lower & upper bounds
+
+### Before vs After Comparison
+
+- Quality score
+- Missing values fixed
+- Memory saved
+- Duplicate removal
+- Completeness improvement
 
 ---
 
-## 📤 Multi-format Export
+## 📤 Export Options
 
-Every cleaned dataset can be exported as:
+Export cleaned data as:
 
 - CSV
-- XLSX
+- Excel (.xlsx)
 - JSON
-- Markdown Report
 - Auto-generated Pandas Script
-
-This allows every cleaning operation to be reproduced outside the application.
+- Markdown Cleaning Report
 
 ---
 
-# 🏗 System Architecture
+# 🛠 Tech Stack
 
-```text
-                    +----------------------+
-                    |      React UI        |
-                    |   (Vite + TS)        |
-                    +----------+-----------+
-                               |
-                               |
-                     REST API (Axios)
-                               |
-                               ▼
-                  +------------------------+
-                  |     FastAPI Server     |
-                  +-----------+------------+
-                              |
-      +-----------------------+----------------------+
-      |                       |                      |
-      ▼                       ▼                      ▼
- Data Profiling        Cleaning Engine      Analytics Engine
-      |                       |                      |
-      +-----------+-----------+----------------------+
-                  |
-                  ▼
-           Export Engine
-                  |
-      +-----------+-----------+
-      |           |           |
-      ▼           ▼           ▼
-     CSV        Excel       JSON
-                  |
-                  ▼
-      Markdown Report + Pandas Script
+## Frontend
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Framer Motion
+- Recharts
+- Axios
+
+---
+
+## Backend
+
+- FastAPI
+- Pandas
+- NumPy
+- OpenPyXL
+- Uvicorn
+
+---
+
+# 📁 Project Structure
+
+```
+CleanFlow-AI/
+│
+├── backend/
+│   ├── app/
+│   │   ├── api/
+│   │   ├── services/
+│   │   ├── models/
+│   │   ├── utils/
+│   │   └── core/
+│   │
+│   ├── main.py
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   ├── package.json
+│   └── vite.config.ts
+│
+└── README.md
 ```
 
 ---
 
-# 🔄 Complete Workflow
+# ⚙ Installation
 
-```text
-Dataset Upload
-      │
-      ▼
-Automatic Profiling
-      │
-      ▼
-AI Suggestions
-      │
-      ▼
-Cleaning Pipeline
-      │
-      ▼
-Analytics Dashboard
-      │
-      ▼
-Export Results
+## 1. Clone Repository
+
+```bash
+git clone https://github.com/yourusername/cleanflow-ai.git
+
+cd cleanflow-ai
+```
+
+---
+
+## 2. Backend Setup
+
+```bash
+cd backend
+
+python -m venv venv
+```
+
+Windows
+
+```bash
+venv\Scripts\activate
+```
+
+Linux/Mac
+
+```bash
+source venv/bin/activate
+```
+
+Install packages
+
+```bash
+pip install -r requirements.txt
+```
+
+Run backend
+
+```bash
+uvicorn main:app --reload
+```
+
+Backend runs at
+
+```
+http://localhost:8000
+```
+
+---
+
+## 3. Frontend Setup
+
+```bash
+cd frontend
+
+npm install
+```
+
+Run
+
+```bash
+npm run dev
+```
+
+Frontend runs at
+
+```
+http://localhost:5173
 ```
 
 ---
 
 # 📸 Screenshots
 
-> Add screenshots after deployment.
+Add screenshots here.
 
-| Page | Preview |
-|------|---------|
-| Landing Page | `/screenshots/landing.png` |
-| Upload | `/screenshots/upload.png` |
-| Dataset Profile | `/screenshots/profile.png` |
-| Cleaning Suggestions | `/screenshots/cleaning.png` |
-| Analytics | `/screenshots/analytics.png` |
-| Export | `/screenshots/export.png` |
+Example:
+
+```
+screenshots/
+
+upload.png
+
+profile.png
+
+cleaning.png
+
+analytics.png
+
+export.png
+```
 
 ---
+
+# 🚀 Deployment
+
+## Frontend
+
+Deploy on
+
+- Vercel
+- Netlify
+
+## Backend
+
+Deploy on
+
+- Render
+- Railway
+- Fly.io
+
+---
+
+# 📊 Example Workflow
+
+```
+Upload Dataset
+        │
+        ▼
+Profile Dataset
+        │
+        ▼
+Generate AI Suggestions
+        │
+        ▼
+Apply Cleaning
+        │
+        ▼
+View Analytics
+        │
+        ▼
+Export Clean Dataset
+```
+
+---
+
+# 🎯 Future Improvements
+
+- AI-powered cleaning recommendations using LLMs
+- PDF profiling
+- SQL database support
+- Cloud storage integration
+- Dataset versioning
+- Team collaboration
+- Automated ML preprocessing
+- Data validation rules
+- Pipeline builder
+- Scheduled cleaning jobs
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome!
+
+1. Fork the repository
+
+2. Create a feature branch
+
+```bash
+git checkout -b feature/new-feature
+```
+
+3. Commit changes
+
+```bash
+git commit -m "Added new feature"
+```
+
+4. Push
+
+```bash
+git push origin feature/new-feature
+```
+
+5. Open a Pull Request
+
+---
+
+# 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+# 👨‍💻 Author
+
+**Konain Fatima**
+
+B.Tech AI & ML Student
+
+Building AI-powered developer tools and data engineering solutions.
+
+GitHub: https://github.com/yourusername
+
+LinkedIn: https://linkedin.com/in/yourprofile
+
+---
+
+# ⭐ Support
+
+If you found this project useful,
+
+⭐ Star the repository
+
+🍴 Fork it
+
+💡 Open Issues
+
+🚀 Share with others
+
+---
+
+<div align="center">
+
+### Built with ❤️ using FastAPI, React & Pandas
+
+**CleanFlow AI**
+
+AI-powered data cleaning made simple.
+
+</div>
