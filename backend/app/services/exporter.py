@@ -40,7 +40,19 @@ def to_xlsx(df: pd.DataFrame) -> bytes:
 # ─── JSON ─────────────────────────────────────────────────────────────────────
 
 def to_json(df: pd.DataFrame) -> bytes:
-    return df.to_json(orient="records", indent=2, force_ascii=False).encode("utf-8")
+
+    df = (
+        df.replace([np.inf, -np.inf], None)
+          .astype(object)
+          .where(df.notna(), None)
+    )
+
+    return df.to_json(
+        orient="records",
+        indent=2,
+        force_ascii=False,
+        date_format="iso",
+    ).encode("utf-8")
 
 
 # ─── Pandas script ────────────────────────────────────────────────────────────
