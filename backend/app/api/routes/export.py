@@ -6,6 +6,7 @@ from fastapi.responses import Response
 from pydantic import BaseModel
 from typing import Optional
 import numpy as np  # Imported for NaN/Inf sanitation
+import json  # Added for native JSON serialization fallbacks
 
 from app.core.session import get
 from app.services.exporter import (
@@ -40,12 +41,20 @@ def export_dataset(
         media_type   = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         filename     = f"cleanflow_export_{session_id[:8]}.xlsx"
     elif format == "json":
-        # ─── SANITIZE FOR JSON COMPLIANCE ─────────────────────────────────────
-        # Replaces raw float Inf/-Inf with Python None (null in JSON)
-        # Replaces NaN values with None so the JSON parser doesn't crash
-        df_sanitized = df.replace([np.inf, -np.inf], None).fillna(None)
+        # ─── UNIVERSAL NATIVE JSON SERIALIZATION ──────────────────────────────
+        # 1. Clean out problematic float infinity symbols
+        df_sanitized = df.replace([np.inf, -np.inf], None)
         
-        content      = to_json(df_sanitized)
+        # 2. Swap NaN values explicitly for an empty string layout
+        df_sanitized = df_sanitized.fillna("")
+        
+        # 3. Convert to a standard Python dictionary records list
+        data_records = df_sanitized.to_dict(orient="records")
+        
+        # 4. Use native json.dumps with a default string handler to intercept complex types
+        json_str     = json.dumps(data_records, default=str)
+        content      = json_str.encode("utf-8")
+        
         media_type   = "application/json"
         filename     = f"cleanflow_export_{session_id[:8]}.json"
     else:
