@@ -1,5 +1,7 @@
 import os
 
+port = int(os.getenv("PORT", 8000))
+
 from app.api.routes import upload, profile, clean, export, suggestions, analytics
 
 from fastapi import FastAPI
