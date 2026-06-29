@@ -418,7 +418,7 @@ export default function Landing() {
 
           {/* ── THEME BALANCED CLEAN DESIGN ARCHITECTURE ── */}
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight">
-            Messy Datasets,{' '}
+            Messy datasets,{' '}
             <span className="inline-block text-indigo-400 drop-shadow-[0_2px_12px_rgba(129,140,248,0.25)] font-extrabold transition-all duration-300">
               cleaned.
             </span>
