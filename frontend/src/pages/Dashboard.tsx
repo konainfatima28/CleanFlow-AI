@@ -1,5 +1,5 @@
 // ────────────────────────────────────────────────────────────────────────────
-// src/pages/Dashboard.tsx — RESPONSIVE VERSION with Export tab
+// src/pages/Dashboard.tsx — RESPONSIVE VERSION WITH LOGO
 // ────────────────────────────────────────────────────────────────────────────
 
 import { useState } from "react"
@@ -10,6 +10,7 @@ import ProfilePanel   from "../components/ProfilePanel"
 import CleaningPanel  from "../components/CleaningPanel"
 import AnalyticsPanel from "../components/AnalyticsPanel"
 import ExportPanel    from "../components/ExportPanel"
+import cleanflowLogo from "../assets/cleanflow.png"
 import { uploadFile, getProfile } from "../services/api"
 
 type View = "upload" | "profile" | "cleaning" | "analytics" | "export"
@@ -97,9 +98,7 @@ export default function Dashboard() {
       {/* ── Mobile Top Header ────────────────────────────────────────────────── */}
       <div className="lg:hidden sticky top-0 z-50 bg-[#111318] border-b border-white/5 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
-            <span className="text-[9px] font-bold text-white">CF</span>
-          </div>
+          <img src={cleanflowLogo} alt="CleanFlow AI Logo" className="w-6 h-6 object-contain shrink-0" />
           <span className="text-white font-bold text-sm tracking-wide">CleanFlow AI</span>
         </div>
 
@@ -162,9 +161,7 @@ export default function Dashboard() {
       <aside className="hidden lg:flex w-64 shrink-0 bg-[#111318] border-r border-white/5 flex-col py-6 px-4 gap-6 sticky top-0 h-screen overflow-y-auto">
         {/* Logo */}
         <div className="flex items-center gap-2 px-1">
-          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shrink-0">
-            <span className="text-[9px] font-bold text-white">CF</span>
-          </div>
+          <img src={cleanflowLogo} alt="CleanFlow AI Logo" className="w-6 h-6 object-contain shrink-0" />
           <div>
             <p className="text-[11px] text-indigo-400 font-semibold leading-none">CleanFlow</p>
             <p className="text-[10px] text-gray-600 leading-none mt-0.5">AI</p>
