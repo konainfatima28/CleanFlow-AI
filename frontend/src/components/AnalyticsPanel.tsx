@@ -85,7 +85,7 @@ interface Props {
 // ─── Palette constants ────────────────────────────────────────────────────────
 const INDIGO   = "#6366f1"
 const VIOLET   = "#8b5cf6"
-const GREEN    = "#22c55e"
+// const GREEN    = "#22c55e"
 const AMBER    = "#f59e0b"
 const RED      = "#ef4444"
 // const MUTED    = "#334155"
