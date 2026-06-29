@@ -1,7 +1,7 @@
 // ────────────────────────────────────────────────────────────────────────────
 // src/pages/Landing.tsx
-// CleanFlow AI landing page — FULLY RESPONSIVE VERSION WITH LOGO
-// ─────────────────────────────────────────────────────────────────────────────
+// CleanFlow AI landing page — FULLY RESPONSIVE VERSION WITH LOGO FIX
+// ────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
@@ -23,9 +23,9 @@ interface DataRow {
 const DIRTY_ROWS: DataRow[] = [
   { id: 1, name: "  alice johnson ",  email: "alice@",        age: "NaN",  country: "US",            revenue: "$1,200",  status: "dirty" },
   { id: 2, name: "BOB SMITH",         email: "bob@gmail.com",   age: "29",   country: "United States", revenue: "1200.00", status: "dirty" },
-  { id: 3, name: "Carol White",       email: "",                age: "31",   country: "u.s.a",         revenue: "950",     status: "dirty" },
+  { id: 3, name: "Carol White",       email: "",                age: "31",   country: "u.s.a",         revenue: "950",      status: "dirty" },
   { id: 4, name: "dave brown",        email: "dave@yahoo",      age: "999",  country: "USA",           revenue: "$950.5",  status: "dirty" },
-  { id: 5, name: "Carol White",       email: "",                age: "31",   country: "u.s.a",         revenue: "950",     status: "dirty" },
+  { id: 5, name: "Carol White",       email: "",                age: "31",   country: "u.s.a",         revenue: "950",      status: "dirty" },
 ]
 
 const CLEAN_ROWS: DataRow[] = [
@@ -403,7 +403,7 @@ export default function Landing() {
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-[1.1] tracking-tight">
-            Clean Datasets,{" "}<span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">cleaned.</span>
+            Clean Datasets <span className="text-indigo-400 bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">cleaned.</span>
           </h1>
 
           <p className="text-[14px] sm:text-[16px] text-[#94a3b8] leading-relaxed max-w-md mx-auto lg:mx-0">
