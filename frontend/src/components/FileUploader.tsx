@@ -1,6 +1,7 @@
+// ────────────────────────────────────────────────────────────────────────────
 // src/components/FileUploader.tsx
-// Drop-zone for CSV / XLSX uploads with animated state transitions.
-// Requires: react-dropzone, framer-motion, lucide-react
+// Drop-zone for uploads with animated state transitions — FULLY RESPONSIVE VERSION
+// ─────────────────────────────────────────────────────────────────────────────
 
 import { useCallback, useState } from "react"
 import { useDropzone } from "react-dropzone"
@@ -73,7 +74,6 @@ const SAMPLES = [
   { label: "Financial transactions", rows: "45,000 rows", cols: "11 cols" },
 ]
 
-// ─── Particle burst (decorative only) ────────────────────────────────────────
 const PARTICLES = Array.from({ length: 8 }, (_, i) => ({
   id: i,
   angle: (i / 8) * 360,
@@ -87,7 +87,6 @@ export default function FileUploader({ onUpload, loading }: Props) {
   const [errorMsg, setErrorMsg] = useState<string>("")
   const [progress, setProgress] = useState(0)
 
-  // Simulate upload progress bar while real request runs
   const startFakeProgress = () => {
     setProgress(0)
     const id = setInterval(() => {
@@ -138,7 +137,7 @@ export default function FileUploader({ onUpload, loading }: Props) {
     maxSize: 50 * 1024 * 1024,
     multiple: false,
     disabled: loading || dropState === "uploading",
-  });
+  })
 
   const reset = () => {
     setDropState("idle")
@@ -147,10 +146,8 @@ export default function FileUploader({ onUpload, loading }: Props) {
     setProgress(0)
   }
 
-  // Derive active hover state from both dropzone and manual tracking
   const isHovering = isDragActive || dropState === "hover"
 
-  // ── Border / glow colour by state ──────────────────────────────────────────
   const borderColor =
     dropState === "success" ? "rgba(74,222,128,0.6)"
     : dropState === "error"   ? "rgba(248,113,113,0.6)"
@@ -164,14 +161,14 @@ export default function FileUploader({ onUpload, loading }: Props) {
     : "none"
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-5">
+    <div className="w-full max-w-2xl mx-auto space-y-6 min-w-0">
 
       {/* ── Header ── */}
       <div className="space-y-1">
-        <h2 className="text-2xl font-semibold tracking-tight text-white">
+        <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-white">
           Upload your dataset
         </h2>
-        <p className="text-sm text-gray-500">
+        <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
           CSV or XLSX · up to 50 MB · data never stored permanently
         </p>
       </div>
@@ -184,7 +181,7 @@ export default function FileUploader({ onUpload, loading }: Props) {
         animate={{ borderColor, boxShadow: glowColor }}
         transition={{ duration: 0.25 }}
         style={{ border: "1.5px dashed", borderColor, boxShadow: glowColor }}
-        className="relative rounded-2xl bg-[#13151f] cursor-pointer overflow-hidden select-none"
+        className="relative rounded-2xl bg-[#13151f] cursor-pointer overflow-hidden select-none w-full min-w-0"
       >
         <input {...getInputProps()} />
 
@@ -209,9 +206,8 @@ export default function FileUploader({ onUpload, loading }: Props) {
             <motion.div
               key="idle"
               initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
-              className="flex flex-col items-center justify-center gap-4 py-16 px-8 text-center"
+              className="flex flex-col items-center justify-center gap-4 py-12 sm:py-16 px-4 sm:px-8 text-center"
             >
-              {/* Icon */}
               <motion.div
                 animate={isHovering ? { y: -5, scale: 1.08 } : { y: 0, scale: 1 }}
                 transition={{ type: "spring", stiffness: 300, damping: 22 }}
@@ -220,12 +216,11 @@ export default function FileUploader({ onUpload, loading }: Props) {
                 <UploadCloud />
               </motion.div>
 
-              {/* Text */}
               <div className="space-y-1">
-                <p className="text-[15px] font-medium text-white">
+                <p className="text-sm sm:text-[15px] font-medium text-white px-2">
                   {isHovering ? "Release to upload" : "Drag & drop your file here"}
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-xs sm:text-sm text-gray-500">
                   or{" "}
                   <span className="text-indigo-400 underline underline-offset-2 cursor-pointer">
                     browse to choose a file
@@ -233,13 +228,11 @@ export default function FileUploader({ onUpload, loading }: Props) {
                 </p>
               </div>
 
-              {/* Accepted formats */}
               <div className="flex gap-2 mt-1">
                 {["CSV", "XLSX"].map(fmt => (
                   <span
                     key={fmt}
-                    className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-medium
-                      bg-[#1e2130] text-gray-400 border border-white/5"
+                    className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-mono font-medium bg-[#1e2130] text-gray-400 border border-white/5"
                   >
                     .{fmt.toLowerCase()}
                   </span>
@@ -253,9 +246,8 @@ export default function FileUploader({ onUpload, loading }: Props) {
             <motion.div
               key="uploading"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="flex flex-col items-center justify-center gap-5 py-16 px-8 text-center"
+              className="flex flex-col items-center justify-center gap-5 py-12 sm:py-16 px-4 sm:px-8 text-center"
             >
-              {/* Spinner */}
               <div className="relative w-12 h-12">
                 <motion.div
                   animate={{ rotate: 360 }}
@@ -265,22 +257,21 @@ export default function FileUploader({ onUpload, loading }: Props) {
                 <div className="absolute inset-2 rounded-full bg-indigo-500/10" />
               </div>
 
-              <div className="space-y-0.5">
-                <p className="text-sm font-medium text-white">
+              <div className="space-y-1 w-full max-w-xs sm:max-w-md mx-auto">
+                <p className="text-xs sm:text-sm font-medium text-white truncate px-4">
                   Uploading {selectedFile?.name}
                 </p>
-                <p className="text-xs text-gray-500">{formatBytes(selectedFile?.size ?? 0)}</p>
+                <p className="text-[11px] sm:text-xs text-gray-500">{formatBytes(selectedFile?.size ?? 0)}</p>
               </div>
 
-              {/* Progress bar */}
-              <div className="w-64 h-1 bg-white/5 rounded-full overflow-hidden">
+              <div className="w-48 sm:w-64 h-1 bg-white/5 rounded-full overflow-hidden">
                 <motion.div
                   className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full"
                   style={{ width: `${progress}%` }}
                   transition={{ duration: 0.15 }}
                 />
               </div>
-              <p className="text-[11px] text-gray-600">{Math.round(progress)}%</p>
+              <p className="text-[10px] sm:text-[11px] text-gray-600">{Math.round(progress)}%</p>
             </motion.div>
           )}
 
@@ -288,11 +279,9 @@ export default function FileUploader({ onUpload, loading }: Props) {
           {dropState === "success" && (
             <motion.div
               key="success"
-              initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex flex-col items-center justify-center gap-4 py-16 px-8 text-center"
+              initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+              className="flex flex-col items-center justify-center gap-4 py-12 sm:py-16 px-4 sm:px-8 text-center"
             >
-              {/* Particle burst */}
               <div className="relative w-12 h-12 flex items-center justify-center">
                 {PARTICLES.map(p => (
                   <motion.div
@@ -315,16 +304,16 @@ export default function FileUploader({ onUpload, loading }: Props) {
                 </motion.div>
               </div>
 
-              <div className="space-y-0.5">
-                <p className="text-sm font-medium text-white">Upload complete</p>
-                <p className="text-xs text-gray-500">
+              <div className="space-y-1 w-full max-w-xs sm:max-w-md mx-auto">
+                <p className="text-xs sm:text-sm font-medium text-white">Upload complete</p>
+                <p className="text-[11px] sm:text-xs text-gray-500 truncate px-4">
                   {selectedFile?.name} · {formatBytes(selectedFile?.size ?? 0)}
                 </p>
               </div>
 
               <button
                 onClick={e => { e.stopPropagation(); reset() }}
-                className="text-xs text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors"
+                className="text-xs text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors focus:outline-none"
               >
                 Upload a different file
               </button>
@@ -335,23 +324,19 @@ export default function FileUploader({ onUpload, loading }: Props) {
           {dropState === "error" && (
             <motion.div
               key="error"
-              initial={{ opacity: 0, x: -4 }} animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0 }}
-              className="flex flex-col items-center justify-center gap-4 py-16 px-8 text-center"
+              initial={{ opacity: 0, x: -4 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
+              className="flex flex-col items-center justify-center gap-4 py-12 sm:py-16 px-4 sm:px-8 text-center"
             >
-              <motion.div
-                animate={{ x: [0, -6, 6, -4, 4, 0] }}
-                transition={{ duration: 0.45 }}
-              >
+              <motion.div animate={{ x: [0, -6, 6, -4, 4, 0] }} transition={{ duration: 0.45 }}>
                 <AlertCircle />
               </motion.div>
               <div className="space-y-1">
-                <p className="text-sm font-medium text-red-400">Upload failed</p>
-                <p className="text-xs text-gray-500 max-w-xs">{errorMsg}</p>
+                <p className="text-xs sm:text-sm font-medium text-red-400">Upload failed</p>
+                <p className="text-[11px] sm:text-xs text-gray-500 max-w-xs px-2">{errorMsg}</p>
               </div>
               <button
                 onClick={e => { e.stopPropagation(); reset() }}
-                className="text-xs text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors"
+                className="text-xs text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors focus:outline-none"
               >
                 Try again
               </button>
@@ -361,53 +346,52 @@ export default function FileUploader({ onUpload, loading }: Props) {
       </motion.div>
 
       {/* ── Divider ── */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 py-1">
         <div className="flex-1 h-px bg-white/5" />
-        <span className="text-[11px] text-gray-600 uppercase tracking-widest">or try a sample</span>
+        <span className="text-[10px] sm:text-[11px] text-gray-600 uppercase tracking-widest whitespace-nowrap">or try a sample</span>
         <div className="flex-1 h-px bg-white/5" />
       </div>
 
       {/* ── Sample datasets ── */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {SAMPLES.map((s, i) => (
           <motion.button
             key={s.label}
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.97 }}
-            className="group relative flex flex-col items-start gap-2 p-4 rounded-xl
-              bg-[#13151f] border border-white/5 hover:border-indigo-500/30
-              transition-colors text-left"
+            className="group relative flex flex-col items-start gap-2 p-4 rounded-xl bg-[#13151f] border border-white/5 hover:border-indigo-500/30 transition-colors text-left w-full min-w-0 focus:outline-none"
           >
-            {/* Glow on hover */}
-            <div className="absolute inset-0 rounded-xl bg-indigo-500/0 group-hover:bg-indigo-500/[0.04] transition-colors" />
+            <div className="absolute inset-0 rounded-xl bg-indigo-500/0 group-hover:bg-indigo-500/[0.04] transition-colors pointer-events-none" />
 
-            <div className="flex items-center gap-2 text-gray-400">
-              <FileText />
-              <span className="text-[10px] text-indigo-400 font-mono">
-                sample-{String(i + 1).padStart(2, "0")}
+            <div className="flex items-center justify-between w-full gap-2 text-gray-400">
+              <div className="flex items-center gap-1.5 shrink-0">
+                <FileText />
+                <span className="text-[10px] text-indigo-400 font-mono">
+                  sample-{String(i + 1).padStart(2, "0")}
+                </span>
+              </div>
+              <span className="flex items-center gap-1 text-[10px] text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                <Sparkles />
+                Load
               </span>
             </div>
 
-            <p className="text-[13px] font-medium text-white leading-snug">{s.label}</p>
+            <p className="text-[13px] font-medium text-white leading-snug truncate w-full mt-1" title={s.label}>
+              {s.label}
+            </p>
 
-            <div className="flex gap-2 mt-auto">
-              <span className="text-[10px] text-gray-500">{s.rows}</span>
-              <span className="text-[10px] text-gray-600">·</span>
-              <span className="text-[10px] text-gray-500">{s.cols}</span>
+            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 mt-2 w-full">
+              <span className="text-[10px] text-gray-500 whitespace-nowrap">{s.rows}</span>
+              <span className="text-[10px] text-gray-600 font-bold leading-none">·</span>
+              <span className="text-[10px] text-gray-500 whitespace-nowrap">{s.cols}</span>
             </div>
-
-            <span className="absolute top-3 right-3 flex items-center gap-1
-              text-[10px] text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity">
-              <Sparkles />
-              Load
-            </span>
           </motion.button>
         ))}
       </div>
 
       {/* ── Privacy note ── */}
-      <p className="text-center text-[11px] text-gray-600 leading-relaxed">
-        Files are processed in memory and deleted immediately after your session.{" "}
+      <p className="text-center text-[10px] sm:text-[11px] text-gray-600 leading-relaxed px-4">
+        Files are processed entirely in memory and deleted immediately after your session.{" "}
         <span className="text-gray-500 underline underline-offset-2 cursor-pointer hover:text-gray-400 transition-colors">
           Privacy policy
         </span>
