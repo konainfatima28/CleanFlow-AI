@@ -47,7 +47,7 @@ const COLS = ["Name", "Email", "Age", "Country", "Revenue"]
 function CellValue({ value, dirty }: { value: string; dirty: boolean }) {
   const isEmpty = value === "" || value === "NaN"
   const isOutlier = value === "999" || value === "  alice johnson "
-  const isDupe = false
+  // const isDupe = false
 
   if (dirty) {
     if (isEmpty) return (
