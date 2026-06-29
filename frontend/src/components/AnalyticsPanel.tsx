@@ -88,11 +88,11 @@ const VIOLET   = "#8b5cf6"
 const GREEN    = "#22c55e"
 const AMBER    = "#f59e0b"
 const RED      = "#ef4444"
-const MUTED    = "#334155"
+// const MUTED    = "#334155"
 const CARD_BG  = "#13151f"
 const BORDER   = "rgba(255,255,255,0.05)"
 
-const CORR_COLORS = [RED, "#f97316", AMBER, "#84cc16", GREEN]
+// const CORR_COLORS = [RED, "#f97316", AMBER, "#84cc16", GREEN]
 
 function corrColor(v: number): string {
   // -1 → red,  0 → neutral,  +1 → green
