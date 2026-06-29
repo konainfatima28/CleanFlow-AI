@@ -4,6 +4,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState } from "react"
+import { Menu, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import FileUploader   from "../components/FileUploader"
 import ProfilePanel   from "../components/ProfilePanel"
@@ -46,6 +47,7 @@ export default function Dashboard() {
   const [operations, setOperations]   = useState<object[]>([])
   const [log, setLog]                 = useState<object[]>([])
   const [celebrate, setCelebrate] = useState(false)
+  const [mobileMenu, setMobileMenu] = useState(false)
 
   const handleUpload = async (file: File) => {
     setLoading(true)
@@ -94,11 +96,44 @@ export default function Dashboard() {
   const hasCleaned  = !!cleanedId
 
   return (
-    <div className="flex min-h-screen bg-[#0a0b0f]">
+    <>
+      <div className="lg:hidden sticky top-0 z-50 bg-[#111318] border-b border-white/5 px-4 py-3 flex items-center justify-between">
+        <h1 className="text-white font-bold">CleanFlow AI</h1>
+
+        <button onClick={() => setMobileMenu(!mobileMenu)}>
+          {mobileMenu ? <X size={22} /> : <Menu size={22} />}
+        </button>
+      </div>
+
+    <div className="min-h-screen bg-[#0a0b0f] lg:flex">
+    {mobileMenu && (
+      <div className="lg:hidden bg-[#111318] border-b border-white/5">
+        {NAV_ITEMS.map((item) => (
+          <button
+            key={item.key}
+            className="w-full text-left px-5 py-4 text-gray-300 border-b border-white/5"
+            onClick={() => {
+              setView(item.key)
+              setMobileMenu(false)
+            }}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+    )}
 
       {/* ── Sidebar ──────────────────────────────────────────────────────── */}
-      <aside className="w-52 shrink-0 bg-[#111318] border-r border-white/5
-        flex flex-col py-6 px-4 gap-6">
+      <aside className="
+      hidden lg:flex
+      w-64
+      shrink-0
+      bg-[#111318]
+      border-r border-white/5
+      flex-col
+      py-6
+      px-4
+      ">
 
         {/* Logo */}
         <div className="flex items-center gap-2 px-1">
@@ -244,8 +279,17 @@ export default function Dashboard() {
 
         </AnimatePresence>
 
-        <main className="flex-1 overflow-y-auto">
-        <div className="max-w-4xl mx-auto px-8 py-10">
+        <main className="flex-1 w-full overflow-x-hidden overflow-y-auto">
+
+        <div className="
+        w-full
+        max-w-screen-2xl
+        mx-auto
+        px-3
+        sm:px-5
+        lg:px-8
+        py-4
+        ">
           <AnimatePresence mode="wait">
 
             {view === "upload" && (
@@ -324,5 +368,6 @@ export default function Dashboard() {
       </main>
       </>
     </div>
+    </>
   )
 }
