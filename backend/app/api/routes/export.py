@@ -5,8 +5,8 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import Response
 from pydantic import BaseModel
 from typing import Optional
-import numpy as np  # Imported for NaN/Inf sanitation
-import json  # Added for native JSON serialization fallbacks
+# import numpy as np  # Imported for NaN/Inf sanitation
+# import json  # Added for native JSON serialization fallbacks
 
 from app.core.session import get
 from app.services.exporter import (
