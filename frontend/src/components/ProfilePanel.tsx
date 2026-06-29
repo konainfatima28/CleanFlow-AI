@@ -177,15 +177,16 @@ function ScoreRing({ score }: { score: number }) {
 }
 
 // ─── KPI Card ─────────────────────────────────────────────────────────────────
+// ─── KPI Card ─────────────────────────────────────────────────────────────────
 function KpiCard({
-  icon, label, value, sub, accent = false, delay = 0,
+  icon, label, value, sub, accent = false, delay = 0, className = "",
 }: {
-  icon: React.ReactNode; label: string; value: string; sub?: string; accent?: boolean; delay?: number
+  icon: React.ReactNode; label: string; value: string; sub?: string; accent?: boolean; delay?: number; className?: string
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay }}
-      className={`relative flex flex-col gap-2.5 p-4 rounded-xl border min-w-0 ${
+      className={`relative flex flex-col gap-2.5 p-4 rounded-xl border min-w-0 ${className} ${
         accent ? "bg-indigo-500/[0.07] border-indigo-500/20" : "bg-[#13151f] border-white/5"
       }`}
     >
@@ -342,7 +343,7 @@ function ColumnTable({ columns }: { columns: ColumnDetail[] }) {
             ))}
           </thead>
           <tbody>
-            {table.getRowModel().rows.map((row, i) => {
+            {table.getRowModel().rows.map((row) => {
               const col = row.original
               const isOpen = expanded === col.name
               return (
