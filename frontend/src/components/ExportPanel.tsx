@@ -7,9 +7,13 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import axios from "axios"
 
+import axios from "axios"
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:8000/api",
 })
+
+import api from "../services/api"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Props {
@@ -179,11 +183,13 @@ export default function ExportPanel({
         )
         
         // Intercept string structural error messages hiding inside standard Blobs
+        const contentType = response.data.type ?? "";
+
         if (
             key !== "json" &&
-            response.data.type.includes("application/json")
+            contentType.includes("application/json")
         ) {
-            throw new Error("Backend returned an error instead of a downloadable file.")
+            throw new Error("Backend returned an error instead of a downloadable file.");
         }
 
         blob     = response.data
