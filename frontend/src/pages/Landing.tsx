@@ -1,7 +1,7 @@
 // src/pages/Landing.tsx
 // CleanFlow AI landing page.
 // Signature element: an animated live "data grid" in the hero that visually
-// transforms dirty → clean rows on a loop — the product's core job made visible.
+// transforms dirty → clean rows on a loop — the product's core job made visible
 // Requires: framer-motion, react-router-dom
 
 import { useEffect, useRef, useState } from "react"
