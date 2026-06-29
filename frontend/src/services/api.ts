@@ -17,19 +17,21 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // If the network request was aborted or timed out
-    if (error.code === "ECONNABORTED" || !error.response) {
+    console.error("Axios Error:", error);
+
+    if (error.code === "ECONNABORTED") {
       return Promise.reject({
         response: {
           data: {
-            detail: "Network timeout or weak connection. Please check your signal and try again.",
+            detail: "Upload timed out. Try using a CSV file or a smaller Excel file.",
           },
         },
-      })
+      });
     }
-    return Promise.reject(error)
+
+    return Promise.reject(error);
   }
-)
+);
 
 // Upload File (multipart/form-data)
 export const uploadFile = (file: File) => {
