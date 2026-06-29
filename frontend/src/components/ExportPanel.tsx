@@ -179,8 +179,11 @@ export default function ExportPanel({
         )
         
         // Intercept string structural error messages hiding inside standard Blobs
-        if (response.data.type === "application/json") {
-          throw new Error("API validation failed inside binary parser thread.")
+        if (
+            key !== "json" &&
+            response.data.type.includes("application/json")
+        ) {
+            throw new Error("Backend returned an error instead of a downloadable file.")
         }
 
         blob     = response.data
