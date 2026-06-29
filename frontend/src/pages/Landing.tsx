@@ -1,11 +1,12 @@
 // ────────────────────────────────────────────────────────────────────────────
 // src/pages/Landing.tsx
-// CleanFlow AI landing page — FULLY RESPONSIVE VERSION
+// CleanFlow AI landing page — FULLY RESPONSIVE VERSION WITH LOGO
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence, useInView } from "framer-motion"
+import cleanflowLogo from "../assets/cleanflow.png"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface DataRow {
@@ -366,9 +367,7 @@ export default function Landing() {
       <nav className="sticky top-0 z-50 border-b border-[#1e2130]/80 bg-[#0a0b0f]/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
-              <span className="text-[10px] font-bold text-white">CF</span>
-            </div>
+            <img src={cleanflowLogo} alt="CleanFlow AI Logo" className="w-6 h-6 object-contain shrink-0" />
             <span className="text-[14px] font-semibold text-white">CleanFlow AI</span>
           </div>
           <div className="flex items-center gap-4">
@@ -550,9 +549,7 @@ export default function Landing() {
       <footer className="border-t border-[#1e2130] py-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
           <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
-              <span className="text-[8px] font-bold text-white">CF</span>
-            </div>
+            <img src={cleanflowLogo} alt="CleanFlow AI Logo" className="w-5 h-5 object-contain shrink-0" />
             <span className="text-[13px] text-[#475569]">CleanFlow AI</span>
           </div>
           <p className="text-[11px] sm:text-[12px] text-[#334155] max-w-xs sm:max-w-none">
