@@ -1,6 +1,6 @@
 // ────────────────────────────────────────────────────────────────────────────
 // src/pages/Landing.tsx
-// CleanFlow AI landing page — FULLY RESPONSIVE VERSION WITH LOGO FIX
+// CleanFlow AI landing page — FULLY RESPONSIVE VERSION WITH TEXT GRADIENT FIX
 // ────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react"
@@ -402,8 +402,8 @@ export default function Landing() {
             <span className="text-[11px] text-indigo-300 font-medium tracking-wide">AI-powered data cleaning</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-[1.1] tracking-tight">
-            Clean Datasets <span className="text-indigo-400 bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">cleaned.</span>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-[1.2] tracking-tight text-white">
+            Clean Datasets, <span className="text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-xl border border-indigo-500/20 shadow-sm inline-block">cleaned.</span>
           </h1>
 
           <p className="text-[14px] sm:text-[16px] text-[#94a3b8] leading-relaxed max-w-md mx-auto lg:mx-0">
