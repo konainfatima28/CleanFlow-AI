@@ -1,4 +1,3 @@
-# backend/app/api/routes/upload.py
 import uuid
 import os
 import io
@@ -14,8 +13,8 @@ router = APIRouter()
 ALLOWED = {".csv", ".xlsx"}
 
 
-@router.post("/")
-async def upload_file(file: UploadFile = File(...)):
+@router.post("")
+def upload_file(file: UploadFile = File(...)):
     start = time.perf_counter()
     
     if not file.filename:
@@ -40,7 +39,7 @@ async def upload_file(file: UploadFile = File(...)):
     bytes_read = 0
     
     while True:
-        chunk = await file.read(1024 * 1024)  # Read in highly efficient 1MB chunks
+        chunk = file.file.read(1024 * 1024)  # Read in highly efficient 1MB chunks natively
         if not chunk:
             break
         bytes_read += len(chunk)
@@ -58,11 +57,10 @@ async def upload_file(file: UploadFile = File(...)):
         parse_start = time.perf_counter()
 
         if ext == ".csv":
-            # memory_map=True reads columns via rapid disk pages to maximize parsing speeds
-            # low_memory=False locks layout configurations down to drop processor cycles
-            df = pd.read_csv(io.BytesIO(contents), low_memory=False, memory_map=True)
+            # FIXED: Removed memory_map=True to stop file-descriptor (fileno) pointer crashes
+            # low_memory=False is preserved because it stabilizes internal row type evaluation
+            df = pd.read_csv(io.BytesIO(contents), low_memory=False)
         else:
-            # Dropping blank trailing container arrays prevents index calculations from locking up
             df = pd.read_excel(io.BytesIO(contents), engine="openpyxl")
         
         print(f"📊 Parsing dataset took {time.perf_counter() - parse_start:.2f} sec")
