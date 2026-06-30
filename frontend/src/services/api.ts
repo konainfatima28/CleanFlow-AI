@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// src/services/api.ts — RESPONSIVE & MOBILE-OPTIMIZED VERSION (ROUTING FIXED)
+// src/services/api.ts — RESPONSIVE & MOBILE-OPTIMIZED VERSION (CORS & MULTIPART FIXED)
 // ─────────────────────────────────────────────────────────────────────────────
 
 import axios from "axios"
@@ -9,9 +9,7 @@ const api = axios.create({
   // Clean up trailing slash defaults to maintain predictable path generation
   baseURL: import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, "") : "http://localhost:8000/api",
   timeout: 100000, 
-  headers: {
-    "Content-Type": "application/json",
-  },
+  // REMOVED global Content-Type restriction to let endpoints calculate multi-form boundary keys dynamically
 })
 
 // Global interceptor to handle mobile network errors cleanly
@@ -37,9 +35,11 @@ export const uploadFile = (file: File) => {
   const form = new FormData()
   form.append("file", file)
   
-  // FIXED: Removed manual content-type header context completely
-  // This lets the browser dynamically generate the correct form boundary signatures
-  return api.post("/upload", form)
+  // Explicitly deleting or passing an empty object for headers allows 
+  // the browser engine to natively append boundary hashes to multipart/form-data
+  return api.post("/upload", form, {
+    headers: {}
+  })
 }
 
 // Profile Diagnostics
