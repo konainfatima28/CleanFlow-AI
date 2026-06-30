@@ -1,12 +1,11 @@
 // ────────────────────────────────────────────────────────────────────────────
 // src/components/ExportPanel.tsx
-// Download panel shown after cleaning is complete — VOLUNTARY SPONSOR WRAPPED
+// Download panel shown after cleaning is complete — FULLY RESPONSIVE VERSION
 // ────────────────────────────────────────────────────────────────────────────
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import axios from "axios"
-import { ExportToast } from "./ExportToast" // Import your new mini toast component
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:8000/api",
@@ -157,7 +156,6 @@ export default function ExportPanel({
   operations = [],
   log = [],
 }: Props) {
-  const [showTipToast, setShowTipToast] = useState(false)
   const [states, setStates] = useState<Record<FormatKey, DlState>>({
     csv: "idle", xlsx: "idle", json: "idle", script: "idle", report: "idle",
   })
@@ -206,12 +204,6 @@ export default function ExportPanel({
 
       triggerDownload(blob, filename)
       setState(key, "done")
-      
-      // Delay opening slightly so the native file download begins first
-      setTimeout(() => {
-        setShowTipToast(true)
-      }, 1000)
-
       setTimeout(() => setState(key, "idle"), 3000)
     } catch {
       setState(key, "error")
@@ -230,7 +222,7 @@ export default function ExportPanel({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-5 w-full min-w-0 relative"
+      className="space-y-5 w-full min-w-0"
     >
       {/* Header */}
       <div>
@@ -367,12 +359,6 @@ export default function ExportPanel({
           Your data is processed entirely in memory and never written to disk. Sessions are cleared automatically. Download your files before closing this tab.
         </p>
       </div>
-
-      {/* Mounted Toast Popup Overlay */}
-      <ExportToast 
-        isVisible={showTipToast} 
-        onClose={() => setShowTipToast(false)} 
-      />
     </motion.div>
   )
 }
