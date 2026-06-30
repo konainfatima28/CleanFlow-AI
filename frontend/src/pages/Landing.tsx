@@ -1,13 +1,14 @@
 // ────────────────────────────────────────────────────────────────────────────
 // src/pages/Landing.tsx
-// Data Pilot Landing Page — EXPERT MINIMALIST PRODUCTION VERSION
-// ────────────────────────────────────────────────────────────────────────────
+// CleanFlow AI landing page — FULLY RESPONSIVE VERSION WITH LOGO
+// ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence, useInView } from "framer-motion"
-import datapilotLogo from "../assets/cleanflow.png"
+import cleanflowLogo from "../assets/cleanflow.png"
 
+// ─── Types ────────────────────────────────────────────────────────────────────
 interface DataRow {
   id: number
   name: string
@@ -18,12 +19,13 @@ interface DataRow {
   status: "dirty" | "clean"
 }
 
+// ─── Animated hero data grid ──────────────────────────────────────────────────
 const DIRTY_ROWS: DataRow[] = [
   { id: 1, name: "  alice johnson ",  email: "alice@",        age: "NaN",  country: "US",            revenue: "$1,200",  status: "dirty" },
   { id: 2, name: "BOB SMITH",         email: "bob@gmail.com",   age: "29",   country: "United States", revenue: "1200.00", status: "dirty" },
-  { id: 3, name: "Carol White",       email: "",                age: "31",   country: "u.s.a",         revenue: "950",      status: "dirty" },
+  { id: 3, name: "Carol White",       email: "",                age: "31",   country: "u.s.a",         revenue: "950",     status: "dirty" },
   { id: 4, name: "dave brown",        email: "dave@yahoo",      age: "999",  country: "USA",           revenue: "$950.5",  status: "dirty" },
-  { id: 5, name: "Carol White",       email: "",                age: "31",   country: "u.s.a",         revenue: "950",      status: "dirty" },
+  { id: 5, name: "Carol White",       email: "",                age: "31",   country: "u.s.a",         revenue: "950",     status: "dirty" },
 ]
 
 const CLEAN_ROWS: DataRow[] = [
@@ -51,9 +53,10 @@ function CellValue({ value, dirty }: { value: string; dirty: boolean }) {
         {value}
       </span>
     )
-    return <span className="text-gray-500 text-[11px] font-mono">{value}</span>
+    return <span className="text-[#64748b] text-[11px] font-mono">{value}</span>
   }
-  return <span className="text-gray-400 text-[11px] font-mono">{value}</span>
+
+  return <span className="text-[#94a3b8] text-[11px] font-mono">{value}</span>
 }
 
 function HeroGrid() {
@@ -79,26 +82,26 @@ function HeroGrid() {
     return () => clearInterval(id)
   }, [])
 
-  const rows = phase === "dirty" 
-    ? DIRTY_ROWS 
+  const rows = phase === "dirty" ? DIRTY_ROWS
     : phase === "transitioning"
       ? DIRTY_ROWS.map((r, i) => i < cleanedCount ? { ...CLEAN_ROWS[i], status: "clean" as const } : r).filter((_, i) => !(i >= 4 && cleanedCount >= 4))
       : CLEAN_ROWS
 
   return (
     <div className="relative w-full rounded-2xl overflow-hidden border border-[#1e2130] bg-[#0d0f14] shadow-2xl shadow-black/60">
+      
+      {/* Toolbar chrome */}
       <div className="flex items-center gap-2 px-4 py-3 border-b border-[#1e2130] bg-[#111318]">
         <span className="w-2.5 h-2.5 rounded-full bg-[#ef4444]/70 shrink-0" />
         <span className="w-2.5 h-2.5 rounded-full bg-[#f59e0b]/70 shrink-0" />
         <span className="w-2.5 h-2.5 rounded-full bg-[#22c55e]/70 shrink-0" />
-        <span className="ml-2 text-[11px] text-gray-500 font-mono truncate">
-          customers.csv — {rows.length} rows · 5 cols
+        <span className="ml-2 sm:ml-3 text-[10px] sm:text-[11px] text-[#334155] font-mono truncate">
+          customers.csv — 5 rows · 5 cols
         </span>
         <div className="ml-auto flex items-center gap-2 shrink-0">
-          <AnimatePresence mode="wait">
+          <AnimatePresence>
             {phase === "transitioning" && (
               <motion.span
-                key="cleaning-badge"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }}
@@ -109,39 +112,48 @@ function HeroGrid() {
                   transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
                   className="inline-block w-2.5 h-2.5 border border-indigo-400 border-t-transparent rounded-full"
                 />
-                Processing…
+                Cleaning…
               </motion.span>
             )}
             {phase === "clean" && (
-              <motion.span key="clean-badge" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="text-[11px] text-green-400">
-                ✓ Optimized
+              <motion.span
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-[11px] text-green-400"
+              >
+                ✓ Clean
               </motion.span>
             )}
           </AnimatePresence>
         </div>
       </div>
 
-      <div className="w-full overflow-x-auto min-w-0">
+      {/* Swipe Wrapper for Mobile Responsiveness */}
+      <div className="w-full overflow-x-auto min-w-0 paths-scroll-touch">
         <div className="min-w-[540px] w-full">
+          {/* Column headers */}
           <div className="grid grid-cols-5 px-4 py-2 border-b border-[#1e2130]">
             {COLS.map(c => (
-              <span key={c} className="text-[10px] uppercase tracking-widest text-gray-600 font-semibold">
+              <span key={c} className="text-[10px] uppercase tracking-widest text-[#334155] font-semibold">
                 {c}
               </span>
             ))}
           </div>
 
-          <div className="divide-y divide-[#1e2130]/60 h-[195px] relative bg-transparent">
-            <AnimatePresence mode="popLayout" initial={false}>
-              {rows.map((row, idx) => (
+          {/* Rows */}
+          <div className="divide-y divide-[#1e2130]/60 min-h-[180px]">
+            <AnimatePresence mode="popLayout">
+              {rows.map(row => (
                 <motion.div
-                  key={`row-${row.id}-status-${row.status}-${idx}`}
-                  layout="position"
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.97 }}
-                  className={`grid grid-cols-5 px-4 py-2.5 relative items-center h-[38px] ${
-                    row.status === "clean" && phase === "transitioning" ? "bg-green-500/[0.03]" : ""
+                  key={`${row.id}-${row.status}`}
+                  layout
+                  initial={{ opacity: 0, backgroundColor: "rgba(99,102,241,0.08)" }}
+                  animate={{ opacity: 1, backgroundColor: "rgba(0,0,0,0)" }}
+                  exit={{ opacity: 0, height: 0, overflow: "hidden" }}
+                  transition={{ duration: 0.35 }}
+                  className={`grid grid-cols-5 px-4 py-2.5 relative ${
+                    row.status === "clean" && phase === "transitioning" ? "bg-green-500/[0.04]" : ""
                   }`}
                 >
                   {[row.name, row.email, row.age, row.country, row.revenue].map((v, i) => (
@@ -149,6 +161,15 @@ function HeroGrid() {
                       <CellValue value={v} dirty={row.status === "dirty"} />
                     </div>
                   ))}
+                  {row.status === "clean" && phase === "transitioning" && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-green-400 text-[10px] font-medium"
+                    >
+                      ✓
+                    </motion.div>
+                  )}
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -156,35 +177,43 @@ function HeroGrid() {
         </div>
       </div>
 
-      <div className="flex items-center gap-4 px-4 py-3 border-t border-[#1e2130] bg-[#0d0f14]">
+      {/* Stats footer */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 px-4 py-3 border-t border-[#1e2130] bg-[#0d0f14]">
         <AnimatePresence mode="wait">
-          {phase === "dirty" ? (
-            <motion.div key="d" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex gap-3 text-[10px]">
-              <span className="text-red-400/70">3 missing cells</span>
-              <span className="text-amber-400/70">1 structural outlier</span>
+          {phase === "dirty" && (
+            <motion.div key="dirty-stats" exit={{ opacity: 0 }} className="flex flex-wrap gap-x-3 gap-y-1">
+              <span className="text-[10px] text-red-400/70">3 missing values</span>
+              <span className="text-[10px] text-amber-400/70">1 outlier</span>
+              <span className="text-[10px] text-orange-400/70">1 duplicate</span>
             </motion.div>
-          ) : (
-            <motion.div key="c" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex gap-3 text-[10px] text-green-400/70">
-              <span>0 data errors detected</span>
-              <span>Dimensions aligned</span>
+          )}
+          {phase !== "dirty" && (
+            <motion.div key="clean-stats" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-wrap gap-x-3 gap-y-1">
+              <span className="text-[10px] text-green-400/70">0 missing values</span>
+              <span className="text-[10px] text-green-400/70">0 outliers</span>
+              <span className="text-[10px] text-green-400/70">duplicates removed</span>
             </motion.div>
           )}
         </AnimatePresence>
-        <div className="ml-auto flex items-center gap-1">
-          <span className="text-[10px] text-gray-600">Model Readiness</span>
+        <div className="sm:ml-auto flex items-center gap-1.5 mt-1 sm:mt-0">
+          <span className="text-[10px] text-[#334155]">Quality score</span>
           <AnimatePresence mode="wait">
-            {phase === "dirty" 
-              ? <motion.span key="l" className="text-[10px] font-bold text-red-400">42%</motion.span>
-              : <motion.span key="h" className="text-[10px] font-bold text-green-400">98%</motion.span>
+            {phase === "dirty"
+              ? <motion.span key="low" exit={{ opacity: 0 }} className="text-[10px] font-bold text-red-400">42</motion.span>
+              : <motion.span key="high" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[10px] font-bold text-green-400">96</motion.span>
             }
           </AnimatePresence>
+          <span className="text-[10px] text-[#334155]">/ 100</span>
         </div>
       </div>
     </div>
   )
 }
 
-function delay(ms: number) { return new Promise(r => setTimeout(r, ms)) }
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function delay(ms: number) {
+  return new Promise(r => setTimeout(r, ms))
+}
 
 function useReveal() {
   const ref = useRef(null)
@@ -192,96 +221,345 @@ function useReveal() {
   return { ref, inView }
 }
 
+// ─── Inline icons ─────────────────────────────────────────────────────────────
 const Icon = {
-  Upload: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>,
-  Zap: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
-  Shield: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
-  Download: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
-  Chart: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>,
-  Check: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>,
-  ChevronDown: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>,
-  Arrow: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>,
+  Upload: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+    </svg>
+  ),
+  Zap: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+    </svg>
+  ),
+  Shield: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+  ),
+  Download: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+  ),
+  Chart: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+    </svg>
+  ),
+  Check: () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+  ),
+  ChevronDown: () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  ),
+  Arrow: () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+    </svg>
+  ),
 }
 
-function FeatureCard({ icon, title, desc, delay = 0 }: { icon: React.ReactNode; title: string; desc: string; delay?: number }) {
+// ─── Feature card ─────────────────────────────────────────────────────────────
+function FeatureCard({
+  icon, title, desc, delay = 0,
+}: { icon: React.ReactNode; title: string; desc: string; delay?: number }) {
   const { ref, inView } = useReveal()
   return (
-    <motion.div ref={ref} initial={{ opacity: 0, y: 16 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.4, delay }} className="p-5 rounded-2xl border border-[#1e2130] bg-[#111318] hover:border-indigo-500/25 transition-colors">
-      <div className="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mb-4">{icon}</div>
-      <p className="text-[14px] font-semibold text-gray-200 mb-1.5">{title}</p>
-      <p className="text-[13px] text-gray-500 leading-relaxed">{desc}</p>
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 16 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.4, delay }}
+      className="group p-5 rounded-2xl border border-[#1e2130] bg-[#111318] hover:border-indigo-500/25 hover:bg-[#14161e] transition-colors"
+    >
+      <div className="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mb-4 group-hover:bg-indigo-500/15 transition-colors">
+        {icon}
+      </div>
+      <p className="text-[14px] font-semibold text-[#f1f5f9] mb-1.5">{title}</p>
+      <p className="text-[13px] text-[#64748b] leading-relaxed">{desc}</p>
     </motion.div>
   )
 }
 
+// ─── FAQ item ─────────────────────────────────────────────────────────────────
+function FaqItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="border-b border-[#1e2130] last:border-0">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between py-4 text-left gap-4"
+      >
+        <span className="text-[14px] font-medium text-[#cbd5e1]">{q}</span>
+        <motion.span
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+          className="shrink-0 text-[#475569]"
+        >
+          <Icon.ChevronDown />
+        </motion.span>
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="overflow-hidden"
+          >
+            <p className="pb-4 text-[13px] text-[#64748b] leading-relaxed">{a}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+// ─── Stat pill ────────────────────────────────────────────────────────────────
+function StatPill({ value, label }: { value: string; label: string }) {
+  const { ref, inView } = useReveal()
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, scale: 0.94 }}
+      animate={inView ? { opacity: 1, scale: 1 } : {}}
+      transition={{ duration: 0.4 }}
+      className="flex flex-col items-center gap-1"
+    >
+      <span className="text-2xl sm:text-4xl font-bold text-white tabular-nums">{value}</span>
+      <span className="text-[10px] sm:text-[12px] text-[#64748b]">{label}</span>
+    </motion.div>
+  )
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
 export default function Landing() {
   const navigate = useNavigate()
 
+  const features = [
+    { icon: <Icon.Upload />, title: "Drop any file", desc: "CSV or XLSX, up to 50 MB. Drag and drop or browse — CleanFlow reads your data instantly." },
+    { icon: <Icon.Zap />, title: "Instant profiling", desc: "Quality score, missing value map, type detection, outlier flags — all computed in seconds." },
+    { icon: <Icon.Chart />, title: "One-click fixes", desc: "Each issue comes with a ranked suggestion and a single button to apply it. No code needed." },
+    { icon: <Icon.Shield />, title: "Privacy first", desc: "Your data never touches a database. Files are processed in memory and discarded immediately." },
+    { icon: <Icon.Download />, title: "Export anywhere", desc: "Download cleaned data as CSV, XLSX, or JSON. Get a Pandas script that reproduces every fix." },
+    { icon: <Icon.Chart />, title: "Visual analytics", desc: "Distributions, correlation heatmaps, before/after comparisons — see exactly what changed." },
+  ]
+
+  const faqs = [
+    { q: "What file formats does CleanFlow AI support?", a: "CSV and XLSX files up to 50 MB. Support for JSON and Parquet is on the roadmap." },
+    { q: "Is my data stored anywhere?", a: "No. Your dataset is processed entirely in memory. Nothing is written to disk or sent to a third-party service. Once your session ends, the data is gone." },
+    { q: "How does the quality score work?", a: "The score (0–100) weighs three factors: missing data (40 pts), duplicate rows (30 pts), and type consistency (30 pts). Each applied fix recalculates and improves the score." },
+    { q: "Can I undo a cleaning operation?", a: "Every operation is logged. The cleaning history panel lets you review each step, and you can re-run only the operations you want on the original file." },
+    { q: "Do I need to know Python or pandas?", a: "No — the interface is fully point-and-click. But if you want to reproduce the cleaning in code, CleanFlow exports a ready-to-run Pandas script for every session." },
+  ]
+
   return (
-    <div className="min-h-screen bg-[#0a0b0f] text-gray-200 overflow-x-hidden" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-      {/* Navigation */}
+    <div className="min-h-screen bg-[#0a0b0f] text-[#f1f5f9] overflow-x-hidden" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+
+      {/* ── Nav ── */}
       <nav className="sticky top-0 z-50 border-b border-[#1e2130]/80 bg-[#0a0b0f]/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src={datapilotLogo} alt="Data Pilot Logo" className="w-6 h-6 object-contain shrink-0" />
-            <span className="text-[14px] font-bold tracking-tight text-white">Data Pilot</span>
+            <img src={cleanflowLogo} alt="CleanFlow AI Logo" className="w-6 h-6 object-contain shrink-0" />
+            <span className="text-[14px] font-semibold text-white">CleanFlow AI</span>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-            onClick={() => navigate("/dashboard")}
-            className="px-4 py-1.5 rounded-lg text-[13px] font-medium bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
-          >
-            Launch Console
-          </motion.button>
-        </div>
-      </nav>
-
-      {/* Hero Content Section */}
-      <section className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-16 lg:pb-24 grid lg:grid-cols-2 gap-12 items-center">
-        <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-indigo-600/5 blur-3xl pointer-events-none" />
-        
-        <motion.div initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }} className="space-y-6 text-center lg:text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-indigo-500/20 bg-indigo-500/5">
-            <span className="text-[11px] text-indigo-300 font-medium tracking-wide uppercase">Automated Data Preparation</span>
-          </div>
-
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight">
-            Transform messy data into{' '}
-            <span className="text-indigo-400 font-extrabold">
-              production readiness.
-            </span>
-          </h1>
-
-          <p className="text-[14px] sm:text-[16px] text-gray-400 leading-relaxed max-w-md mx-auto lg:mx-0">
-            Ingest large matrices, parse structured quality summaries, and execute data transformation steps instantaneously without writing code.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+          <div className="flex items-center gap-4">
+            <a href="#features" className="text-[13px] text-[#64748b] hover:text-white transition-colors hidden sm:block">Features</a>
+            <a href="#faq" className="text-[13px] text-[#64748b] hover:text-white transition-colors hidden sm:block">FAQ</a>
             <motion.button
               whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
               onClick={() => navigate("/dashboard")}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-[14px] font-semibold bg-indigo-600 text-white shadow-lg shadow-indigo-500/20"
+              className="px-3 py-1.5 sm:px-4 rounded-lg text-[12px] sm:text-[13px] font-medium bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
             >
-              Analyze Your Dataset
+              Open app
+            </motion.button>
+          </div>
+        </div>
+      </nav>
+
+      {/* ── Hero ── */}
+      <section className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-12 sm:pt-20 pb-16 lg:pb-24 grid lg:grid-cols-2 gap-10 lg:grid-flow-row items-center">
+        {/* Ambient glow */}
+        <div className="absolute top-0 left-1/4 w-72 sm:w-96 h-72 sm:h-96 rounded-full bg-indigo-600/8 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-48 sm:w-64 h-48 sm:h-64 rounded-full bg-violet-600/6 blur-3xl pointer-events-none" />
+
+        {/* Left — copy */}
+        <motion.div
+          initial={{ opacity: 0, x: -16 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          className="space-y-4 sm:space-y-6 relative text-center lg:text-left order-2 lg:order-1"
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-indigo-500/25 bg-indigo-500/8">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+            <span className="text-[11px] text-indigo-300 font-medium tracking-wide">AI-powered data cleaning</span>
+          </div>
+
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-[1.1] tracking-tight">
+            Messy data,{" "}<span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">cleaned.</span>
+          </h1>
+
+          <p className="text-[14px] sm:text-[16px] text-[#94a3b8] leading-relaxed max-w-md mx-auto lg:mx-0">
+            Upload a CSV or Excel file. CleanFlow profiles your dataset, surfaces every quality issue, and fixes them in one click — no Python required.
+          </p>
+
+          {/* CTA row */}
+          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-2">
+            <motion.button
+              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+              onClick={() => navigate("/dashboard")}
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-[14px] font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors shadow-lg shadow-indigo-500/25"
+            >
+              Upload your dataset
               <Icon.Arrow />
             </motion.button>
+            <span className="text-[12px] text-[#475569]">Free · no account needed</span>
+          </div>
+
+          {/* Trust badges */}
+          <div className="flex flex-wrap justify-center lg:justify-start gap-x-4 gap-y-2 pt-2">
+            {["CSV & XLSX support", "100K+ row datasets", "Privacy first"].map(b => (
+              <span key={b} className="flex items-center gap-1.5 text-[12px] text-[#475569]">
+                <span className="text-green-400"><Icon.Check /></span>
+                {b}
+              </span>
+            ))}
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.1 }} className="relative w-full min-w-0">
+        {/* Right — live grid demo */}
+        <motion.div
+          initial={{ opacity: 0, x: 16 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="relative order-1 lg:order-2 w-full min-w-0"
+        >
           <HeroGrid />
+          <div className="absolute -bottom-8 left-4 right-4 h-8 bg-gradient-to-b from-[#0a0b0f]/0 to-[#0a0b0f] pointer-events-none" />
         </motion.div>
       </section>
 
-      {/* Core Feature Matrix */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <FeatureCard icon={<Icon.Upload />} title="Streaming File Ingestion" desc="Processes large CSV and Excel matrix frames up to 100K+ lines seamlessly." />
-        <FeatureCard icon={<Icon.Zap />} title="Automated Quality Profiling" desc="Computes missing distribution maps and structural anomaly flags dynamically." />
-        <FeatureCard icon={<Icon.Chart />} title="Deterministic Fix Dispatch" desc="Review anomalies and apply targeted correction recipes with a single action." />
-        <FeatureCard icon={<Icon.Shield />} title="In-Memory Isolation" desc="Strict privacy design ensures datasets are cleaned inside sandbox sessions." />
-        <FeatureCard icon={<Icon.Download />} title="Pandas Script Export" desc="Generates clean, reproducible Python data transformation tracking blocks." />
-        <FeatureCard icon={<Icon.Chart />} title="Visual Feature Matrix" desc="Inspect correlation arrays and value trends before and after processing." />
+      {/* ── Stats strip ── */}
+      <section className="border-y border-[#1e2130] bg-[#0d0f14] py-8 sm:py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 grid grid-cols-3 gap-4 sm:gap-8 text-center">
+          <StatPill value="13+" label="cleaning operations" />
+          <StatPill value="50 MB" label="max file size" />
+          <StatPill value="100K+" label="rows supported" />
+        </div>
       </section>
+
+      {/* ── Features ── */}
+      <section id="features" className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24 space-y-10 sm:space-y-12">
+        <div className="text-center space-y-3">
+          <p className="text-[11px] uppercase tracking-widest text-indigo-400 font-semibold">What CleanFlow does</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white">Every data quality problem, solved</h2>
+          <p className="text-[14px] sm:text-[15px] text-[#64748b] max-w-xl mx-auto">
+            From duplicate rows to invalid emails — CleanFlow detects issues automatically and explains exactly how to fix them.
+          </p>
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {features.map((f, i) => (
+            <FeatureCard key={f.title} {...f} delay={i * 0.04} />
+          ))}
+        </div>
+      </section>
+
+      {/* ── How it works ── */}
+      <section className="border-y border-[#1e2130] bg-[#0d0f14] py-16 sm:py-24">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-10 sm:space-y-12">
+          <div className="text-center space-y-3">
+            <p className="text-[11px] uppercase tracking-widest text-indigo-400 font-semibold">How it works</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white">Three steps to clean data</h2>
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-4 sm:gap-6">
+            {[
+              { step: "1", title: "Upload", desc: "Drag in your CSV or XLSX. CleanFlow reads it instantly — no waiting." },
+              { step: "2", title: "Review", desc: "See your quality score, missing values, duplicates, and type issues in one view." },
+              { step: "3", title: "Export", desc: "Apply fixes one by one or all at once. Download your clean file in any format." },
+            ].map(({ step, title, desc }, i) => {
+              const { ref, inView } = useReveal()
+              return (
+                <motion.div
+                  key={step} ref={ref}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={inView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: i * 0.08 }}
+                  className="relative p-5 rounded-2xl border border-[#1e2130] bg-[#111318]"
+                >
+                  <span className="text-4xl sm:text-5xl font-black text-[#1e2130] absolute top-4 right-5 select-none tabular-nums leading-none">
+                    {step}
+                  </span>
+                  <p className="text-[15px] font-semibold text-white mb-2">{title}</p>
+                  <p className="text-[13px] text-[#64748b] leading-relaxed">{desc}</p>
+                </motion.div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section id="faq" className="max-w-2xl mx-auto px-4 sm:px-6 py-16 sm:py-24 space-y-8 sm:space-y-10">
+        <div className="text-center space-y-3">
+          <p className="text-[11px] uppercase tracking-widest text-indigo-400 font-semibold">FAQ</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white">Common questions</h2>
+        </div>
+        <div className="rounded-2xl border border-[#1e2130] bg-[#111318] px-4 sm:px-6">
+          {faqs.map(f => <FaqItem key={f.q} {...f} />)}
+        </div>
+      </section>
+
+      {/* ── Final CTA ── */}
+      <section className="max-w-3xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="relative rounded-3xl border border-indigo-500/20 bg-gradient-to-br from-indigo-500/8 to-violet-500/5 p-8 sm:p-12 text-center overflow-hidden"
+        >
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-48 sm:w-64 h-48 sm:h-64 rounded-full bg-indigo-600/10 blur-3xl" />
+          </div>
+
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3 relative">Ready to clean your data?</h2>
+          <p className="text-[14px] sm:text-[15px] text-[#64748b] mb-6 sm:mb-8 relative">
+            Drop in a file and get a full quality report in under 10 seconds.
+          </p>
+          <motion.button
+            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+            onClick={() => navigate("/dashboard")}
+            className="relative w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl text-[15px] font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors shadow-xl shadow-indigo-500/30"
+          >
+            Upload a dataset
+            <Icon.Arrow />
+          </motion.button>
+        </motion.div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer className="border-t border-[#1e2130] py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+          <div className="flex items-center gap-2">
+            <img src={cleanflowLogo} alt="CleanFlow AI Logo" className="w-5 h-5 object-contain shrink-0" />
+            <span className="text-[13px] text-[#475569]">CleanFlow AI</span>
+          </div>
+          <p className="text-[11px] sm:text-[12px] text-[#334155] max-w-xs sm:max-w-none">
+            Data processed in memory · never stored · never shared
+          </p>
+          <p className="text-[11px] sm:text-[12px] text-[#334155]">
+            Built with React · FastAPI · Pandas
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }
