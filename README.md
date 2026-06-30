@@ -169,6 +169,7 @@ exporter.py
 
 
 ### Data Flow
+
 Upload CSV/XLSX
 │
 ▼
@@ -234,6 +235,7 @@ npm run dev
 # App running at http://localhost:5173
 4. Open the app
 Navigate to http://localhost:5173 and upload any CSV or XLSX file.
+```
 
 📁 Project Structure
 cleanflow-ai/
@@ -279,6 +281,7 @@ cleanflow-ai/
         │   └── ExportPanel.tsx        # 5-format download panel
         └── services/
             └── api.ts                 # Axios API client
+
 📖 API Documentation
 Full interactive docs available at /docs (Swagger) and /redoc when running locally.
 
@@ -295,7 +298,8 @@ GET	/api/export/{session_id}?format=csv	Download cleaned file
 POST	/api/export/script/{session_id}	Download Pandas script
 POST	/api/export/report/{session_id}	Download Markdown report
 Example — Upload
-Bash
+
+```Bash
 curl -X POST http://localhost:8000/api/upload/ \
   -F "file=@dataset.csv"
 JSON
@@ -316,11 +320,14 @@ curl -X POST http://localhost:8000/api/clean/973b47ef... \
       {"type": "fill_missing", "column": "country", "strategy": "mode"}
     ]
   }'
+```
 📸 Screenshots
 Upload your own screenshots to /assets/ and update the paths below.
 
 Landing Page	Dashboard — Profile
+
 Cleaning Suggestions	Visual Analytics
+
 ⚡ Performance & Optimisations
 Large Dataset Engineering (100k+ Rows)
 Scaling an application on free cloud computing architectures introduces tight memory and processing runtime constraints. During the optimization of large matrix conversions (such as the standard 119k+ row Hotel Booking Demand dataset), several full-stack infrastructure enhancements were made:
@@ -338,6 +345,7 @@ Upload + Parsing	< 2s	Up to 50 MB
 Profile Scoring	< 500ms	100,000+ Rows
 Rule Evaluation	< 300ms	32+ Attributes
 Compressed Export	< 1s	Stream-based
+
 🌐 Deployment
 Frontend — Vercel
 Bash
