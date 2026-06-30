@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// src/services/api.ts — RESPONSIVE & MOBILE-OPTIMIZED VERSION (CORS & MULTIPART FIXED)
+// src/services/api.ts — RESPONSIVE & MOBILE-OPTIMIZED VERSION (EXPORT BALANCED)
 // ─────────────────────────────────────────────────────────────────────────────
 
 import axios from "axios"
@@ -8,15 +8,13 @@ import axios from "axios"
 const api = axios.create({
   // Clean up trailing slash defaults to maintain predictable path generation
   baseURL: import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, "") : "http://localhost:8000/api",
-  timeout: 1000000, 
-  // REMOVED global Content-Type restriction to let endpoints calculate multi-form boundary keys dynamically
+  timeout: 100000, 
 })
 
 // Global interceptor to handle mobile network errors cleanly
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // If the network request was aborted or timed out
     if (error.code === "ECONNABORTED" || !error.response) {
       return Promise.reject({
         response: {
@@ -34,9 +32,6 @@ api.interceptors.response.use(
 export const uploadFile = (file: File) => {
   const form = new FormData()
   form.append("file", file)
-  
-  // Explicitly deleting or passing an empty object for headers allows 
-  // the browser engine to natively append boundary hashes to multipart/form-data
   return api.post("/upload", form, {
     headers: {}
   })
@@ -63,7 +58,14 @@ export const getComparison = (originalId: string, cleanedId: string) =>
   api.get(`/analytics/compare/${originalId}/${cleanedId}`)
 
 // Export Clean Output Blobs
-export const exportDataset = (sessionId: string, format: "csv" | "xlsx" | "json") =>
-  api.get(`/export/${sessionId}?format=${format}`, { responseType: "blob" })
+export const exportDataset = (sessionId: string, format: "csv" | "xlsx" | "json") => {
+  // Forces strict query parameters matching backend payload endpoints
+  return api.get(`/export/${sessionId}?format=${format}`, { 
+    responseType: "blob",
+    headers: {
+      "Accept": "application/octet-stream, application/json, text/csv"
+    }
+  })
+}
 
 export default api
