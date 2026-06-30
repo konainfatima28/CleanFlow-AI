@@ -428,9 +428,9 @@ export default function Dashboard() {
           </div>
         </main>
 
-        {/* ── AdSense Compliant Footer Anchor Row (Inside the content grid box container) ── */}
+        {/* ── AdSense Compliant Footer Anchor Row ── */}
         <footer className="w-full text-center py-5 border-t border-white/5 bg-[#0e1014]/30 text-[11px] text-gray-600 mt-auto shrink-0">
-          <p>© 2026 CleanFlow AI. Engineered as a B.Tech CSE Capstone Project.</p>
+          <p>© 2026 CleanFlow AI. Free, secure data cleaning for everyone.</p>
           <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-1.5 text-gray-500">
             <button onClick={() => openLegalView("about")} className="hover:text-indigo-400 transition-colors focus:outline-none">About Tool</button>
             <span>·</span>
