@@ -1,4 +1,4 @@
-                                                          # CleanFlow AI — AI-Powered Data Cleaning Platform
+# CleanFlow AI — AI-Powered Data Cleaning Platform
 
 <div align="center">
 
