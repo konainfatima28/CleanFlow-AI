@@ -3,9 +3,11 @@
 // Data Pilot Cleaning Panel — TRANSIENT TRANSFORMATION CONTROL CONSOLE
 // ────────────────────────────────────────────────────────────────────────────
 
+// To this:
 import { useEffect, useState, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { getSuggestions, applyClean } from "../services/api"
+import { getSuggestions } from "../services/api" // Removed unused applyClean
+import api from "../services/api" // Added missing 'api' client instance wrapper
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Operation {
