@@ -1,61 +1,57 @@
-# backend/app/api/routes/upload.py
 import uuid
 import os
-import shutil
-import tempfile
+import io
+
 import pandas as pd
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from app.core.storage import storage_manager  # Parquet state engine reference
+
+from app.core.session import save
 
 router = APIRouter()
 
-ALLOWED_EXTENSIONS = {".csv", ".xlsx"}
+ALLOWED = {".csv", ".xlsx"}
+
 
 @router.post("/")
 async def upload_file(file: UploadFile = File(...)):
     if not file.filename:
-        raise HTTPException(status_code=400, detail="Matrix filename missing.")
+        raise HTTPException(status_code=400, detail="Filename is missing")
 
     ext = os.path.splitext(file.filename)[1].lower()
-    if ext not in ALLOWED_EXTENSIONS:
+
+    if ext not in ALLOWED:
         raise HTTPException(
             status_code=400,
-            detail="Unsupported matrix format. Only structured CSV and XLSX schemas are supported.",
+            detail="Only CSV and XLSX supported",
         )
 
-    # Stream the file contents directly onto the disk partition chunk-by-chunk 
-    # to protect server infrastructure against random RAM peaks.
-    try:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as temp_file:
-            # Copy file stream directly to temporary storage in 1MB chunks
-            shutil.copyfileobj(file.file, temp_file)
-            temp_path = temp_file.name
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to isolate file write stream: {e}")
+    MAX_SIZE = 25 * 1024 * 1024  # 25 MB
+
+    contents = await file.read()
+    
+    if len(contents) > MAX_SIZE:
+        raise HTTPException(
+            status_code=413,
+            detail="File too large. Maximum supported size is 25 MB. Please upload a CSV or a smaller Excel file.",
+        )
 
     try:
-        # Load structural data source using transient pandas allocations
         if ext == ".csv":
-            df = pd.read_csv(temp_path)
+            df = pd.read_csv(io.BytesIO(contents))
         else:
-            df = pd.read_excel(temp_path)
+            df = pd.read_excel(io.BytesIO(contents))
     except Exception as e:
         raise HTTPException(
             status_code=400,
-            detail=f"Matrix parsing structural exception: {e}",
+            detail=f"Could not parse file: {e}",
         )
-    finally:
-        # Clean up the temporary file safely immediately after dataframe conversion
-        if os.path.exists(temp_path):
-            os.remove(temp_path)
 
     session_id = str(uuid.uuid4())
+    save(session_id, df)
 
-    # Initialize the Snappy-compressed Parquet transaction lineage tree state on disk
-    storage_manager.initialize_session(session_id, df, file.filename)
-
-    # Returns unified parameter properties that your frontend hooks match cleanly
     return {
         "session_id": session_id,
-        "filename": file.filename
+        "filename": file.filename,
+        "rows": len(df),
+        "columns": len(df.columns),
     }
