@@ -8,7 +8,7 @@ import axios from "axios"
 const api = axios.create({
   // Clean up trailing slash defaults to maintain predictable path generation
   baseURL: import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, "") : "http://localhost:8000/api",
-  timeout: 100000, 
+  timeout: 1000000, 
   // REMOVED global Content-Type restriction to let endpoints calculate multi-form boundary keys dynamically
 })
 
