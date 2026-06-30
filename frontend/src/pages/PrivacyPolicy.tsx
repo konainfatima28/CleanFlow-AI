@@ -1,3 +1,7 @@
+// ────────────────────────────────────────────────────────────────────────────
+// src/pages/PrivacyPolicy.tsx — 
+// ────────────────────────────────────────────────────────────────────────────
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, ArrowLeft } from 'lucide-react';
@@ -34,31 +38,32 @@ export const PrivacyPolicy: React.FC<LegalProps> = ({ onBack }) => {
           </div>
         </div>
 
-        {/* Content blocks */}
-        <div className="space-y-6 text-sm leading-relaxed">
+        {/* Humanized & SEO-Friendly Content Blocks */}
+        <div className="space-y-6 text-sm leading-relaxed text-gray-400">
           <section className="space-y-2">
-            <h2 className="text-base font-semibold text-white">1. Data Minimization & Processing Integrity</h2>
+            <h2 className="text-base font-semibold text-white">1. Your Data Stays Yours (In-Memory Processing)</h2>
             <p>
-              CleanFlow AI processes uploading operations utilizing ephemeral, transient in-memory memory mapping architecture sequences. **Your imported workspace data matrices (CSV, XLSX) are never committed to permanent storage structures, data repositories, or underlying cloud databases.** </p>
+              We believe your data belongs to you. CleanFlow AI is built to handle file uploads entirely within transient, temporary in-memory sessions. **Your uploaded workspace files (like CSV datasets or Excel XLSX spreadsheets) are never saved to a database, cloud repository, or permanent storage disk.**
+            </p>
             <p>
-              All cleaning transformations run securely in the memory footprint runtime context and clear immediately when your active browsing session instance is terminated or expired.
+              All data cleaning operations, outlier filtering, and profiling features run inside a fleeting runtime context. The moment you close your tab or let your session expire, everything disappears completely.
             </p>
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-base font-semibold text-white">2. Third-Party Advertising & Cookies</h2>
+            <h2 className="text-base font-semibold text-white">2. Google AdSense & Third-Party Cookies</h2>
             <p>
-              This digital platform integrates Google AdSense behavioral telemetry services. Google utilizes tracking assets (including cookies) to serve custom advertisements based on user navigation paths across this interface and external destination targets.
+              To keep this app free for everyone, we use Google AdSense to serve relevant advertisements. Google uses cookies and unique tracking tokens to serve custom ads based on your visits to CleanFlow AI and other corners of the web.
             </p>
             <p>
-              Users retain complete control to toggle off personalized tracking options via individual Google account dashboard preferences or browser cookie management adjustments.
+              You are completely in control of your advertising footprint. You can opt out of personalized tracking at any time by updating your personal Google Ad preferences or adjusting your web browser's cookie blocking settings.
             </p>
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-base font-semibold text-white">3. Information Protection</h2>
+            <h2 className="text-base font-semibold text-white">3. Secure Information Protection</h2>
             <p>
-              Communication vectors traveling between your local workstation client interface and our hosting endpoints are encrypted using standardized Transport Layer Security protocol tunnels.
+              Even though your data is strictly temporary, your transmission vectors are treated with enterprise safety parameters. All communication between your local computer and our hosting infrastructure is shielded behind secure Transport Layer Security (TLS) encryption protocols.
             </p>
           </section>
         </div>
