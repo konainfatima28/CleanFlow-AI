@@ -3,11 +3,9 @@
 // Data Pilot Cleaning Panel — TRANSIENT TRANSFORMATION CONTROL CONSOLE
 // ────────────────────────────────────────────────────────────────────────────
 
-// To this:
 import { useEffect, useState, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { getSuggestions } from "../services/api" // Removed unused applyClean
-import api from "../services/api" // Added missing 'api' client instance wrapper
+import { getSuggestions, applyClean } from "../services/api" // ✅ Corrected named import wrappers
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Operation {
@@ -315,14 +313,14 @@ function DiffSummary({ diff }: { diff: Diff }) {
             {formatNum(diff.original_missing)} null cells · {formatKB(diff.original_memory_kb)}
           </p>
         </div>
-        <div className="text-gray-600 text-sm text-center hidden md:block">→</div>
-        <div className="flex-1 p-3 rounded-lg bg-indigo-500/[0.04] border border-indigo-500/10 w-full">
-          <p className="text-[10px] text-indigo-400 font-bold uppercase tracking-widest mb-1">Optimized Output Lineage</p>
-          <p className="text-xs sm:text-sm font-mono text-gray-300">
-            {formatNum(diff.cleaned_rows)} lines · {diff.cleaned_columns} labels
+        <div className="text-gray-600 text-base text-center hidden md:block">→</div>
+        <div className="flex-1 p-3 rounded-lg bg-green-500/[0.06] border border-green-500/15 w-full">
+          <p className="text-[10px] text-green-600 uppercase tracking-widest mb-1">After Matrix</p>
+          <p className="text-xs sm:text-sm font-mono text-green-300">
+            {formatNum(diff.cleaned_rows)} rows · {diff.cleaned_columns} cols
           </p>
-          <p className="text-[11px] text-indigo-500/50 mt-0.5">
-            {formatNum(diff.cleaned_missing)} null cells · {formatKB(diff.cleaned_memory_kb)}
+          <p className="text-[11px] text-green-600/70 mt-0.5">
+            {formatNum(diff.cleaned_missing)} missing · {formatKB(diff.cleaned_memory_kb)}
           </p>
         </div>
       </div>
@@ -333,32 +331,32 @@ function DiffSummary({ diff }: { diff: Diff }) {
 function ActionLog({ entries }: { entries: LogEntry[] }) {
   if (entries.length === 0) return null
   return (
-    <div className="rounded-xl border border-white/5 bg-[#0d0f14] overflow-hidden w-full">
+    <div className="rounded-xl border border-white/5 bg-[#0d0f18] overflow-hidden w-full">
       <div className="px-4 py-2.5 border-b border-white/5 flex items-center gap-2">
-        <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-        <p className="text-[11px] font-bold uppercase tracking-widest text-gray-600">
-          Deterministic Audit Trail
+        <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-600">
+          Action log
         </p>
       </div>
-      <div className="divide-y divide-white/[0.02] max-h-48 overflow-y-auto pr-1 paths-scroll-touch">
+      <div className="divide-y divide-white/[0.03] max-h-48 overflow-y-auto paths-collapse">
         {entries.map((e, i) => (
           <motion.div
-            key={i} initial={{ opacity: 0, x: -4 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }}
+            key={i} initial={{ opacity: 0, x: -4 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
             className="flex items-start justify-between gap-3 px-4 py-2.5"
           >
             <div className="flex items-start gap-3 min-w-0">
               <span className={`mt-0.5 shrink-0 ${
-                e.status === "ok" ? "text-indigo-400" : e.status === "error" ? "text-red-400" : "text-gray-600"
+                e.status === "ok" ? "text-green-400" : e.status === "error" ? "text-red-400" : "text-gray-600"
               }`}>
                 {e.status === "ok" ? <Icon.Check /> : <Icon.AlertTriangle />}
               </span>
               <div className="min-w-0 flex-1">
                 <p className="text-[11px] font-mono text-gray-400 truncate">{e.operation}</p>
-                <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">{e.detail}</p>
+                <p className="text-[11px] text-gray-600 mt-0.5 leading-relaxed">{e.detail}</p>
               </div>
             </div>
-            <span className="text-[10px] font-mono text-gray-700 shrink-0 mt-0.5">
-              {e.rows_affected} vectors
+            <span className="text-[10px] tabular-nums text-gray-700 shrink-0 mt-0.5">
+              {e.rows_affected} rows
             </span>
           </motion.div>
         ))}
@@ -382,16 +380,15 @@ export default function CleaningPanel({ sessionId, onCleanComplete }: Props) {
   useEffect(() => {
     setLoading(true)
     getSuggestions(sessionId)
-      .then(({ data }) => setSuggestions(data.suggestions || []))
-      .catch(() => setError("Profiling suggestion engine failed to initialize options tree."))
+      .then(({ data }) => setSuggestions(data.suggestions))
+      .catch(() => setError("Could not load suggestions. Please try again."))
       .finally(() => setLoading(false))
   }, [sessionId])
 
   const runOperations = useCallback(
     async (ops: Operation[], ids: string[]) => {
-      // Synchronized endpoint configuration connecting directly to Data Pilot clean routes
-      const response = await api.post(`/clean/${sessionId}`, { operations: ops }, { timeout: 0 })
-      const data = response.data
+      // ✅ Solved: Called your clean wrapper instead of raw un-imported api parameter
+      const { data } = await applyClean(sessionId, ops)
       setLog(prev => [...prev, ...data.log])
       setDiff(data.diff)
       setCleanedSessionId(data.cleaned_session_id)
@@ -417,7 +414,7 @@ export default function CleaningPanel({ sessionId, onCleanComplete }: Props) {
         [...log, ...data.log]
       )
     } catch {
-      setError("Failed to stream core operation transformation across targets.")
+      setError("Failed to apply fix. Please try again.")
     } finally {
       setApplying(null)
     }
@@ -431,6 +428,11 @@ export default function CleaningPanel({ sessionId, onCleanComplete }: Props) {
       const ops = pending.map(s => s.operation)
       const ids = pending.map(s => s.id)
 
+      if (!ops.some(op => op.type === "optimize_memory")) {
+        ops.push({ type: "optimize_memory" })
+        ids.push("auto_memory_optimization")
+      }
+
       const data = await runOperations(ops, ids)
       onCleanComplete(
         data.cleaned_session_id,
@@ -439,7 +441,7 @@ export default function CleaningPanel({ sessionId, onCleanComplete }: Props) {
         [...log, ...data.log]
       )
     } catch {
-      setError("Bulk lineage execution transformation chain halted.")
+      setError("Bulk apply failed. Please try again.")
     } finally {
       setBulkApplying(false)
     }
@@ -459,12 +461,12 @@ export default function CleaningPanel({ sessionId, onCleanComplete }: Props) {
       <div className="space-y-3 w-full">
         <div className="flex items-center gap-2 mb-4">
           <motion.div
-            animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+            animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
             className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full"
           />
-          <p className="text-sm text-gray-500">Data Pilot parsing transformation profiles...</p>
+          <p className="text-sm text-gray-500">Analysing your dataset…</p>
         </div>
-        {[...Array(3)].map((_, i) => (
+        {[...Array(4)].map((_, i) => (
           <div key={i} className="h-20 rounded-xl bg-[#13151f] border border-white/5 animate-pulse" />
         ))}
       </div>
@@ -473,13 +475,13 @@ export default function CleaningPanel({ sessionId, onCleanComplete }: Props) {
 
   if (error) {
     return (
-      <div className="rounded-xl bg-red-500/[0.05] border border-red-500/20 p-5 text-center space-y-2 w-full">
+      <div className="rounded-xl bg-red-500/[0.06] border border-red-500/20 p-5 text-center space-y-2 w-full">
         <p className="text-sm text-red-400">{error}</p>
         <button
           onClick={() => { setError(""); setLoading(true) }}
-          className="text-xs text-indigo-400 underline font-semibold focus:outline-none"
+          className="text-xs text-indigo-400 underline focus:outline-none"
         >
-          Re-initialize Console Connection
+          Retry
         </button>
       </div>
     )
