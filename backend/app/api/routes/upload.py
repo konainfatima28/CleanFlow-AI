@@ -40,7 +40,7 @@ async def upload_file(file: UploadFile = File(...)):
         if ext == ".csv":
             df = pd.read_csv(io.BytesIO(contents))
         else:
-            df = pd.read_excel(io.BytesIO(contents))
+            df = pd.read_excel(io.BytesIO(contents),engine="openpyxl")
     except Exception as e:
         raise HTTPException(
             status_code=400,
