@@ -96,7 +96,7 @@ const FORMATS: {
     key: "xlsx",
     label: "Excel",
     ext: ".xlsx",
-    desc: "Auto-formatted spreadsheet with column widths set.",
+    desc: "Auto-formatted spreadsheet with column widths set. It will take few minutes. (for faster generation continue with .CSV)",
     accent: "green",
     icon: <Icon.File />,
   },
