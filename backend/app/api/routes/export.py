@@ -4,9 +4,6 @@
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import Response
 from pydantic import BaseModel
-# from typing import Optional
-# import numpy as np  # Imported for NaN/Inf sanitation
-# import json  # Added for native JSON serialization fallbacks
 
 from app.core.session import get
 from app.services.exporter import (
@@ -32,25 +29,32 @@ def export_dataset(
     if df is None:
         raise HTTPException(404, "Session not found or expired.")
 
-    if format == "csv":
+    # Normalize incoming queries to drop case mismatches
+    fmt = format.lower()
+
+    if fmt == "csv":
         content      = to_csv(df)
         media_type   = "text/csv"
         filename     = f"cleanflow_export_{session_id[:8]}.csv"
-    elif format == "xlsx":
+    elif fmt == "xlsx":
         content      = to_xlsx(df)
         media_type   = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         filename     = f"cleanflow_export_{session_id[:8]}.xlsx"
-    elif format == "json":
-        content = to_json(df)
-        media_type = "application/json"
-        filename = f"cleanflow_export_{session_id[:8]}.json"
+    elif fmt == "json":
+        content      = to_json(df)
+        media_type   = "application/json"
+        filename     = f"cleanflow_export_{session_id[:8]}.json"
     else:
         raise HTTPException(400, "Unsupported format.")
 
+    # Explicitly expose headers to let Vercel read binary attachment chunks safely
     return Response(
         content=content,
         media_type=media_type,
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Access-Control-Expose-Headers": "Content-Disposition"
+        },
     )
 
 
@@ -77,7 +81,10 @@ def export_script(session_id: str, body: ScriptRequest):
     return Response(
         content=content,
         media_type="text/x-python",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Access-Control-Expose-Headers": "Content-Disposition"
+        },
     )
 
 
@@ -113,5 +120,8 @@ def export_report(cleaned_session_id: str, body: ReportRequest):
     return Response(
         content=content,
         media_type="text/markdown",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Access-Control-Expose-Headers": "Content-Disposition"
+        },
     )
