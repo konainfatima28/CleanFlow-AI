@@ -1,9 +1,9 @@
 // ────────────────────────────────────────────────────────────────────────────
 // src/components/ProfilePanel.tsx
-// Data Pilot Profiling Dashboard — DATA SCIENCE CONTEXT EXTRACTION
+// Data profiling dashboard — FULLY RESPONSIVE VERSION
 // ────────────────────────────────────────────────────────────────────────────
 
-import { useState, useMemo, Fragment } from "react"
+import { useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
@@ -119,15 +119,14 @@ function formatKB(kb: number): string {
 }
 
 function scoreColor(score: number) {
-  if (score >= 85) return { ring: "#6366f1", text: "text-indigo-400", label: "Model Ready" }
-  if (score >= 60) return { ring: "#facc15", text: "text-yellow-400", label: "Needs Alignment" }
-  return { ring: "#f87171", text: "text-red-400", label: "Highly Volatile" }
+  if (score >= 80) return { ring: "#4ade80", text: "text-green-400", label: "Good" }
+  if (score >= 55) return { ring: "#facc15", text: "text-yellow-400", label: "Fair" }
+  return { ring: "#f87171", text: "text-red-400", label: "Poor" }
 }
 
 function dtypeBadge(dtype: string) {
   const map: Record<string, { label: string; cls: string }> = {
     int64:   { label: "int",    cls: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
-    Int64:   { label: "int",    cls: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
     float64: { label: "float",  cls: "bg-violet-500/10 text-violet-400 border-violet-500/20" },
     object:  { label: "string", cls: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
     bool:    { label: "bool",   cls: "bg-pink-500/10 text-pink-400 border-pink-500/20" },
@@ -140,6 +139,7 @@ function dtypeBadge(dtype: string) {
   )
 }
 
+// ─── Quality Score Ring ───────────────────────────────────────────────────────
 function ScoreRing({ score }: { score: number }) {
   const { ring, text, label } = scoreColor(score)
   const r = 40
@@ -150,32 +150,34 @@ function ScoreRing({ score }: { score: number }) {
     <div className="flex flex-col items-center justify-center gap-1">
       <div className="relative w-24 h-24">
         <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r={r} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="6" />
+          <circle cx="50" cy="50" r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="7" />
           <motion.circle
-            cx="50" cy="50" r={r} fill="none" stroke={ring} strokeWidth="6" strokeLinecap="round" strokeDasharray={circ}
+            cx="50" cy="50" r={r} fill="none" stroke={ring} strokeWidth="7" strokeLinecap="round" strokeDasharray={circ}
             initial={{ strokeDashoffset: circ }}
             animate={{ strokeDashoffset: circ - dash }}
-            transition={{ duration: 1.2, ease: "easeOut", delay: 0.1 }}
-            style={{ filter: `drop-shadow(0 0 4px ${ring}66)` }}
+            transition={{ duration: 1.2, ease: "easeOut", delay: 0.3 }}
+            style={{ filter: `drop-shadow(0 0 6px ${ring}88)` }}
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <motion.span
-            className={`text-2xl font-bold tracking-tight tabular-nums ${text}`}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
+            className={`text-2xl font-bold tabular-nums ${text}`}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
           >
             {score}
           </motion.span>
         </div>
       </div>
       <div className="text-center">
-        <p className={`text-[11px] font-bold tracking-wide uppercase ${text}`}>{label}</p>
-        <p className="text-[10px] text-gray-600 mt-0.5">Readiness Score</p>
+        <p className={`text-xs font-semibold ${text}`}>{label}</p>
+        <p className="text-[10px] text-gray-600 mt-0.5">quality score</p>
       </div>
     </div>
   )
 }
 
+// ─── KPI Card ─────────────────────────────────────────────────────────────────
+// ─── KPI Card ─────────────────────────────────────────────────────────────────
 function KpiCard({
   icon, label, value, sub, accent = false, delay = 0, className = "",
 }: {
@@ -200,8 +202,9 @@ function KpiCard({
   )
 }
 
+// ─── Completeness Bar ─────────────────────────────────────────────────────────
 function CompletenessBar({ pct }: { pct: number }) {
-  const color = pct >= 90 ? "#6366f1" : pct >= 75 ? "#facc15" : "#f87171"
+  const color = pct >= 90 ? "#4ade80" : pct >= 70 ? "#facc15" : "#f87171"
   return (
     <div className="flex items-center gap-2 w-full min-w-[100px]">
       <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
@@ -215,6 +218,7 @@ function CompletenessBar({ pct }: { pct: number }) {
   )
 }
 
+// ─── Missing Values Mini Bar Chart ───────────────────────────────────────────
 function MissingChart({ columns }: { columns: ColumnDetail[] }) {
   const data = columns
     .filter(c => c.missing > 0)
@@ -225,8 +229,8 @@ function MissingChart({ columns }: { columns: ColumnDetail[] }) {
   if (data.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-32 gap-2">
-        <span className="text-2xl text-indigo-400">✓</span>
-        <p className="text-xs text-gray-500">Perfect Distribution (0 Missing Sparsity)</p>
+        <span className="text-3xl">✓</span>
+        <p className="text-xs text-gray-500">No missing values</p>
       </div>
     )
   }
@@ -235,16 +239,16 @@ function MissingChart({ columns }: { columns: ColumnDetail[] }) {
     <div className="w-full h-[160px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} layout="vertical" margin={{ left: -10, right: 16, top: 4, bottom: 4 }}>
-          <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 10, fill: "#4b5563" }} tickFormatter={v => `${v}%`} axisLine={false} tickLine={false} />
+          <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 10, fill: "#6b7280" }} tickFormatter={v => `${v}%`} axisLine={false} tickLine={false} />
           <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#9ca3af" }} width={72} axisLine={false} tickLine={false} />
           <Tooltip
-            cursor={{ fill: "rgba(255,255,255,0.02)" }}
+            cursor={{ fill: "rgba(255,255,255,0.03)" }}
             contentStyle={{ background: "#1a1d27", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, fontSize: 11 }}
-            formatter={(value) => [`${value}%`, "Sparsity"]}
+            formatter={(value) => [`${value}%`, "Missing"]}
           />
           <Bar dataKey="pct" radius={[0, 4, 4, 0]} maxBarSize={14}>
             {data.map((entry, i) => (
-              <Cell key={i} fill={entry.pct > 30 ? "#f87171" : entry.pct > 12 ? "#facc15" : "#6366f1"} />
+              <Cell key={i} fill={entry.pct > 30 ? "#f87171" : entry.pct > 10 ? "#facc15" : "#818cf8"} />
             ))}
           </Bar>
         </BarChart>
@@ -253,30 +257,29 @@ function MissingChart({ columns }: { columns: ColumnDetail[] }) {
   )
 }
 
-function ColumnTable({ columns, totalRows }: { columns: ColumnDetail[]; totalRows: number }) {
+// ─── Column Table ─────────────────────────────────────────────────────────────
+const colHelper = createColumnHelper<ColumnDetail>()
+
+function ColumnTable({ columns }: { columns: ColumnDetail[] }) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState("")
   const [expanded, setExpanded] = useState<string | null>(null)
 
-  // Optimization: Disable resource-heavy features on files with lots of rows to prevent lag
-  const isLargeFrame = totalRows > 50000;
-
-  const colHelper = createColumnHelper<ColumnDetail>()
   const defs = useMemo(() => [
     colHelper.accessor("name", {
-      header: "Feature Dimension",
+      header: "Column",
       cell: info => <span className="font-mono text-[12px] text-white font-medium whitespace-nowrap">{info.getValue()}</span>,
     }),
     colHelper.accessor("dtype", {
-      header: "Data Type",
+      header: "Type",
       cell: info => dtypeBadge(info.getValue()),
     }),
     colHelper.accessor("unique", {
-      header: "Cardinality",
+      header: "Unique",
       cell: info => <span className="tabular-nums text-[12px] text-gray-400">{formatNum(info.getValue())}</span>,
     }),
     colHelper.accessor("missing_pct", {
-      header: "Sparsity",
+      header: "Missing",
       cell: info => {
         const pct = info.getValue()
         const color = pct === 0 ? "text-green-400" : pct > 20 ? "text-red-400" : "text-yellow-400"
@@ -288,7 +291,7 @@ function ColumnTable({ columns, totalRows }: { columns: ColumnDetail[]; totalRow
       },
     }),
     colHelper.accessor("completeness", {
-      header: "Completeness Track",
+      header: "Completeness",
       cell: info => <CompletenessBar pct={info.getValue()} />,
       size: 140,
     }),
@@ -312,12 +315,12 @@ function ColumnTable({ columns, totalRows }: { columns: ColumnDetail[]; totalRow
           <Icon.Search />
         </span>
         <input
-          value={globalFilter} onChange={e => setGlobalFilter(e.target.value)} placeholder="Filter variables & labels..."
+          value={globalFilter} onChange={e => setGlobalFilter(e.target.value)} placeholder="Search columns…"
           className="w-full bg-[#13151f] border border-white/5 rounded-lg pl-8 pr-3 py-2 text-[13px] text-gray-300 placeholder-gray-600 focus:outline-none focus:border-indigo-500/40 transition-colors"
         />
       </div>
 
-      <div className="rounded-xl border border-white/5 overflow-x-auto w-full">
+      <div className="rounded-xl border border-white/5 overflow-x-auto paths-scroll-touch w-full">
         <table className="w-full text-left min-w-[540px]">
           <thead>
             {table.getHeaderGroups().map(hg => (
@@ -370,20 +373,20 @@ function ColumnTable({ columns, totalRows }: { columns: ColumnDetail[]; totalRow
                             className="overflow-hidden"
                           >
                             <div className="pt-3 grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
-                              {/* Descriptive Statistical Moments */}
+                              {/* Stats */}
                               <div className="space-y-2">
-                                <p className="text-[10px] uppercase tracking-widest text-gray-600 font-semibold">Statistical Moments</p>
+                                <p className="text-[10px] uppercase tracking-widest text-gray-600 font-semibold">Statistics</p>
                                 <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
                                   {[
-                                    ["Minimum (Min)", col.min],
-                                    ["Maximum (Max)", col.max],
-                                    ["Arithmetic Mean", col.mean],
-                                    ["Median (Q2)", col.median],
-                                    ["Std Deviation (σ)", col.std],
-                                    ["Mode", col.mode],
+                                    ["Min",    col.min],
+                                    ["Max",    col.max],
+                                    ["Mean",   col.mean],
+                                    ["Median", col.median],
+                                    ["Std dev",col.std],
+                                    ["Mode",   col.mode],
                                   ].filter(([, v]) => v !== undefined && v !== null).map(([label, val]) => (
                                     <div key={label as string} className="flex justify-between border-b border-white/[0.02] pb-0.5">
-                                      <span className="text-[11px] text-gray-500">{label}</span>
+                                      <span className="text-[11px] text-gray-600">{label}</span>
                                       <span className="text-[11px] tabular-nums text-gray-300 font-mono">
                                         {typeof val === "number" ? val.toLocaleString() : (val as string)}
                                       </span>
@@ -392,35 +395,33 @@ function ColumnTable({ columns, totalRows }: { columns: ColumnDetail[]; totalRow
                                 </div>
                               </div>
 
-                              {/* Value Distribution Frequency Profiles */}
-                              <div className="space-y-2">
-                                <p className="text-[10px] uppercase tracking-widest text-gray-600 font-semibold">Value Distributions</p>
-                                {isLargeFrame ? (
-                                  <p className="text-[11px] text-gray-600 leading-relaxed italic">
-                                    High-volume dataset detected. In-depth distribution analytics are deferred to the core Analytics Workspace to maintain local performance.
-                                  </p>
-                                ) : col.top_values ? (
+                              {/* Top values */}
+                              {col.top_values && (
+                                <div className="space-y-2">
+                                  <p className="text-[10px] uppercase tracking-widest text-gray-600 font-semibold">Top values</p>
                                   <div className="space-y-1.5">
                                     {Object.entries(col.top_values).slice(0, 5).map(([k, v]) => {
                                       const total = Object.values(col.top_values!).reduce((a, b) => a + b, 0)
-                                      const pct = total > 0 ? Math.round((v / total) * 100) : 0
+                                      const pct = Math.round((v / total) * 100)
                                       return (
                                         <div key={k} className="flex items-center gap-2">
                                           <span className="text-[11px] text-gray-400 w-24 truncate font-mono">{k}</span>
                                           <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
-                                            <div className="h-full bg-indigo-500/50 rounded-full" style={{ width: `${pct}%` }} />
+                                            <div className="h-full bg-indigo-500/60 rounded-full" style={{ width: `${pct}%` }} />
                                           </div>
                                           <span className="text-[10px] text-gray-600 tabular-nums w-8 text-right shrink-0">{pct}%</span>
                                         </div>
                                       )
                                     })}
                                   </div>
-                                ) : (
-                                  <div className="flex items-center gap-2 text-[11px] text-gray-600 pt-2">
-                                    Continuous numeric values. See the Analytics Panel for complete histograms and outlier visualizations.
-                                  </div>
-                                )}
-                              </div>
+                                </div>
+                              )}
+
+                              {!col.top_values && col.mean !== undefined && (
+                                <div className="flex items-center gap-2 text-xs text-gray-600 md:pt-4">
+                                  Numeric column — expand stats on the left for distribution details.
+                                </div>
+                              )}
                             </div>
                           </motion.div>
                         </td>
@@ -435,26 +436,30 @@ function ColumnTable({ columns, totalRows }: { columns: ColumnDetail[]; totalRow
 
         {table.getRowModel().rows.length === 0 && (
           <div className="py-10 text-center text-sm text-gray-600">
-            No matching variables discovered for "{globalFilter}"
+            No columns match "{globalFilter}"
           </div>
         )}
       </div>
 
       <p className="text-[11px] text-gray-600 text-right">
-        Displaying {table.getRowModel().rows.length} of {columns.length} features · Select a row to view descriptive moments
+        {table.getRowModel().rows.length} of {columns.length} columns · click a row for details
       </p>
     </div>
   )
 }
 
+// Simple legacy wrapper support for React < 16.2 fragments
+import { Fragment } from "react"
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 export default function ProfilePanel({ profile, sessionId, onStartCleaning }: Props) {
   const [activeTab, setActiveTab] = useState<"overview" | "columns" | "missing">("overview")
   const { ring } = scoreColor(profile.quality_score)
 
   const tabs = [
-    { key: "overview",  label: "Profile Overview" },
-    { key: "columns",   label: `Dimensions Matrix (${profile.columns})` },
-    { key: "missing",   label: "Sparsity Breakdown" },
+    { key: "overview",  label: "Overview" },
+    { key: "columns",   label: `Columns (${profile.columns})` },
+    { key: "missing",   label: "Missing values" },
   ] as const
 
   return (
@@ -462,49 +467,51 @@ export default function ProfilePanel({ profile, sessionId, onStartCleaning }: Pr
       initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
       className="space-y-6 w-full min-w-0"
     >
-      {/* Header Panel */}
+      {/* Header row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-white tracking-tight">Dataset Profile</h2>
+          <h2 className="text-xl font-semibold text-white">Dataset profile</h2>
           <p className="text-sm text-gray-500 mt-0.5">
-            Data Pilot Context Console: <span className="font-mono text-gray-600 text-[11px]">{sessionId.slice(0, 8)}…</span>
+            Session <span className="font-mono text-gray-600 text-[11px]">{sessionId.slice(0, 8)}…</span>
           </p>
         </div>
         <motion.button
           whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={onStartCleaning}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold transition-colors shadow-lg shadow-indigo-500/10 focus:outline-none"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-colors shadow-lg shadow-indigo-500/20 focus:outline-none"
         >
           <Icon.Wand />
-          <span>Launch Pilot Cleaner</span>
+          <span>Start cleaning</span>
         </motion.button>
       </div>
 
-      {/* KPI Matrix */}
+      {/* Score + KPIs Responsive Matrix */}
       <div className="grid grid-cols-1 lg:grid-cols-6 gap-4 w-full">
+        {/* Score ring box */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }}
+          initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }}
           className="lg:col-span-1 flex items-center justify-center p-5 rounded-xl bg-[#13151f] border border-white/5 w-full"
-          style={{ boxShadow: `0 0 25px ${ring}12` }}
+          style={{ boxShadow: `0 0 30px ${ring}18` }}
         >
           <ScoreRing score={profile.quality_score} />
         </motion.div>
 
+        {/* KPI blocks grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 lg:col-span-5 gap-3 w-full">
-          <KpiCard icon={<Icon.Rows />}      label="Total Rows"        value={formatNum(profile.rows)}         delay={0.05} />
-          <KpiCard icon={<Icon.Columns />}   label="Total Features"    value={String(profile.columns)}         delay={0.10} />
-          <KpiCard icon={<Icon.Missing />}   label="Sparsity Index"    value={formatNum(profile.missing_values)} sub={`${profile.missing_pct}% empty cells`} delay={0.15} />
-          <KpiCard icon={<Icon.Duplicate />} label="Redundant Duplicates" value={formatNum(profile.duplicates)} sub="exact row matches" delay={0.20} />
-          <KpiCard icon={<Icon.Memory />}    label="Virtual Memory Size" value={formatKB(profile.memory_kb)}    delay={0.25} className="col-span-2 sm:col-span-1" />
+          <KpiCard icon={<Icon.Rows />}      label="Total rows"      value={formatNum(profile.rows)}         delay={0.05} />
+          <KpiCard icon={<Icon.Columns />}   label="Columns"         value={String(profile.columns)}         delay={0.10} />
+          <KpiCard icon={<Icon.Missing />}   label="Missing values"  value={formatNum(profile.missing_values)} sub={`${profile.missing_pct}% of cells`} delay={0.15} />
+          <KpiCard icon={<Icon.Duplicate />} label="Duplicates"      value={formatNum(profile.duplicates)} sub="exact row matches" delay={0.20} />
+          <KpiCard icon={<Icon.Memory />}    label="Memory usage"    value={formatKB(profile.memory_kb)}    delay={0.25} className="col-span-2 sm:col-span-1" />
         </div>
       </div>
 
-      {/* Navigation Subtabs */}
-      <div className="flex gap-1 border-b border-white/5 overflow-x-auto scrollbar-none">
+      {/* Tabs */}
+      <div className="flex gap-1 border-b border-white/5 overflow-x-auto paths-scroll-touch scrollbar-none">
         {tabs.map(t => (
           <button
             key={t.key} onClick={() => setActiveTab(t.key)}
-            className={`relative px-4 py-2.5 text-[13px] font-semibold whitespace-nowrap transition-colors shrink-0 ${
-              activeTab === t.key ? "text-indigo-400" : "text-gray-500 hover:text-gray-300"
+            className={`relative px-4 py-2.5 text-[13px] font-medium whitespace-nowrap transition-colors shrink-0 ${
+              activeTab === t.key ? "text-white" : "text-gray-500 hover:text-gray-300"
             }`}
           >
             {t.label}
@@ -515,38 +522,37 @@ export default function ProfilePanel({ profile, sessionId, onStartCleaning }: Pr
         ))}
       </div>
 
-      {/* Tab Panels Routing */}
+      {/* Tab panels */}
       <div className="w-full">
         <AnimatePresence mode="wait">
           {activeTab === "overview" && (
             <motion.div key="overview" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4">
-              
-              {/* Score Breakdown Analysis */}
+              {/* Quality score card breakdown */}
               <div className="rounded-xl bg-[#13151f] border border-white/5 p-4 sm:p-5 space-y-4">
-                <p className="text-[13px] font-bold uppercase tracking-wider text-gray-400">Readiness Criteria Breakdown</p>
+                <p className="text-[13px] font-semibold text-white">Score breakdown</p>
                 {[
                   {
-                    label: "Completeness Factor",
+                    label: "Missing data",
                     pct: Math.max(0, 40 - (profile.missing_pct / 100 * 40)),
                     max: 40,
-                    desc: `${profile.missing_pct}% sparsity detected inside data cell blocks.`,
+                    desc: `${profile.missing_pct}% of cells are empty`,
                   },
                   {
-                    label: "Redundancy Vector",
-                    pct: profile.rows > 0 ? Math.max(0, 30 - (profile.duplicates / profile.rows * 30)) : 30,
+                    label: "Duplicate rows",
+                    pct: Math.max(0, 30 - (profile.duplicates / profile.rows * 30)),
                     max: 30,
-                    desc: `${profile.duplicates} duplicated matrices skewing pipeline distributions.`,
+                    desc: `${profile.duplicates} duplicate rows detected`,
                   },
                   {
-                    label: "Type Homogeneity",
+                    label: "Type consistency",
                     pct: 30,
                     max: 30,
-                    desc: "Structural datatypes verified and structurally categorized.",
+                    desc: "All columns have consistent types",
                   },
                 ].map(item => (
                   <div key={item.label} className="space-y-1.5">
                     <div className="flex justify-between text-[12px] gap-2">
-                      <span className="text-gray-300 font-medium">{item.label}</span>
+                      <span className="text-gray-400 truncate">{item.label}</span>
                       <span className="text-gray-500 tabular-nums shrink-0">
                         {Math.round(item.pct)} / {item.max} pts
                       </span>
@@ -555,17 +561,17 @@ export default function ProfilePanel({ profile, sessionId, onStartCleaning }: Pr
                       <motion.div
                         className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500"
                         initial={{ width: 0 }} animate={{ width: `${(item.pct / item.max) * 100}%` }}
-                        transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
+                        transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
                       />
                     </div>
-                    <p className="text-[11px] text-gray-500 leading-normal">{item.desc}</p>
+                    <p className="text-[11px] text-gray-600 leading-normal">{item.desc}</p>
                   </div>
                 ))}
               </div>
 
-              {/* Data Type Allocation Frame */}
+              {/* Column types configuration block */}
               <div className="rounded-xl bg-[#13151f] border border-white/5 p-4 sm:p-5">
-                <p className="text-[13px] font-bold uppercase tracking-wider text-gray-400 mb-3">Feature Typing Distributions</p>
+                <p className="text-[13px] font-semibold text-white mb-3 sm:mb-4">Column types</p>
                 <div className="flex flex-wrap gap-2">
                   {Object.entries(
                     profile.columns_detail.reduce((acc, c) => {
@@ -573,9 +579,9 @@ export default function ProfilePanel({ profile, sessionId, onStartCleaning }: Pr
                       return acc
                     }, {} as Record<string, number>)
                   ).map(([dtype, count]) => (
-                    <div key={dtype} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/5">
+                    <div key={dtype} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/5">
                       {dtypeBadge(dtype)}
-                      <span className="text-[12px] text-gray-400 font-semibold font-mono tabular-nums">{count}</span>
+                      <span className="text-[12px] text-gray-400 tabular-nums">{count}</span>
                     </div>
                   ))}
                 </div>
@@ -585,33 +591,33 @@ export default function ProfilePanel({ profile, sessionId, onStartCleaning }: Pr
 
           {activeTab === "columns" && (
             <motion.div key="columns" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-              <ColumnTable columns={profile.columns_detail} totalRows={profile.rows} />
+              <ColumnTable columns={profile.columns_detail} />
             </motion.div>
           )}
 
           {activeTab === "missing" && (
             <motion.div key="missing" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4">
               <div className="rounded-xl bg-[#13151f] border border-white/5 p-4 sm:p-5">
-                <p className="text-[13px] font-bold uppercase tracking-wider text-gray-400 mb-1">Feature Sparsity Severity</p>
-                <p className="text-[11px] text-gray-500 mb-4">Top 10 isolated columns sorted by density failures.</p>
+                <p className="text-[13px] font-semibold text-white mb-1">Missing values by column</p>
+                <p className="text-[11px] text-gray-600 mb-4 sm:mb-5">Top 10 columns with the most missing data — colour coded by severity</p>
                 <MissingChart columns={profile.columns_detail} />
               </div>
 
               <div className="rounded-xl bg-[#13151f] border border-white/5 p-4 sm:p-5 space-y-3">
-                <p className="text-[13px] font-bold uppercase tracking-wider text-gray-400 mb-1">Feature Matrix Completeness Profile</p>
+                <p className="text-[13px] font-semibold text-white mb-3">All columns completeness</p>
                 <div className="space-y-3 max-h-96 overflow-y-auto pr-1 paths-scroll-touch">
                   {[...profile.columns_detail]
                     .sort((a, b) => a.completeness - b.completeness)
                     .map((col, i) => (
                       <motion.div
-                        key={col.name} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.01 }}
-                        className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 border-b border-white/[0.01] pb-2 last:border-0"
+                        key={col.name} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.02 }}
+                        className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 border-b border-white/[0.02] pb-2 last:border-0"
                       >
                         <span className="font-mono text-[11px] text-gray-400 w-full sm:w-36 truncate" title={col.name}>{col.name}</span>
                         <div className="flex-1 w-full">
                           <CompletenessBar pct={col.completeness} />
                         </div>
-                        <span className="text-[11px] text-gray-500 font-medium tabular-nums text-left sm:text-right w-24 shrink-0 mt-0.5 sm:mt-0">
+                        <span className="text-[11px] text-gray-600 tabular-nums text-left sm:text-right w-24 shrink-0 mt-0.5 sm:mt-0">
                           {col.missing === 0 ? "complete" : `${col.missing} missing`}
                         </span>
                       </motion.div>
