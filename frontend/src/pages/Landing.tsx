@@ -403,7 +403,7 @@ export default function Landing() {
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-[1.1] tracking-tight">
-            Messy data,{" "}<span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">cleaned.</span>
+            Datasets: {" "}<span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Upload. Clean. Analyze.</span>
           </h1>
 
           <p className="text-[14px] sm:text-[16px] text-[#94a3b8] leading-relaxed max-w-md mx-auto lg:mx-0">
