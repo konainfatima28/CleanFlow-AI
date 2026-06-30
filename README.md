@@ -64,7 +64,6 @@ Upload a CSV or Excel file and get:
 - Privacy-first: data processed in memory, never stored
 
 ### 📊 Automatic Data Profiling
-
 | Metric | Description |
 |--------|-------------|
 | Quality Score | 0–100 composite score across 3 dimensions |
@@ -75,7 +74,6 @@ Upload a CSV or Excel file and get:
 | Completeness | Per-column and dataset-wide |
 
 ### 🤖 AI Cleaning Suggestions (13 operations)
-
 Each suggestion includes a problem description, reason, impact level (High / Medium / Low), affected row count, and sample values.
 
 | Operation | Description |
@@ -99,7 +97,6 @@ Each suggestion includes a problem description, reason, impact level (High / Med
 - **Before/After** — Radar chart overlay + metric diff table (only after cleaning)
 
 ### 📤 Export Options
-
 | Format | Description |
 |--------|-------------|
 | `.csv` | Universal flat file |
@@ -113,7 +110,6 @@ Each suggestion includes a problem description, reason, impact level (High / Med
 ## 🛠 Tech Stack
 
 ### Frontend
-
 | Tool | Version | Purpose |
 |------|---------|---------|
 | React | 18 | UI framework |
@@ -127,7 +123,6 @@ Each suggestion includes a problem description, reason, impact level (High / Med
 | Axios | 1 | HTTP client |
 
 ### Backend
-
 | Tool | Version | Purpose |
 |------|---------|---------|
 | FastAPI | 0.111 | REST API framework |
@@ -138,7 +133,6 @@ Each suggestion includes a problem description, reason, impact level (High / Med
 | Uvicorn | 0.29 | ASGI server |
 
 ### Deployment
-
 | Service | Purpose |
 |---------|---------|
 | Vercel | Frontend hosting + CDN |
@@ -174,7 +168,6 @@ Route Layer               Session Store
 ```
 
 ### Data Flow
-
 ```
 Upload CSV/XLSX
       │
@@ -191,7 +184,7 @@ Suggestions → Ranked list of issues
 Clean → Apply operations → New session
       │
       ▼
-Analytics → Chart data (distributions, correlation, outliers)
+Analytics → Charts data (distributions, correlation, outliers)
       │
       ▼
 Export → CSV / XLSX / JSON / .py / .md
@@ -207,14 +200,12 @@ Export → CSV / XLSX / JSON / .py / .md
 - npm or yarn
 
 ### 1. Clone the repository
-
 ```bash
 git clone https://github.com/konainfatima28/cleanflow-ai.git
 cd cleanflow-ai
 ```
 
 ### 2. Backend setup
-
 ```bash
 cd backend
 
@@ -233,7 +224,6 @@ uvicorn main:app --reload
 ```
 
 ### 3. Frontend setup
-
 ```bash
 cd frontend
 
@@ -249,7 +239,6 @@ npm run dev
 ```
 
 ### 4. Open the app
-
 Navigate to `http://localhost:5173` and upload any CSV or XLSX file.
 
 ---
@@ -325,7 +314,6 @@ Full interactive docs available at `/docs` (Swagger) and `/redoc` when running l
 | `POST` | `/api/export/report/{session_id}` | Download Markdown report |
 
 ### Example — Upload
-
 ```bash
 curl -X POST http://localhost:8000/api/upload/ \
   -F "file=@dataset.csv"
@@ -341,7 +329,6 @@ curl -X POST http://localhost:8000/api/upload/ \
 ```
 
 ### Example — Apply cleaning
-
 ```bash
 curl -X POST http://localhost:8000/api/clean/973b47ef... \
   -H "Content-Type: application/json" \
@@ -357,6 +344,8 @@ curl -X POST http://localhost:8000/api/clean/973b47ef... \
 ---
 
 ## 📸 Screenshots
+
+> Upload your own screenshots to `/assets/` and update the paths below.
 
 | Landing Page | Dashboard — Profile |
 |---|---|
@@ -387,19 +376,24 @@ curl -X POST http://localhost:8000/api/clean/973b47ef... \
 
 ```bash
 cd frontend
+# Set production API URL
 echo "VITE_API_URL=https://your-api.onrender.com/api" > .env.production
-# Push to GitHub → connect repo on vercel.com → Root Directory: frontend
+
+# Push to GitHub, then connect repo on vercel.com
+# Set Root Directory = frontend
 ```
 
 ### Backend — Render
 
 ```bash
 # Push backend/ to GitHub
-# render.com → New Web Service → connect repo
+# On render.com: New Web Service → connect repo
 # Root Directory: backend
 # Build Command: pip install -r requirements.txt
 # Start Command: uvicorn main:app --host 0.0.0.0 --port $PORT
-# Env var: ALLOWED_ORIGINS = https://your-app.vercel.app
+
+# Add environment variable:
+# ALLOWED_ORIGINS = https://your-app.vercel.app
 ```
 
 ---
@@ -416,6 +410,7 @@ echo "VITE_API_URL=https://your-api.onrender.com/api" > .env.production
 - [ ] Support for Parquet, Feather, XML, SQL formats
 - [ ] Real-time collaboration
 - [ ] Scheduled cleaning jobs via REST API
+- [ ] GPU-accelerated processing
 - [ ] Enterprise dashboard with team workspaces
 
 ---
@@ -459,7 +454,6 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 **If this project helped you, please consider giving it a ⭐**
 
-Built with ❤️ using React · FastAPI · Pandas
+Built with ❤️ using React, FastAPI, and Pandas
 
 </div>
-```
