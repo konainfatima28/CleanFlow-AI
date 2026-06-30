@@ -88,6 +88,18 @@ const RED      = "#ef4444"
 const CARD_BG  = "#13151f"
 const BORDER   = "rgba(255,255,255,0.05)"
 
+// ─── Formatting Helpers ──────────────────────────────────────────────────────
+function formatNum(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`
+  return String(n)
+}
+
+function formatKB(kb: number): string {
+  if (kb >= 1024) return `${(kb / 1024).toFixed(1)} MB`
+  return `${kb.toFixed(1)} KB`
+}
+
 function corrColor(v: number): string {
   if (v >= 0.7)  return "#22c55e"
   if (v >= 0.3)  return "#86efac"
