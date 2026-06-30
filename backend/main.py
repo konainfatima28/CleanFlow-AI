@@ -26,13 +26,14 @@ raw_origins = os.getenv(
 # Strip out trailing slashes or accidental white spaces from the domains list
 ALLOWED_ORIGINS = [origin.strip().rstrip("/") for origin in raw_origins.split(",")]
 
-# 2. Inject CORS policy configurations
+# 2. Inject Robust CORS policy configurations for File Streams
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
-    allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_credentials=True,  # Set to True to prevent preflight dropouts on cross-origin requests
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Explicitly state allowed methods
+    allow_headers=["*"],  # Accept all inbound headers safely
+    expose_headers=["Content-Disposition"],  # CRITICAL: Allows Vercel frontend to read file attachments
 )
 
 # 3. Application Routers
