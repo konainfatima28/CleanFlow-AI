@@ -1,9 +1,9 @@
 // ────────────────────────────────────────────────────────────────────────────
-// src/pages/Dashboard.tsx — FULL SAFE PRODUCTION VERSION WITH VOLUNTARY TIP SUPPORT
+// src/pages/Dashboard.tsx — FULL SAFE PRODUCTION VERSION WITH VALIDATION GUARDS
 // ────────────────────────────────────────────────────────────────────────────
 
 import { useState } from "react"
-import { Menu, X, Coffee, Heart } from "lucide-react"
+import { Menu, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import FileUploader   from "../components/FileUploader"
 import ProfilePanel   from "../components/ProfilePanel"
@@ -36,9 +36,6 @@ const NAV_ITEMS: {
   { key: "export",    label: "Export",    icon: "↓", alwaysOn: false, needsCleaned: true },
 ]
 
-// Add your global hosted support shortcut link footprint
-const DONATION_URL = "https://www.buymeacoffee.com/yourusername"
-
 export default function Dashboard() {
   const [view, setView]               = useState<View>("upload")
   const [sessionId, setSessionId]     = useState<string | null>(null)
@@ -66,6 +63,7 @@ export default function Dashboard() {
       setProfile(prof)
       setView("profile")
     } catch (e: any) {
+      // ─── SAFELY PARSE STRINGS OR OBJECT ARRAYS TO PREVENT BLANK SCREEN CRASHES ───
       const rawDetail = e?.response?.data?.detail
       
       if (!rawDetail) {
@@ -73,6 +71,7 @@ export default function Dashboard() {
       } else if (typeof rawDetail === "string") {
         setUploadError(rawDetail)
       } else if (Array.isArray(rawDetail) && rawDetail[0]?.msg) {
+        // Extracts the clean validation text from FastAPI's 422 object layout securely
         setUploadError(`Validation Error: ${rawDetail[0].msg} (${rawDetail[0].loc.join(" -> ")})`)
       } else if (typeof rawDetail === "object") {
         setUploadError(JSON.stringify(rawDetail))
@@ -124,7 +123,7 @@ export default function Dashboard() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-[#111318] border-b border-white/5 overflow-hidden sticky top-[49px] z-40 flex flex-col justify-between"
+            className="lg:hidden bg-[#111318] border-b border-white/5 overflow-hidden sticky top-[49px] z-40"
           >
             <div className="px-2 py-3 space-y-1">
               {NAV_ITEMS.map((item) => {
@@ -159,19 +158,6 @@ export default function Dashboard() {
                   </button>
                 )
               })}
-            </div>
-
-            {/* Mobile Dropdown Bottom Persistent Tip Hook */}
-            <div className="p-3 border-t border-white/5 bg-[#0e1014]">
-              <a
-                href={DONATION_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-semibold text-gray-400 hover:text-teal-400 bg-white/[0.01] hover:bg-teal-500/5 border border-white/5 hover:border-teal-500/20 transition-all"
-              >
-                <Coffee size={14} className="text-gray-400 group-hover:text-teal-400" />
-                <span>Buy me a coffee</span>
-              </a>
             </div>
           </motion.div>
         )}
@@ -252,7 +238,7 @@ export default function Dashboard() {
 
         {/* Session badge */}
         {sessionId && (
-          <div className="px-1 space-y-1">
+          <div className="mt-auto px-1 space-y-1">
             <p className="text-[9px] uppercase tracking-widest text-gray-700 font-semibold">
               Session
             </p>
@@ -264,20 +250,6 @@ export default function Dashboard() {
             </p>
           </div>
         )}
-
-        {/* ── Desktop Sidebar Bottom Persistent Tip Button ── */}
-        <div className="mt-auto pt-4 border-t border-white/5">
-          <a
-            href={DONATION_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] font-medium text-gray-500 hover:text-teal-400 hover:bg-white/[0.02] border border-transparent hover:border-teal-500/10 transition-all duration-200 group"
-          >
-            <Coffee size={14} className="text-gray-600 group-hover:text-teal-400 transition-colors" />
-            <span>Buy me a coffee</span>
-            <Heart size={10} className="ml-auto text-transparent group-hover:text-rose-500 group-hover:fill-rose-500 transition-all shrink-0" />
-          </a>
-        </div>
       </aside>
 
       {/* ── Main Content Area ───────────────────────────────────────────────── */}
@@ -333,6 +305,7 @@ export default function Dashboard() {
                 </motion.div>
               )}
 
+              {/* ─── TYPE-SAFE DEFENSIVE CONTAINER MAPPING GUARD ─── */}
               {view === "profile" && profile && typeof profile === "object" && sessionId && (
                 <motion.div key="profile"
                   initial={{ opacity: 0, y: 8 }}
