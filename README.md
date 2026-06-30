@@ -64,6 +64,7 @@ Upload a CSV or Excel file and get:
 - Privacy-first: data processed in memory, never stored
 
 ### 📊 Automatic Data Profiling
+
 | Metric | Description |
 |--------|-------------|
 | Quality Score | 0–100 composite score across 3 dimensions |
@@ -74,6 +75,7 @@ Upload a CSV or Excel file and get:
 | Completeness | Per-column and dataset-wide |
 
 ### 🤖 AI Cleaning Suggestions (13 operations)
+
 Each suggestion includes a problem description, reason, impact level (High / Medium / Low), affected row count, and sample values.
 
 | Operation | Description |
@@ -97,6 +99,7 @@ Each suggestion includes a problem description, reason, impact level (High / Med
 - **Before/After** — Radar chart overlay + metric diff table (only after cleaning)
 
 ### 📤 Export Options
+
 | Format | Description |
 |--------|-------------|
 | `.csv` | Universal flat file |
@@ -110,6 +113,7 @@ Each suggestion includes a problem description, reason, impact level (High / Med
 ## 🛠 Tech Stack
 
 ### Frontend
+
 | Tool | Version | Purpose |
 |------|---------|---------|
 | React | 18 | UI framework |
@@ -123,6 +127,7 @@ Each suggestion includes a problem description, reason, impact level (High / Med
 | Axios | 1 | HTTP client |
 
 ### Backend
+
 | Tool | Version | Purpose |
 |------|---------|---------|
 | FastAPI | 0.111 | REST API framework |
@@ -133,6 +138,7 @@ Each suggestion includes a problem description, reason, impact level (High / Med
 | Uvicorn | 0.29 | ASGI server |
 
 ### Deployment
+
 | Service | Purpose |
 |---------|---------|
 | Vercel | Frontend hosting + CDN |
@@ -141,319 +147,3 @@ Each suggestion includes a problem description, reason, impact level (High / Med
 ---
 
 ## 🏗 Architecture
-
-```
-Browser (React + TypeScript)
-         │
-         │  HTTP / REST
-         ▼
-FastAPI Application (Uvicorn)
-         │
-    ┌────┴─────────────────────┐
-    │                          │
-    ▼                          ▼
-Route Layer               Session Store
-  /upload                 (in-memory)
-  /profile                     │
-  /suggestions            DataFrame
-  /clean                  per session
-  /analytics                   │
-  /export                      ▼
-    │                   Service Layer
-    └──────────────────►  profiler.py
-                          suggestions.py
-                          cleaner.py
-                          analytics.py
-                          exporter.py
-```
-
-### Data Flow
-```
-Upload CSV/XLSX
-      │
-      ▼
-Parse → Store in session (UUID)
-      │
-      ▼
-Profile → Quality score + column stats
-      │
-      ▼
-Suggestions → Ranked list of issues
-      │
-      ▼
-Clean → Apply operations → New session
-      │
-      ▼
-Analytics → Charts data (distributions, correlation, outliers)
-      │
-      ▼
-Export → CSV / XLSX / JSON / .py / .md
-```
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js 18+
-- Python 3.11+
-- npm or yarn
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/konainfatima28/cleanflow-ai.git
-cd cleanflow-ai
-```
-
-### 2. Backend setup
-```bash
-cd backend
-
-# Create virtual environment
-python -m venv venv
-venv\Scripts\activate        # Windows
-# source venv/bin/activate   # macOS/Linux
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Start the API server
-uvicorn main:app --reload
-# API running at http://localhost:8000
-# Swagger docs at http://localhost:8000/docs
-```
-
-### 3. Frontend setup
-```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Create environment file
-echo "VITE_API_URL=http://localhost:8000/api" > .env.development
-
-# Start dev server
-npm run dev
-# App running at http://localhost:5173
-```
-
-### 4. Open the app
-Navigate to `http://localhost:5173` and upload any CSV or XLSX file.
-
----
-
-## 📁 Project Structure
-
-```
-cleanflow-ai/
-│
-├── backend/
-│   ├── main.py                        # FastAPI app + CORS + route registration
-│   ├── requirements.txt
-│   ├── render.yaml                    # Render deployment config
-│   └── app/
-│       ├── api/
-│       │   └── routes/
-│       │       ├── upload.py          # POST /api/upload/
-│       │       ├── profile.py         # GET  /api/profile/{session_id}
-│       │       ├── suggestions.py     # GET  /api/suggestions/{session_id}
-│       │       ├── clean.py           # POST /api/clean/{session_id}
-│       │       ├── analytics.py       # GET  /api/analytics/{session_id}
-│       │       └── export.py          # GET  /api/export/{session_id}
-│       ├── core/
-│       │   └── session.py             # In-memory session store
-│       └── services/
-│           ├── profiler.py            # Data quality scoring + column stats
-│           ├── suggestions.py         # 13 issue detectors
-│           ├── cleaner.py             # Operation executor + audit log
-│           ├── analytics.py           # Chart data generators
-│           └── exporter.py            # CSV/XLSX/JSON/Pandas/.md exporters
-│
-└── frontend/
-    ├── index.html
-    ├── vite.config.ts
-    ├── tailwind.config.js
-    ├── vercel.json                    # SPA rewrite rule
-    └── src/
-        ├── App.tsx                    # Router
-        ├── main.tsx
-        ├── index.css
-        ├── pages/
-        │   ├── Landing.tsx            # Marketing page with live demo grid
-        │   └── Dashboard.tsx          # Main app shell + sidebar nav
-        ├── components/
-        │   ├── FileUploader.tsx       # Drag & drop with 4 animated states
-        │   ├── ProfilePanel.tsx       # Quality ring + KPI cards + column table
-        │   ├── CleaningPanel.tsx      # Suggestion cards + bulk apply + log
-        │   ├── AnalyticsPanel.tsx     # 5-tab visual analytics dashboard
-        │   └── ExportPanel.tsx        # 5-format download panel
-        └── services/
-            └── api.ts                 # Axios API client
-```
-
----
-
-## 📖 API Documentation
-
-Full interactive docs available at `/docs` (Swagger) and `/redoc` when running locally.
-
-### Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/health` | Health check |
-| `POST` | `/api/upload/` | Upload CSV or XLSX file |
-| `GET` | `/api/profile/{session_id}` | Get data quality profile |
-| `GET` | `/api/suggestions/{session_id}` | Get ranked cleaning suggestions |
-| `POST` | `/api/clean/{session_id}` | Apply cleaning operations |
-| `GET` | `/api/analytics/{session_id}` | Get chart data |
-| `GET` | `/api/analytics/compare/{orig}/{cleaned}` | Before/after comparison |
-| `GET` | `/api/export/{session_id}?format=csv` | Download cleaned file |
-| `POST` | `/api/export/script/{session_id}` | Download Pandas script |
-| `POST` | `/api/export/report/{session_id}` | Download Markdown report |
-
-### Example — Upload
-```bash
-curl -X POST http://localhost:8000/api/upload/ \
-  -F "file=@dataset.csv"
-```
-
-```json
-{
-  "session_id": "973b47ef-cae7-4f39-8d46-d5d1035526d6",
-  "filename": "dataset.csv",
-  "rows": 8807,
-  "columns": 12
-}
-```
-
-### Example — Apply cleaning
-```bash
-curl -X POST http://localhost:8000/api/clean/973b47ef... \
-  -H "Content-Type: application/json" \
-  -d '{
-    "operations": [
-      {"type": "remove_duplicates"},
-      {"type": "trim_whitespace"},
-      {"type": "fill_missing", "column": "country", "strategy": "mode"}
-    ]
-  }'
-```
-
----
-
-## 📸 Screenshots
-
-> Upload your own screenshots to `/assets/` and update the paths below.
-
-| Landing Page | Dashboard — Profile |
-|---|---|
-| ![Landing](assets/landing.png) | ![Profile](assets/profile.png) |
-
-| Cleaning Suggestions | Visual Analytics |
-|---|---|
-| ![Cleaning](assets/cleaning.png) | ![Analytics](assets/analytics.png) |
-
----
-
-## ⚡ Performance
-
-| Metric | Value |
-|--------|-------|
-| Max file size | 50 MB |
-| Max rows tested | 100,000+ |
-| Upload + parse time | < 2s for typical datasets |
-| Profile generation | < 500ms |
-| Suggestion generation | < 300ms |
-| Export (CSV) | < 1s |
-
----
-
-## 🌐 Deployment
-
-### Frontend — Vercel
-
-```bash
-cd frontend
-# Set production API URL
-echo "VITE_API_URL=https://your-api.onrender.com/api" > .env.production
-
-# Push to GitHub, then connect repo on vercel.com
-# Set Root Directory = frontend
-```
-
-### Backend — Render
-
-```bash
-# Push backend/ to GitHub
-# On render.com: New Web Service → connect repo
-# Root Directory: backend
-# Build Command: pip install -r requirements.txt
-# Start Command: uvicorn main:app --host 0.0.0.0 --port $PORT
-
-# Add environment variable:
-# ALLOWED_ORIGINS = https://your-app.vercel.app
-```
-
----
-
-## 🔭 Future Scope
-
-- [ ] Natural language cleaning commands ("Remove rows where Age < 18")
-- [ ] AI-powered anomaly detection using Isolation Forest
-- [ ] Automatic feature engineering suggestions
-- [ ] Dataset versioning and history
-- [ ] User authentication and saved sessions
-- [ ] Cloud storage integration (S3, Google Drive)
-- [ ] Background processing for 1M+ row datasets
-- [ ] Support for Parquet, Feather, XML, SQL formats
-- [ ] Real-time collaboration
-- [ ] Scheduled cleaning jobs via REST API
-- [ ] GPU-accelerated processing
-- [ ] Enterprise dashboard with team workspaces
-
----
-
-## 🎯 Skills Demonstrated
-
-```
-Full-Stack Development     ████████████████████  React + FastAPI
-Data Engineering           ████████████████████  Pandas + NumPy
-REST API Design            ████████████████████  FastAPI + Pydantic
-TypeScript                 ████████████████████  Strict typing
-Data Visualisation         ██████████████████░░  Recharts
-UI/UX Engineering          ████████████████████  Tailwind + Framer Motion
-Python                     ████████████████████  Services + algorithms
-Deployment                 █████████████████░░░  Vercel + Render
-Performance Optimisation   ████████████████░░░░  Memory + lazy loading
-Software Architecture      ████████████████████  Clean separation of concerns
-```
-
----
-
-## 👩‍💻 Author
-
-**Konain Fatima**
-B.Tech CSE (AI/ML) — Jagannath University, Delhi (2022–2026)
-
-[![GitHub](https://img.shields.io/badge/GitHub-konainfatima28-181717?style=flat-square&logo=github)](https://github.com/konainfatima28)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat-square&logo=linkedin)](https://linkedin.com/in/konainfatima)
-
-> Specialising in Agentic AI, RAG systems, LangGraph, and production ML pipelines.
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
-
----
-
-<div align="center">
-
-**If this project helped you, please consider giving it a ⭐**
-
-Built with ❤️ using React, FastAPI, and Pandas
-
-</div>
