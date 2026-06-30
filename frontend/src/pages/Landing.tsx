@@ -1,6 +1,6 @@
 // ────────────────────────────────────────────────────────────────────────────
 // src/pages/Landing.tsx
-// CleanFlow AI landing page — FULL PRODUCTION ADSENSE COMPLIANT VERSION WITH TRUST ROUTING
+// CleanFlow AI landing page — HUMANIZED & SEO OPTIMIZED PRODUCTION VERSION
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react"
@@ -245,7 +245,7 @@ const Icon = {
   ),
   Chart: () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" h="14"/><line x1="2" y1="20" x2="22" y2="20"/>
     </svg>
   ),
   Check: () => (
@@ -344,23 +344,22 @@ export default function Landing() {
   const navigate = useNavigate()
 
   const features = [
-    { icon: <Icon.Upload />, title: "Drop any file", desc: "CSV or XLSX, up to 50 MB. Drag and drop or browse — CleanFlow reads your data instantly." },
-    { icon: <Icon.Zap />, title: "Instant profiling", desc: "Quality score, missing value map, type detection, outlier flags — all computed in seconds." },
-    { icon: <Icon.Chart />, title: "One-click fixes", desc: "Each issue comes with a ranked suggestion and a single button to apply it. No code needed." },
-    { icon: <Icon.Shield />, title: "Privacy first", desc: "Your data never touches a database. Files are processed in memory and discarded immediately." },
-    { icon: <Icon.Download />, title: "Export anywhere", desc: "Download cleaned data as CSV, XLSX, or JSON. Get a Pandas script that reproduces every fix." },
-    { icon: <Icon.Chart />, title: "Visual analytics", desc: "Distributions, correlation heatmaps, before/after comparisons — see exactly what changed." },
+    { icon: <Icon.Upload />, title: "Drop any file", desc: "Upload CSV or XLSX sheets up to 50 MB. Drag and drop or browse to let CleanFlow map your cells instantly." },
+    { icon: <Icon.Zap />, title: "Instant profiling", desc: "Get an interactive data quality score dashboard tracking missing records, duplicate items, and outliers." },
+    { icon: <Icon.Chart />, title: "One-click fixes", desc: "Review structural anomalies with ranked cleaning recommendations. Optimize files with a single click." },
+    { icon: <Icon.Shield />, title: "Privacy first", desc: "Your datasets stay local. Everything is evaluated temporary inside in-memory pipelines and drops on exit." },
+    { icon: <Icon.Download />, title: "Export anywhere", desc: "Download normalized data seamlessly as CSV, Excel, or JSON arrays alongside reproducible Python script logs." },
+    { icon: <Icon.Chart />, title: "Visual analytics", desc: "Explore distribution shifts, value maps, matrix comparisons, and clean dataset profiles visually." },
   ]
 
   const faqs = [
-    { q: "What file formats does CleanFlow AI support?", a: "CSV and XLSX files up to 50 MB. Support for JSON and Parquet is on the roadmap." },
-    { q: "Is my data stored anywhere?", a: "No. Your dataset is processed entirely in memory. Nothing is written to disk or sent to a third-party service. Once your session ends, the data is gone." },
-    { q: "How does the quality score work?", a: "The score (0–100) weighs three factors: missing data (40 pts), duplicate rows (30 pts), and type consistency (30 pts). Each applied fix recalculates and improves the score." },
-    { q: "Can I undo a cleaning operation?", a: "Every operation is logged. The cleaning history panel lets you review each step, and you can re-run only the operations you want on the original file." },
-    { q: "Do I need to know Python or pandas?", a: "No — the interface is fully point-and-click. But if you want to reproduce the cleaning in code, CleanFlow exports a ready-to-run Pandas script for every session." },
+    { q: "What file formats does CleanFlow AI support?", a: "CleanFlow fully handles CSV data files and Excel (XLSX) spreadsheets up to 50 MB. Support for structural JSON and Parquet datasets is arriving soon." },
+    { q: "Is my data stored anywhere?", a: "Never. CleanFlow runs as a secure, local-first in-memory utility. Your spreadsheets never touch a hard disk or permanent database and disappear completely the moment you close the tab." },
+    { q: "How does the quality score calculation work?", a: "The composite score balances structural completeness (40 points), column type consistency (30 points), and duplicate row extraction filters (30 points) to chart raw data health." },
+    { q: "Can I track my historical cleaning steps?", a: "Yes. Every transformation rule you apply is tracked inside an interactive operation audit log panel, allowing you to review steps or build an equivalent script." },
+    { q: "Do I need to know Python or Pandas data analysis?", a: "Not at all. The interface is built for anyone to use visually with simple point-and-click operations. If you are a developer, you can export a ready-to-run Pandas script anytime." },
   ]
 
-  // Handler function to transition back into the main dashboard state shell for trust layout links
   const navigateToDashboardView = (legalView: string) => {
     navigate(`/dashboard`, { state: { targetLegalView: legalView } })
   }
@@ -391,7 +390,6 @@ export default function Landing() {
 
       {/* ── Hero ── */}
       <section className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-12 sm:pt-20 pb-16 lg:pb-24 grid lg:grid-cols-2 gap-10 lg:grid-flow-row items-center">
-        {/* Ambient glow */}
         <div className="absolute top-0 left-1/4 w-72 sm:w-96 h-72 sm:h-96 rounded-full bg-indigo-600/8 blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 right-1/4 w-48 sm:w-64 h-48 sm:h-64 rounded-full bg-violet-600/6 blur-3xl pointer-events-none" />
 
@@ -408,11 +406,11 @@ export default function Landing() {
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-[1.1] tracking-tight">
-            Datasets: {" "}<span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Upload. Clean. Analyze.</span>
+            Datasets Made Simple: {" "}<span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Upload. Clean. Analyze.</span>
           </h1>
 
           <p className="text-[14px] sm:text-[16px] text-[#94a3b8] leading-relaxed max-w-md mx-auto lg:mx-0">
-            Upload your CSV or Excel file. CleanFlow AI detects missing values, duplicates, outliers, and formatting issues, then cleans your dataset in one click—no coding required.
+            Fix your broken spreadsheets without wrestling with code layouts. CleanFlow AI identifies empty blocks, duplicate lines, anomalous format boundaries, and outliers instantly.
           </p>
 
           {/* CTA row */}
@@ -464,9 +462,9 @@ export default function Landing() {
       <section id="features" className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24 space-y-10 sm:space-y-12">
         <div className="text-center space-y-3">
           <p className="text-[11px] uppercase tracking-widest text-indigo-400 font-semibold">What CleanFlow does</p>
-          <h2 className="text-2xl sm:text-3xl font-bold text-white">Every data quality problem, solved</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white">Fix structural dataset errors effortlessly</h2>
           <p className="text-[14px] sm:text-[15px] text-[#64748b] max-w-xl mx-auto">
-            From duplicate rows to invalid emails — CleanFlow detects issues automatically and explains exactly how to fix them.
+            From mixed columns and duplicate entries to missing emails—CleanFlow highlights errors automatically and guides you through optimization routines smoothly.
           </p>
         </div>
 
@@ -487,9 +485,9 @@ export default function Landing() {
 
           <div className="grid sm:grid-cols-3 gap-4 sm:gap-6">
             {[
-              { step: "1", title: "Upload", desc: "Drag in your CSV or XLSX. CleanFlow reads it instantly — no waiting." },
-              { step: "2", title: "Review", desc: "See your quality score, missing values, duplicates, and type issues in one view." },
-              { step: "3", title: "Export", desc: "Apply fixes one by one or all at once. Download your clean file in any format." },
+              { step: "1", title: "Upload Sheet", desc: "Drop your CSV or Excel file right in. CleanFlow processes the fields instantly with zero lag." },
+              { step: "2", title: "Review Suggestions", desc: "Check your quality map score, duplicate rows, missing entries, and outlier balances instantly." },
+              { step: "3", title: "Export Clean Data", desc: "Apply individual recommendations or fix everything at once. Export clean results back out." },
             ].map(({ step, title, desc }, i) => {
               const { ref, inView } = useReveal()
               return (
@@ -512,23 +510,23 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ─── RICH CONTENT ADSENSE VALUE BLOCK (Prevents Low Value Content Drops) ─── */}
+      {/* ─── RICH CONTENT ADSENSE VALUE BLOCK (Provides Humanized, Keyword-Rich Explanations) ─── */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 py-16 grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-[#1e2130]/60">
         <div className="space-y-4">
           <h3 className="text-xs font-bold tracking-widest uppercase text-indigo-400">
-            Algorithmic Profile Analysis & Outliers
+            How CleanFlow Handles Outliers & Metrics
           </h3>
           <p className="text-[13px] text-[#64748b] leading-relaxed">
-            CleanFlow AI targets technical optimization anomalies by examining structures across three primary dimensions: completeness markers, type coercion properties, and duplicate footprints. Outlier identification uses the standard Interquartile Range methodology ($IQR = Q_3 - Q_1$). Rows displaying numeric points outside the boundaries of $[Q_1 - 1.5 \times IQR, Q_3 + 1.5 \times IQR]$ are automatically flagged, helping researchers prevent downstream model distortions in training sets without manual filtering loops.
+            CleanFlow evaluates data quality across three specific areas: completeness mapping, type validation, and row duplication. For continuous numeric parameters, it utilizes an intuitive Interquartile Range evaluation ($IQR = Q_3 - Q_1$) to automatically detect outliers. Any point falling outside the standard boundaries of $[Q_1 - 1.5 \times IQR, Q_3 + 1.5 \times IQR]$ gets flagged instantly, giving you a clear window into dataset anomalies before they cause issues down the road.
           </p>
         </div>
 
         <div className="space-y-4">
           <h3 className="text-xs font-bold tracking-widest uppercase text-teal-400">
-            Confidential In-Memory Data Pipeline Optimization
+            A Safe, In-Memory Solution Built For Users
           </h3>
           <p className="text-[13px] text-[#64748b] leading-relaxed">
-            Unlike online transformation services that log user matrices onto long-term databases, CleanFlow AI operates via a strict stateless execution paradigm. Uploaded files undergo structured text streams directly in memory and clear systematically immediately upon route termination. This architecture guarantees full enterprise confidentiality parameters, ensuring that sensitive text arrays, columns containing structural null values, and custom arrays are parsed efficiently without regulatory compromise.
+            Most online spreadsheet converters require you to risk your privacy by saving documents onto persistent databases. CleanFlow was designed to fix that problem using a fully secure standalone, stateless execution model. All tabular matrices and rows process temporarily within browser session memory contexts. Your proprietary cells, missing entry text profiles, and numeric distributions clear instantly upon tab exit, providing top-tier data security.
           </p>
         </div>
       </section>
@@ -579,7 +577,7 @@ export default function Landing() {
             <span className="text-[13px] text-[#475569]">CleanFlow AI</span>
           </div>
           <p className="text-[11px] sm:text-[12px] text-[#334155] max-w-xs sm:max-w-none">
-            Built with React · FastAPI · Pandas · Engineered as a CSE Capstone Project
+            Built with React · FastAPI · Pandas · Free, secure data cleaning for everyone
           </p>
           <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[11px] sm:text-[12px] text-[#475569] font-medium">
             <button onClick={() => navigateToDashboardView("about")} className="hover:text-indigo-400 transition-colors focus:outline-none">About Us</button>
