@@ -1,5 +1,5 @@
 // ────────────────────────────────────────────────────────────────────────────
-// src/pages/Dashboard.tsx — RESPONSIVE VERSION WITH LOGO
+// src/pages/Dashboard.tsx — RESPONSIVE VERSION WITH NULL-SAFE PROFILE GUARDS
 // ────────────────────────────────────────────────────────────────────────────
 
 import { useState } from "react"
@@ -79,7 +79,6 @@ export default function Dashboard() {
     setOperations(appliedOps)
     setLog(appliedLog)
     setCelebrate(true)
-    // ─── FIXED: Removed automatic setView("analytics") redirection ───
   }
 
   const hasSession  = !!sessionId
@@ -232,7 +231,7 @@ export default function Dashboard() {
             <p className="text-[10px] font-mono text-gray-600 break-all leading-relaxed">
               {sessionId.slice(0, 18)}…
             </p>
-            <p className="text-[10px] font-mono text-gray-700 break-all truncate" title={filename}>
+            <p className="text-[10px] font-mono text-gray-400 break-all truncate" title={filename}>
               {filename}
             </p>
           </div>
@@ -292,7 +291,8 @@ export default function Dashboard() {
                 </motion.div>
               )}
 
-              {view === "profile" && profile && sessionId && (
+              {/* ─── ENHANCED NULL-SAFE DEFENSIVE CONTAINER GUARDS ─── */}
+              {view === "profile" && profile && typeof profile === "object" && sessionId && (
                 <motion.div key="profile"
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
