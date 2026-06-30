@@ -1,4 +1,13 @@
 import os
+import sys
+
+# ─── FORCE MODULE ROOT RESOLUTION ─────────────────────────────────────────────
+# Fixes ModuleNotFoundError on Render by inserting the absolute path
+# of the current directory to sys.path before internal app components load.
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+if CURRENT_DIR not in sys.path:
+    sys.path.insert(0, CURRENT_DIR)
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import (
