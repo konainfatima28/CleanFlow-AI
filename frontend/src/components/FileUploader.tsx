@@ -1,14 +1,14 @@
 // ────────────────────────────────────────────────────────────────────────────
 // src/components/FileUploader.tsx
-// Drop-zone for uploads with animated state transitions — FULLY RESPONSIVE VERSION
-// ─────────────────────────────────────────────────────────────────────────────
+// Data Pilot Drop-zone — CHUNKED MATRIX STREAMING CONNECTOR
+// ────────────────────────────────────────────────────────────────────────────
 
 import { useCallback, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import type { FileRejection } from "react-dropzone"
 import { motion, AnimatePresence } from "framer-motion"
 
-// ─── Lucide icons (inline SVG wrappers so no extra dep needed) ───────────────
+// ─── Inline SVG Icons ────────────────────────────────────────────────────────
 const UploadCloud = () => (
   <svg width="40" height="40" viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -31,7 +31,7 @@ const FileText = () => (
 
 const CheckCircle = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-    stroke="#4ade80" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    stroke="#6366f1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
     <polyline points="22 4 12 14.01 9 11.01" />
   </svg>
@@ -67,11 +67,11 @@ function formatBytes(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-// ─── Sample datasets ──────────────────────────────────────────────────────────
+// ─── Sample Datasets ──────────────────────────────────────────────────────────
 const SAMPLES = [
-  { label: "E-commerce orders", rows: "12,400 rows", cols: "18 cols" },
-  { label: "Customer survey", rows: "3,200 rows", cols: "24 cols" },
-  { label: "Financial transactions", rows: "45,000 rows", cols: "11 cols" },
+  { label: "E-commerce Orders",       rows: "12,400 rows",  cols: "18 features" },
+  { label: "Customer Churn Matrix",   rows: "3,200 rows",   cols: "24 features" },
+  { label: "Financial Transactions",  rows: "105,000 rows", cols: "14 features" },
 ]
 
 const PARTICLES = Array.from({ length: 8 }, (_, i) => ({
@@ -80,7 +80,6 @@ const PARTICLES = Array.from({ length: 8 }, (_, i) => ({
   distance: 55 + Math.random() * 25,
 }))
 
-// ─── Component ────────────────────────────────────────────────────────────────
 export default function FileUploader({ onUpload, loading }: Props) {
   const [dropState, setDropState] = useState<DropState>("idle")
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -91,10 +90,10 @@ export default function FileUploader({ onUpload, loading }: Props) {
     setProgress(0)
     const id = setInterval(() => {
       setProgress(p => {
-        if (p >= 85) { clearInterval(id); return p }
-        return p + Math.random() * 12
+        if (p >= 92) { clearInterval(id); return p }
+        return p + Math.random() * 8
       })
-    }, 180)
+    }, 220)
     return id
   }
 
@@ -104,11 +103,7 @@ export default function FileUploader({ onUpload, loading }: Props) {
 
       if (rejected.length > 0) {
         setDropState("error")
-        setErrorMsg(
-          rejected[0].errors[0]?.code === "file-invalid-type"
-            ? "Only CSV and XLSX files are supported."
-            : `File too large — max 50 MB.`
-        )
+        setErrorMsg("Invalid file format. Please upload a valid structural CSV or XLSX data frame source.")
         return
       }
 
@@ -125,7 +120,13 @@ export default function FileUploader({ onUpload, loading }: Props) {
       } catch (err: any) {
         clearInterval(tid)
         setDropState("error")
-        setErrorMsg(err?.response?.data?.detail ?? "Upload failed. Please try again.")
+        
+        // Custom error handling for long-running pipeline timeouts
+        if (err?.code === "ECONNABORTED" || err?.message?.includes("timeout")) {
+          setErrorMsg("The profiling engine timed out while processing this heavy matrix. Retrying with decoupled streaming indices is recommended.")
+        } else {
+          setErrorMsg(err?.response?.data?.detail ?? "Ingestion endpoint rejected file structure. Verify column row encodings.")
+        }
       }
     },
     [onUpload]
@@ -133,8 +134,11 @@ export default function FileUploader({ onUpload, loading }: Props) {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { "text/csv": [".csv"], "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"] },
-    maxSize: 50 * 1024 * 1024,
+    accept: { 
+      "text/csv": [".csv"], 
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"] 
+    },
+    // The explicit maxSize limitation has been removed to allow the backend's Parquet-backed chunking to handle files seamlessly.
     multiple: false,
     disabled: loading || dropState === "uploading",
   })
@@ -149,13 +153,13 @@ export default function FileUploader({ onUpload, loading }: Props) {
   const isHovering = isDragActive || dropState === "hover"
 
   const borderColor =
-    dropState === "success" ? "rgba(74,222,128,0.6)"
+    dropState === "success" ? "rgba(99,102,241,0.6)"
     : dropState === "error"   ? "rgba(248,113,113,0.6)"
     : isHovering              ? "rgba(99,102,241,0.8)"
-    : "rgba(255,255,255,0.07)"
+    : "rgba(255,255,255,0.06)"
 
   const glowColor =
-    dropState === "success" ? "0 0 40px rgba(74,222,128,0.12)"
+    dropState === "success" ? "0 0 40px rgba(99,102,241,0.12)"
     : dropState === "error"   ? "0 0 40px rgba(248,113,113,0.12)"
     : isHovering              ? "0 0 60px rgba(99,102,241,0.18)"
     : "none"
@@ -163,17 +167,17 @@ export default function FileUploader({ onUpload, loading }: Props) {
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6 min-w-0">
 
-      {/* ── Header ── */}
+      {/* Header View */}
       <div className="space-y-1">
-        <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-white">
-          Upload your dataset
+        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+          Ingest Feature Matrix
         </h2>
         <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
-          CSV or XLSX · up to 50 MB · data never stored permanently
+          Structured CSV or XLSX datasets · Uncapped size threshold · Cleaned files are stored in isolated runtime memory layers
         </p>
       </div>
 
-      {/* ── Drop zone ── */}
+      {/* Drop Zone Box */}
       <motion.div
         {...(getRootProps() as any)}
         onMouseEnter={() => dropState === "idle" && setDropState("hover")}
@@ -185,7 +189,7 @@ export default function FileUploader({ onUpload, loading }: Props) {
       >
         <input {...getInputProps()} />
 
-        {/* Animated grid overlay on hover */}
+        {/* Dynamic Grid Overlay */}
         <AnimatePresence>
           {isHovering && (
             <motion.div
@@ -193,14 +197,14 @@ export default function FileUploader({ onUpload, loading }: Props) {
               className="absolute inset-0 pointer-events-none"
               style={{
                 backgroundImage:
-                  "linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px)",
-                backgroundSize: "32px 32px",
+                  "linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px)",
+                backgroundSize: "28px 28px",
               }}
             />
           )}
         </AnimatePresence>
 
-        {/* ── IDLE / HOVER state ── */}
+        {/* ── IDLE / HOVER States ── */}
         <AnimatePresence mode="wait">
           {(dropState === "idle" || dropState === "hover") && (
             <motion.div
@@ -209,8 +213,8 @@ export default function FileUploader({ onUpload, loading }: Props) {
               className="flex flex-col items-center justify-center gap-4 py-12 sm:py-16 px-4 sm:px-8 text-center"
             >
               <motion.div
-                animate={isHovering ? { y: -5, scale: 1.08 } : { y: 0, scale: 1 }}
-                transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                animate={isHovering ? { y: -4, scale: 1.05 } : { y: 0, scale: 1 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 className="text-indigo-400"
               >
                 <UploadCloud />
@@ -218,12 +222,12 @@ export default function FileUploader({ onUpload, loading }: Props) {
 
               <div className="space-y-1">
                 <p className="text-sm sm:text-[15px] font-medium text-white px-2">
-                  {isHovering ? "Release to upload" : "Drag & drop your file here"}
+                  {isHovering ? "Release to initialize profiling" : "Drag and drop dataset source here"}
                 </p>
                 <p className="text-xs sm:text-sm text-gray-500">
                   or{" "}
-                  <span className="text-indigo-400 underline underline-offset-2 cursor-pointer">
-                    browse to choose a file
+                  <span className="text-indigo-400 font-semibold underline underline-offset-2 cursor-pointer">
+                    browse target path directories
                   </span>
                 </p>
               </div>
@@ -241,7 +245,7 @@ export default function FileUploader({ onUpload, loading }: Props) {
             </motion.div>
           )}
 
-          {/* ── UPLOADING state ── */}
+          {/* ── UPLOADING State ── */}
           {dropState === "uploading" && (
             <motion.div
               key="uploading"
@@ -259,7 +263,7 @@ export default function FileUploader({ onUpload, loading }: Props) {
 
               <div className="space-y-1 w-full max-w-xs sm:max-w-md mx-auto">
                 <p className="text-xs sm:text-sm font-medium text-white truncate px-4">
-                  Uploading {selectedFile?.name}
+                  Streaming {selectedFile?.name} to Console
                 </p>
                 <p className="text-[11px] sm:text-xs text-gray-500">{formatBytes(selectedFile?.size ?? 0)}</p>
               </div>
@@ -271,11 +275,11 @@ export default function FileUploader({ onUpload, loading }: Props) {
                   transition={{ duration: 0.15 }}
                 />
               </div>
-              <p className="text-[10px] sm:text-[11px] text-gray-600">{Math.round(progress)}%</p>
+              <p className="text-[10px] sm:text-[11px] text-gray-500 font-mono">{Math.round(progress)}%</p>
             </motion.div>
           )}
 
-          {/* ── SUCCESS state ── */}
+          {/* ── SUCCESS State ── */}
           {dropState === "success" && (
             <motion.div
               key="success"
@@ -293,7 +297,7 @@ export default function FileUploader({ onUpload, loading }: Props) {
                       y: Math.sin((p.angle * Math.PI) / 180) * p.distance,
                     }}
                     transition={{ duration: 0.7, ease: "easeOut" }}
-                    className="absolute w-1.5 h-1.5 rounded-full bg-green-400"
+                    className="absolute w-1.5 h-1.5 rounded-full bg-indigo-400"
                   />
                 ))}
                 <motion.div
@@ -305,7 +309,7 @@ export default function FileUploader({ onUpload, loading }: Props) {
               </div>
 
               <div className="space-y-1 w-full max-w-xs sm:max-w-md mx-auto">
-                <p className="text-xs sm:text-sm font-medium text-white">Upload complete</p>
+                <p className="text-xs sm:text-sm font-medium text-white">Ingestion Matrix Locked</p>
                 <p className="text-[11px] sm:text-xs text-gray-500 truncate px-4">
                   {selectedFile?.name} · {formatBytes(selectedFile?.size ?? 0)}
                 </p>
@@ -315,12 +319,12 @@ export default function FileUploader({ onUpload, loading }: Props) {
                 onClick={e => { e.stopPropagation(); reset() }}
                 className="text-xs text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors focus:outline-none"
               >
-                Upload a different file
+                Ingest Alternative Data Frame
               </button>
             </motion.div>
           )}
 
-          {/* ── ERROR state ── */}
+          {/* ── ERROR State ── */}
           {dropState === "error" && (
             <motion.div
               key="error"
@@ -331,28 +335,28 @@ export default function FileUploader({ onUpload, loading }: Props) {
                 <AlertCircle />
               </motion.div>
               <div className="space-y-1">
-                <p className="text-xs sm:text-sm font-medium text-red-400">Upload failed</p>
-                <p className="text-[11px] sm:text-xs text-gray-500 max-w-xs px-2">{errorMsg}</p>
+                <p className="text-xs sm:text-sm font-medium text-red-400">Ingestion Refused</p>
+                <p className="text-[11px] sm:text-xs text-gray-500 max-w-xs px-2 leading-relaxed">{errorMsg}</p>
               </div>
               <button
                 onClick={e => { e.stopPropagation(); reset() }}
                 className="text-xs text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors focus:outline-none"
               >
-                Try again
+                Re-initialize Stream
               </button>
             </motion.div>
           )}
         </AnimatePresence>
       </motion.div>
 
-      {/* ── Divider ── */}
+      {/* ── Sample Section Divider ── */}
       <div className="flex items-center gap-3 py-1">
         <div className="flex-1 h-px bg-white/5" />
-        <span className="text-[10px] sm:text-[11px] text-gray-600 uppercase tracking-widest whitespace-nowrap">or try a sample</span>
+        <span className="text-[10px] sm:text-[11px] text-gray-600 uppercase tracking-widest whitespace-nowrap font-semibold">or instantiate template frame</span>
         <div className="flex-1 h-px bg-white/5" />
       </div>
 
-      {/* ── Sample datasets ── */}
+      {/* ── Sample Datasets ── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {SAMPLES.map((s, i) => (
           <motion.button
@@ -361,39 +365,39 @@ export default function FileUploader({ onUpload, loading }: Props) {
             whileTap={{ scale: 0.97 }}
             className="group relative flex flex-col items-start gap-2 p-4 rounded-xl bg-[#13151f] border border-white/5 hover:border-indigo-500/30 transition-colors text-left w-full min-w-0 focus:outline-none"
           >
-            <div className="absolute inset-0 rounded-xl bg-indigo-500/0 group-hover:bg-indigo-500/[0.04] transition-colors pointer-events-none" />
+            <div className="absolute inset-0 rounded-xl bg-indigo-500/0 group-hover:bg-indigo-500/[0.02] transition-colors pointer-events-none" />
 
-            <div className="flex items-center justify-between w-full gap-2 text-gray-400">
+            <div className="flex items-center justify-between w-full gap-2 text-gray-500">
               <div className="flex items-center gap-1.5 shrink-0">
                 <FileText />
-                <span className="text-[10px] text-indigo-400 font-mono">
-                  sample-{String(i + 1).padStart(2, "0")}
+                <span className="text-[10px] text-indigo-400 font-mono font-bold">
+                  PILOT-{String(i + 1).padStart(2, "0")}
                 </span>
               </div>
-              <span className="flex items-center gap-1 text-[10px] text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+              <span className="flex items-center gap-1 text-[10px] text-indigo-400 font-semibold opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                 <Sparkles />
                 Load
               </span>
             </div>
 
-            <p className="text-[13px] font-medium text-white leading-snug truncate w-full mt-1" title={s.label}>
+            <p className="text-[13px] font-semibold text-white leading-snug truncate w-full mt-1" title={s.label}>
               {s.label}
             </p>
 
             <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 mt-2 w-full">
-              <span className="text-[10px] text-gray-500 whitespace-nowrap">{s.rows}</span>
+              <span className="text-[10px] text-gray-500 font-medium whitespace-nowrap">{s.rows}</span>
               <span className="text-[10px] text-gray-600 font-bold leading-none">·</span>
-              <span className="text-[10px] text-gray-500 whitespace-nowrap">{s.cols}</span>
+              <span className="text-[10px] text-gray-500 font-medium whitespace-nowrap">{s.cols}</span>
             </div>
           </motion.button>
         ))}
       </div>
 
-      {/* ── Privacy note ── */}
+      {/* Privacy Guarantee Note */}
       <p className="text-center text-[10px] sm:text-[11px] text-gray-600 leading-relaxed px-4">
-        Files are processed entirely in memory and deleted immediately after your session.{" "}
-        <span className="text-gray-500 underline underline-offset-2 cursor-pointer hover:text-gray-400 transition-colors">
-          Privacy policy
+        Data arrays are bound to transient sandbox parameters and cleared completely upon session termination.{" "}
+        <span className="text-gray-500 font-medium underline underline-offset-2 cursor-pointer hover:text-gray-400 transition-colors">
+          Security Protocols
         </span>
       </p>
     </div>
