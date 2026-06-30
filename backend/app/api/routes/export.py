@@ -40,14 +40,14 @@ def export_dataset(
         filename     = f"cleanflow_export_{session_id[:8]}.csv"
         
     elif fmt == "xlsx":
-        # ─── MEMORY OPTIMIZED WRITER ENGINE FOR MODERN PANDAS (3.0+) ───
+        # ─── STREAM-OPTIMIZED ZIP64 ARCHIVE SERIALIZATION WRITER ───
         try:
             output = io.BytesIO()
             
-            # FIXED: Nested options inside engine_kwargs to accommodate newer Pandas rules.
-            # constant_memory=True forces openpyxl to flush rows to the buffer sequentially,
-            # dropping RAM usage from 800MB+ down to near-zero for large datasets.
-            with pd.ExcelWriter(output, engine="openpyxl", engine_kwargs={'options': {'constant_memory': True}}) as writer:
+            # FIXED: Removed 'constant_memory' to prevent openpyxl 500 layout crashes.
+            # Enforcing {'zip64': True} allows the underlying archive system to write 
+            # large matrices (100k+ rows) iteratively without index overflow.
+            with pd.ExcelWriter(output, engine="openpyxl", engine_kwargs={'options': {'zip64': True}}) as writer:
                 df.to_excel(writer, index=False, sheet_name="Cleaned Data")
             
             content = output.getvalue()
