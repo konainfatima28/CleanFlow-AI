@@ -1,16 +1,16 @@
 // ────────────────────────────────────────────────────────────────────────────
-// src/pages/Dashboard.tsx — DATA PILOT RESPONSIVE PRODUCTION VERSION
+// src/pages/Dashboard.tsx — RESPONSIVE VERSION WITH LOGO
 // ────────────────────────────────────────────────────────────────────────────
 
 import { useState } from "react"
-import { Menu, X, Info } from "lucide-react"
+import { Menu, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import FileUploader   from "../components/FileUploader"
 import ProfilePanel   from "../components/ProfilePanel"
 import CleaningPanel  from "../components/CleaningPanel"
 import AnalyticsPanel from "../components/AnalyticsPanel"
 import ExportPanel    from "../components/ExportPanel"
-import datapilotLogo  from "../assets/cleanflow.png" 
+import cleanflowLogo from "../assets/cleanflow.png"
 import { uploadFile, getProfile } from "../services/api"
 
 type View = "upload" | "profile" | "cleaning" | "analytics" | "export"
@@ -29,11 +29,11 @@ const NAV_ITEMS: {
   alwaysOn: boolean
   needsCleaned?: boolean
 }[] = [
-  { key: "upload",    label: "Upload Matrix", icon: "↑", alwaysOn: true },
-  { key: "profile",   label: "Data Profile",  icon: "≡", alwaysOn: false },
-  { key: "cleaning",  label: "Pilot Clean",   icon: "✦", alwaysOn: false },
-  { key: "analytics", label: "Analytics",     icon: "◈", alwaysOn: false },
-  { key: "export",    label: "Export Core",   icon: "↓", alwaysOn: false, needsCleaned: true },
+  { key: "upload",    label: "Upload",    icon: "↑", alwaysOn: true },
+  { key: "profile",   label: "Profile",   icon: "≡", alwaysOn: false },
+  { key: "cleaning",  label: "Clean",     icon: "✦", alwaysOn: false },
+  { key: "analytics", label: "Analytics", icon: "◈", alwaysOn: false },
+  { key: "export",    label: "Export",    icon: "↓", alwaysOn: false, needsCleaned: true },
 ]
 
 export default function Dashboard() {
@@ -48,7 +48,6 @@ export default function Dashboard() {
   const [log, setLog]                 = useState<object[]>([])
   const [celebrate, setCelebrate]     = useState(false)
   const [mobileMenu, setMobileMenu]   = useState(false)
-  const [isLargeDataset, setIsLargeDataset] = useState(false)
 
   const handleUpload = async (file: File) => {
     setLoading(true)
@@ -57,13 +56,6 @@ export default function Dashboard() {
     setOperations([])
     setLog([])
     setFilename(file.name)
-    
-    if (file.size > 40 * 1024 * 1024) {
-      setIsLargeDataset(true)
-    } else {
-      setIsLargeDataset(false)
-    }
-
     try {
       const { data: up }   = await uploadFile(file)
       setSessionId(up.session_id)
@@ -71,7 +63,7 @@ export default function Dashboard() {
       setProfile(prof)
       setView("profile")
     } catch (e: any) {
-      setUploadError(e?.response?.data?.detail ?? "Upload connection failed. Check your network or size parameters.")
+      setUploadError(e?.response?.data?.detail ?? "Upload failed. Please try again.")
     } finally {
       setLoading(false)
     }
@@ -87,6 +79,14 @@ export default function Dashboard() {
     setOperations(appliedOps)
     setLog(appliedLog)
     setCelebrate(true)
+
+    setTimeout(() => {
+      setView("analytics")
+    }, 500)
+
+    setTimeout(() => {
+      setCelebrate(false)
+    }, 2500)
   }
 
   const hasSession  = !!sessionId
@@ -98,8 +98,8 @@ export default function Dashboard() {
       {/* ── Mobile Top Header ────────────────────────────────────────────────── */}
       <div className="lg:hidden sticky top-0 z-50 bg-[#111318] border-b border-white/5 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <img src={datapilotLogo} alt="Data Pilot Logo" className="w-6 h-6 object-contain shrink-0" />
-          <span className="text-white font-bold text-sm tracking-wide">Data Pilot</span>
+          <img src={cleanflowLogo} alt="CleanFlow AI Logo" className="w-6 h-6 object-contain shrink-0" />
+          <span className="text-white font-bold text-sm tracking-wide">CleanFlow AI</span>
         </div>
 
         <button 
@@ -159,16 +159,16 @@ export default function Dashboard() {
 
       {/* ── Desktop Sidebar ─────────────────────────────────────────────────── */}
       <aside className="hidden lg:flex w-64 shrink-0 bg-[#111318] border-r border-white/5 flex-col py-6 px-4 gap-6 sticky top-0 h-screen overflow-y-auto">
-        {/* Brand Logo Header */}
+        {/* Logo */}
         <div className="flex items-center gap-2 px-1">
-          <img src={datapilotLogo} alt="Data Pilot Logo" className="w-6 h-6 object-contain shrink-0" />
+          <img src={cleanflowLogo} alt="CleanFlow AI Logo" className="w-6 h-6 object-contain shrink-0" />
           <div>
-            <p className="text-[13px] text-indigo-400 font-bold tracking-tight leading-none">Data Pilot</p>
-            <p className="text-[9px] text-gray-600 tracking-widest uppercase leading-none mt-1">Enterprise ML</p>
+            <p className="text-[11px] text-indigo-400 font-semibold leading-none">CleanFlow</p>
+            <p className="text-[10px] text-gray-600 leading-none mt-0.5">AI</p>
           </div>
         </div>
 
-        {/* Sidebar Nav */}
+        {/* Nav */}
         <nav className="space-y-0.5">
           {NAV_ITEMS.map(n => {
             const disabled = (!n.alwaysOn && !hasSession) || (n.needsCleaned && !hasCleaned)
@@ -183,7 +183,7 @@ export default function Dashboard() {
                   ${active
                     ? "bg-indigo-600/20 text-indigo-300 border border-indigo-500/20"
                     : disabled
-                      ? "text-gray-700 cursor-not-allowed opacity-40"
+                      ? "text-gray-700 cursor-not-allowed"
                       : "text-gray-500 hover:text-gray-200 hover:bg-white/[0.04]"
                   }`}
               >
@@ -201,30 +201,17 @@ export default function Dashboard() {
           })}
         </nav>
 
-        {/* Dynamic Context Optimization Banner for Large Matrices */}
-        {isLargeDataset && hasSession && (
-          <div className="p-3 rounded-xl bg-amber-500/5 border border-amber-500/10 backdrop-blur-md space-y-1.5">
-            <div className="flex items-center gap-1.5 text-amber-400 text-[11px] font-semibold">
-              <Info size={12} />
-              <span>Optimized Engine Mode</span>
-            </div>
-            <p className="text-[10px] text-gray-500 leading-relaxed">
-              Large file pipeline activated. Parquet-backed disk chunking is running to bypass browser RAM bottlenecks.
-            </p>
-          </div>
-        )}
-
-        {/* Progress Steps */}
+        {/* Progress steps */}
         {hasSession && (
           <div className="space-y-2">
             <p className="text-[9px] uppercase tracking-widest text-gray-700 font-semibold px-1">
-              Pipeline State
+              Progress
             </p>
             {[
-              { label: "Matrix Ingested", done: true },
-              { label: "Data Profiling",  done: !!profile },
-              { label: "Cleansing Steps", done: hasCleaned },
-              { label: "Export Ready",    done: hasCleaned },
+              { label: "Uploaded",  done: true },
+              { label: "Profiled",  done: !!profile },
+              { label: "Cleaned",   done: hasCleaned },
+              { label: "Exported",  done: false },
             ].map(step => (
               <div key={step.label} className="flex items-center gap-2 px-1">
                 <div className={`w-3 h-3 rounded-full border flex items-center justify-center shrink-0 transition-colors
@@ -243,16 +230,16 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Session Info Badge */}
+        {/* Session badge */}
         {sessionId && (
           <div className="mt-auto px-1 space-y-1">
             <p className="text-[9px] uppercase tracking-widest text-gray-700 font-semibold">
-              Pilot Session ID
+              Session
             </p>
             <p className="text-[10px] font-mono text-gray-600 break-all leading-relaxed">
               {sessionId.slice(0, 18)}…
             </p>
-            <p className="text-[10px] font-mono text-gray-400 break-all truncate" title={filename}>
+            <p className="text-[10px] font-mono text-gray-700 break-all truncate" title={filename}>
               {filename}
             </p>
           </div>
@@ -261,38 +248,18 @@ export default function Dashboard() {
 
       {/* ── Main Content Area ───────────────────────────────────────────────── */}
       <div className="flex-1 min-w-0 flex flex-col h-auto lg:h-screen overflow-y-auto">
-        
-        {/* Success Toast Notification */}
+        {/* Success Alert Toast */}
         <AnimatePresence>
           {celebrate && (
             <motion.div
               initial={{ opacity: 0, y: -20, x: "50%" }}
               animate={{ opacity: 1, y: 0, x: "0%" }}
               exit={{ opacity: 0, y: -20 }}
-              className="fixed top-4 right-4 left-4 sm:left-auto sm:w-96 z-50 bg-[#111318] border border-green-500/30 backdrop-blur-xl rounded-xl px-6 py-4 shadow-2xl flex flex-col gap-3"
+              className="fixed top-4 right-4 left-4 sm:left-auto sm:w-96 z-50 bg-green-500/15 border border-green-500/30 backdrop-blur-xl rounded-xl px-6 py-4 shadow-2xl"
             >
-              <div className="flex items-start justify-between w-full">
-                <div>
-                  <h2 className="text-base font-bold text-green-300">🎉 Cleansing Complete</h2>
-                  <p className="text-xs text-gray-400 mt-0.5">The pipeline has run cleanly and optimized the target dimensions.</p>
-                </div>
-                <button 
-                  onClick={() => setCelebrate(false)}
-                  className="text-gray-500 hover:text-gray-300 text-xs font-mono p-1"
-                >
-                  ✕
-                </button>
-              </div>
-              
-              <button
-                onClick={() => {
-                  setView("analytics")
-                  setCelebrate(false)
-                }}
-                className="w-full text-center py-2 px-3 rounded-lg text-xs font-semibold bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/20 transition-all shadow-md"
-              >
-                View Interactive Analytics →
-              </button>
+              <h2 className="text-base font-bold text-green-300">🎉 Cleaning Complete</h2>
+              <p className="text-xs text-gray-300 mt-1">Your dataset has been cleaned successfully.</p>
+              <p className="text-[11px] text-green-400 mt-1 font-medium">Redirecting to Analytics...</p>
             </motion.div>
           )}
         </AnimatePresence>
