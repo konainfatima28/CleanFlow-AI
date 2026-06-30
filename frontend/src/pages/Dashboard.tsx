@@ -10,7 +10,7 @@ import ProfilePanel   from "../components/ProfilePanel"
 import CleaningPanel  from "../components/CleaningPanel"
 import AnalyticsPanel from "../components/AnalyticsPanel"
 import ExportPanel    from "../components/ExportPanel"
-import datapilotLogo  from "../assets/cleanflow.png" // Keep asset name or swap path smoothly
+import datapilotLogo  from "../assets/cleanflow.png" 
 import { uploadFile, getProfile } from "../services/api"
 
 type View = "upload" | "profile" | "cleaning" | "analytics" | "export"
@@ -58,7 +58,6 @@ export default function Dashboard() {
     setLog([])
     setFilename(file.name)
     
-    // Set flag for datasets larger than 40MB or roughly 100K rows
     if (file.size > 40 * 1024 * 1024) {
       setIsLargeDataset(true)
     } else {
