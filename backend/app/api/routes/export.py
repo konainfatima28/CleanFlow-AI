@@ -6,6 +6,7 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import Response
 from pydantic import BaseModel
 import pandas as pd
+import numpy as np
 
 from app.core.session import get
 from app.services.exporter import (
@@ -40,15 +41,24 @@ def export_dataset(
         filename     = f"cleanflow_export_{session_id[:8]}.csv"
         
     elif fmt == "xlsx":
-        # ─── PRODUCTION HIGH-SPEED XLSXWRITER ENGINE TUNNEL ───
+        # ─── SANITIZED PRODUCTION XLSXWRITER TUNNEL ───
         try:
             output = io.BytesIO()
             
-            # xlsxwriter elegantly supports constant_memory optimization natively.
-            # This flushes written rows to the stream sequentially, letting 119k+ row
-            # matrices transfer using virtually zero active container RAM.
+            # Create a shallow copy to safely scrub types without modifying state
+            export_df = df.copy()
+            
+            # Step 1: Clean out raw numpy infinite markers that crash XML schemas
+            export_df = export_df.replace([np.inf, -np.inf], np.nan)
+            
+            # Step 2: Clear native mixed/object field strings (e.g., country, agent, company)
+            for col in export_df.columns:
+                if export_df[col].dtype == 'object':
+                    export_df[col] = export_df[col].astype(str).replace('nan', '')
+            
+            # Step 3: Stream rows sequentially to stay under RAM allocations
             with pd.ExcelWriter(output, engine="xlsxwriter", engine_kwargs={'options': {'constant_memory': True}}) as writer:
-                df.to_excel(writer, index=False, sheet_name="Cleaned Data")
+                export_df.to_excel(writer, index=False, sheet_name="Cleaned Data")
             
             content = output.getvalue()
             media_type   = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -121,7 +131,6 @@ def export_report(cleaned_session_id: str, body: ReportRequest):
         raise HTTPException(404, "One or both sessions not found.")
 
     # ─── RUNTIME TIMEOUT GUARD FOR MASSIVE PROFILING ───
-    # Computing complete matrices on huge frames causes Render gateway timeouts.
     # Downsample to a statistically accurate pool slice (15,000 rows max) if too heavy.
     MAX_PROFILE_ROWS = 15000
     
