@@ -8,7 +8,7 @@ import axios from "axios"
 const api = axios.create({
   // Clean up trailing slash defaults to maintain predictable path generation
   baseURL: import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, "") : "http://localhost:8000/api",
-  timeout: 1000000, 
+  timeout: 100000, 
   headers: {
     "Content-Type": "application/json",
   },
@@ -36,12 +36,10 @@ api.interceptors.response.use(
 export const uploadFile = (file: File) => {
   const form = new FormData()
   form.append("file", file)
-  // FIXED: Changed from "/upload/" to "/upload" to prevent double slashes
-  return api.post("/upload", form, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  })
+  
+  // FIXED: Removed manual content-type header context completely
+  // This lets the browser dynamically generate the correct form boundary signatures
+  return api.post("/upload", form)
 }
 
 // Profile Diagnostics
