@@ -1,6 +1,4 @@
-<div align="center">
-# CleanFlow AI — AI-Powered Data Cleaning Platform
-</div>
+                                                          # CleanFlow AI — AI-Powered Data Cleaning Platform
 
 <div align="center">
 
