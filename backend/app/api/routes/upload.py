@@ -27,6 +27,7 @@ async def upload_file(file: UploadFile = File(...)):
     # to protect server infrastructure against random RAM peaks.
     try:
         with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as temp_file:
+            # Copy file stream directly to temporary storage in 1MB chunks
             shutil.copyfileobj(file.file, temp_file)
             temp_path = temp_file.name
     except Exception as e:
@@ -49,14 +50,12 @@ async def upload_file(file: UploadFile = File(...)):
             os.remove(temp_path)
 
     session_id = str(uuid.uuid4())
-    
+
     # Initialize the Snappy-compressed Parquet transaction lineage tree state on disk
     storage_manager.initialize_session(session_id, df, file.filename)
 
     # Returns unified parameter properties that your frontend hooks match cleanly
     return {
         "session_id": session_id,
-        "filename": file.filename,
-        "rows": len(df),
-        "columns": len(df.columns),
+        "filename": file.filename
     }
