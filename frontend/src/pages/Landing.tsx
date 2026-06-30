@@ -407,7 +407,7 @@ export default function Landing() {
           </h1>
 
           <p className="text-[14px] sm:text-[16px] text-[#94a3b8] leading-relaxed max-w-md mx-auto lg:mx-0">
-            Upload a CSV or Excel file. CleanFlow profiles your dataset, surfaces every quality issue, and fixes them in one click — no Python required.
+            Upload your CSV or Excel file and let CleanFlow AI analyze, clean, and optimize your dataset in one click. Detect missing values, duplicates, outliers, and formatting issues in one click—no Python or coding required.Upload a CSV or Excel file. CleanFlow profiles your dataset, surfaces every quality issue, and fixes them in one click — no Python required.
           </p>
 
           {/* CTA row */}
