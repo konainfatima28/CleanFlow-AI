@@ -125,7 +125,7 @@ export default function Dashboard() {
 
   const hasSession  = !!sessionId
   const hasCleaned  = !!cleanedId
-  const isLegalView = ["about", "terms", "contact", "privacy"].includes(view)
+  //const isLegalView = ["about", "terms", "contact", "privacy"].includes(view)
 
   return (
     <div className="min-h-screen bg-[#0a0b0f] flex flex-col lg:flex-row text-gray-100">
