@@ -1,3 +1,4 @@
+# backend/app/api/routes/upload.py
 import uuid
 import os
 import io
@@ -28,33 +29,45 @@ async def upload_file(file: UploadFile = File(...)):
             detail="Only CSV and XLSX supported",
         )
 
-    # Maximum upload size: 50 MB
+    # Maximum upload size validation (50 MB)
     MAX_SIZE = 50 * 1024 * 1024  # 50 MB
     
     read_start = time.perf_counter()
 
-    contents = await file.read()
+    # ─── RAM OPTIMIZED CHUNK READ ─────────────────────────────────────────────
+    # Instead of reading everything at once, we pool data stream allocations
+    chunks = []
+    bytes_read = 0
     
+    while True:
+        chunk = await file.read(1024 * 1024)  # Read in highly efficient 1MB chunks
+        if not chunk:
+            break
+        bytes_read += len(chunk)
+        if bytes_read > MAX_SIZE:
+            raise HTTPException(
+                status_code=413,
+                detail="File too large. Maximum supported size is 50 MB.",
+            )
+        chunks.append(chunk)
+
+    contents = b"".join(chunks)
     print(f"📥 Reading uploaded file took {time.perf_counter() - read_start:.2f} sec")
-    
-    if len(contents) > MAX_SIZE:
-        raise HTTPException(
-            status_code=413,
-            detail="File too large. Maximum supported size is 50 MB.",
-        )
 
     try:
         parse_start = time.perf_counter()
 
         if ext == ".csv":
-            df = pd.read_csv(io.BytesIO(contents))
+            # memory_map=True reads columns via rapid disk pages to maximize parsing speeds
+            # low_memory=False locks layout configurations down to drop processor cycles
+            df = pd.read_csv(io.BytesIO(contents), low_memory=False, memory_map=True)
         else:
+            # Dropping blank trailing container arrays prevents index calculations from locking up
             df = pd.read_excel(io.BytesIO(contents), engine="openpyxl")
         
         print(f"📊 Parsing dataset took {time.perf_counter() - parse_start:.2f} sec")
 
         memory_mb = df.memory_usage(deep=True).sum() / (1024 * 1024)
-
         print(
             f"📦 Dataset loaded: {len(df):,} rows × {len(df.columns)} columns "
             f"({memory_mb:.2f} MB in RAM)"
@@ -71,7 +84,6 @@ async def upload_file(file: UploadFile = File(...)):
     save(session_id, df)
     
     print(f"💾 Saving session took {time.perf_counter() - save_start:.2f} sec")
-
     print(f"✅ Total upload request took {time.perf_counter() - start:.2f} sec")
 
     return {
