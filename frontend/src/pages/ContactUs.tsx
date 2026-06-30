@@ -47,7 +47,7 @@ export const ContactUs: React.FC<LegalProps> = ({ onBack }) => {
           <div className="space-y-3">
             {/* Email link */}
             <a 
-              href="mailto:youremail@domain.com" 
+              href="mailto:Konainfatima28@gmail.com" 
               className="flex items-center gap-4 p-4 rounded-xl bg-[#111318] border border-white/5 hover:border-indigo-500/20 text-gray-300 hover:text-white transition-all group"
             >
               <Mail size={18} className="text-indigo-400 group-hover:scale-110 transition-transform" />
