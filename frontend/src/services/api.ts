@@ -8,7 +8,7 @@ import axios from "axios"
 const api = axios.create({
   // Clean up trailing slash defaults to maintain predictable path generation
   baseURL: import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, "") : "http://localhost:8000/api",
-  timeout: 100000, // Reduced from 1,000,000ms (16 mins) to a safer 100s for real-world mobile connection cycles
+  timeout: 1000000, 
   headers: {
     "Content-Type": "application/json",
   },
