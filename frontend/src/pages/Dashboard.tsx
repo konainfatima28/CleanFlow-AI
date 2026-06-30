@@ -67,6 +67,9 @@ export default function Dashboard() {
       const target = (location.state as any).targetLegalView as View
       setPreviousView("upload")
       setView(target)
+      
+      // Update browser history string tracking on redirect
+      window.history.pushState(null, "", `/${target}`)
       window.scrollTo({ top: 0, left: 0, behavior: "instant" })
     } 
     // 2. Fallback check: Read the path directly out of the browser configuration window bar
@@ -86,6 +89,15 @@ export default function Dashboard() {
     setPreviousView(view)
     setView(targetView)
     setMobileMenu(false)
+    
+    // Update browser history string tracking on footer selection click
+    window.history.pushState(null, "", `/${targetView}`)
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" })
+  }
+
+  const handleBackFromLegal = () => {
+    setView(previousView)
+    window.history.pushState(null, "", "/dashboard")
     window.scrollTo({ top: 0, left: 0, behavior: "instant" })
   }
 
@@ -175,6 +187,7 @@ export default function Dashboard() {
                     onClick={() => {
                       setView(item.key)
                       setMobileMenu(false)
+                      window.history.pushState(null, "", "/dashboard")
                     }}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors text-left
                       ${active 
@@ -234,7 +247,12 @@ export default function Dashboard() {
               <button
                 key={n.key}
                 disabled={disabled}
-                onClick={() => !disabled && setView(n.key)}
+                onClick={() => {
+                  if (!disabled) {
+                    setView(n.key)
+                    window.history.pushState(null, "", "/dashboard")
+                  }
+                }}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-colors
                   ${active
                     ? "bg-indigo-600/20 text-indigo-300 border border-indigo-500/20"
@@ -427,16 +445,16 @@ export default function Dashboard() {
 
               {/* Trust Page Render Mappings */}
               {view === "about" && (
-                <AboutUs onBack={() => setView(previousView)} />
+                <AboutUs onBack={handleBackFromLegal} />
               )}
               {view === "terms" && (
-                <TermsOfService onBack={() => setView(previousView)} />
+                <TermsOfService onBack={handleBackFromLegal} />
               )}
               {view === "contact" && (
-                <ContactUs onBack={() => setView(previousView)} />
+                <ContactUs onBack={handleBackFromLegal} />
               )}
               {view === "privacy" && (
-                <PrivacyPolicy onBack={() => setView(previousView)} />
+                <PrivacyPolicy onBack={handleBackFromLegal} />
               )}
             </AnimatePresence>
           </div>
