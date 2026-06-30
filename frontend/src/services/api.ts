@@ -7,7 +7,7 @@ import axios from "axios"
 // Define a reasonable timeout (e.g., 30s) so mobile devices don't hang infinitely
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:8000/api",
-  timeout: 240000, 
+  timeout: 600000, 
   headers: {
     "Content-Type": "application/json",
   },
