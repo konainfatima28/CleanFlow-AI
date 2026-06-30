@@ -53,7 +53,7 @@ export const ContactUs: React.FC<LegalProps> = ({ onBack }) => {
               <Mail size={18} className="text-indigo-400 group-hover:scale-110 transition-transform" />
               <div className="text-left">
                 <p className="text-xs text-gray-500 font-medium">Direct User Support Email</p>
-                <p className="text-sm font-mono mt-0.5">youremail@domain.com</p>
+                <p className="text-sm font-mono mt-0.5">Konainfatima28@gmail.com</p>
               </div>
             </a>
 
@@ -67,7 +67,7 @@ export const ContactUs: React.FC<LegalProps> = ({ onBack }) => {
               <Github size={18} className="text-teal-400 group-hover:scale-110 transition-transform" />
               <div className="text-left">
                 <p className="text-xs text-gray-500 font-medium">Open Source Repository & Profile</p>
-                <p className="text-sm font-mono mt-0.5">github.com/konainfatima28</p>
+                <p className="text-sm font-mono mt-0.5">Github.com/konainfatima28</p>
               </div>
             </a>
 
@@ -81,7 +81,7 @@ export const ContactUs: React.FC<LegalProps> = ({ onBack }) => {
               <Linkedin size={18} className="text-sky-400 group-hover:scale-110 transition-transform" />
               <div className="text-left">
                 <p className="text-xs text-gray-500 font-medium">Professional Networking</p>
-                <p className="text-sm font-mono mt-0.5">linkedin.com/in/konainfatima</p>
+                <p className="text-sm font-mono mt-0.5">Linkedin.com/in/konainfatima</p>
               </div>
             </a>
           </div>
