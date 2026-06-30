@@ -79,14 +79,7 @@ export default function Dashboard() {
     setOperations(appliedOps)
     setLog(appliedLog)
     setCelebrate(true)
-
-    setTimeout(() => {
-      setView("analytics")
-    }, 500)
-
-    setTimeout(() => {
-      setCelebrate(false)
-    }, 2500)
+    // ─── FIXED: Removed automatic setView("analytics") redirection ───
   }
 
   const hasSession  = !!sessionId
@@ -248,18 +241,37 @@ export default function Dashboard() {
 
       {/* ── Main Content Area ───────────────────────────────────────────────── */}
       <div className="flex-1 min-w-0 flex flex-col h-auto lg:h-screen overflow-y-auto">
-        {/* Success Alert Toast */}
+        {/* Success Alert Toast with Manual View Button */}
         <AnimatePresence>
           {celebrate && (
             <motion.div
               initial={{ opacity: 0, y: -20, x: "50%" }}
               animate={{ opacity: 1, y: 0, x: "0%" }}
               exit={{ opacity: 0, y: -20 }}
-              className="fixed top-4 right-4 left-4 sm:left-auto sm:w-96 z-50 bg-green-500/15 border border-green-500/30 backdrop-blur-xl rounded-xl px-6 py-4 shadow-2xl"
+              className="fixed top-4 right-4 left-4 sm:left-auto sm:w-96 z-50 bg-[#111318] border border-green-500/30 backdrop-blur-xl rounded-xl px-6 py-4 shadow-2xl flex flex-col gap-3"
             >
-              <h2 className="text-base font-bold text-green-300">🎉 Cleaning Complete</h2>
-              <p className="text-xs text-gray-300 mt-1">Your dataset has been cleaned successfully.</p>
-              <p className="text-[11px] text-green-400 mt-1 font-medium">Redirecting to Analytics...</p>
+              <div className="flex items-start justify-between w-full">
+                <div>
+                  <h2 className="text-base font-bold text-green-300">🎉 Cleaning Complete</h2>
+                  <p className="text-xs text-gray-400 mt-0.5">Your dataset has been cleaned successfully.</p>
+                </div>
+                <button 
+                  onClick={() => setCelebrate(false)}
+                  className="text-gray-500 hover:text-gray-300 text-xs font-mono p-1"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <button
+                onClick={() => {
+                  setView("analytics")
+                  setCelebrate(false)
+                }}
+                className="w-full text-center py-2 px-3 rounded-lg text-xs font-semibold bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/20 transition-all shadow-md"
+              >
+                View Interactive Analytics →
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
