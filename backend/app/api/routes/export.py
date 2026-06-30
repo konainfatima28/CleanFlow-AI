@@ -1,9 +1,11 @@
 # backend/app/api/routes/export.py
 # Download endpoints for CSV, XLSX, JSON, Pandas script, Markdown report.
 
+import io
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import Response
 from pydantic import BaseModel
+import pandas as pd
 
 from app.core.session import get
 from app.services.exporter import (
@@ -29,17 +31,28 @@ def export_dataset(
     if df is None:
         raise HTTPException(404, "Session not found or expired.")
 
-    # Normalize incoming queries to drop case mismatches
     fmt = format.lower()
 
     if fmt == "csv":
         content      = to_csv(df)
         media_type   = "text/csv"
         filename     = f"cleanflow_export_{session_id[:8]}.csv"
+        
     elif fmt == "xlsx":
-        content      = to_xlsx(df)
+        # ─── MEMORY GUARD FOR EXCEL SERIALIZATION ───
+        # If dataset exceeds 30,000 rows, openpyxl styles will exceed free-tier RAM limitations.
+        # Fallback to a stream-optimized chunk configuration writer.
+        if len(df) > 30000:
+            output = io.BytesIO()
+            with pd.ExcelWriter(output, engine="openpyxl", options={'constant_memory': True}) as writer:
+                df.to_excel(writer, index=False, sheet_name="Cleaned Data")
+            content = output.getvalue()
+        else:
+            content = to_xlsx(df)
+            
         media_type   = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         filename     = f"cleanflow_export_{session_id[:8]}.xlsx"
+        
     elif fmt == "json":
         content      = to_json(df)
         media_type   = "application/json"
@@ -47,7 +60,6 @@ def export_dataset(
     else:
         raise HTTPException(400, "Unsupported format.")
 
-    # Explicitly expose headers to let Vercel read binary attachment chunks safely
     return Response(
         content=content,
         media_type=media_type,
@@ -105,8 +117,23 @@ def export_report(cleaned_session_id: str, body: ReportRequest):
     if original_df is None or cleaned_df is None:
         raise HTTPException(404, "One or both sessions not found.")
 
-    original_profile = profile_dataframe(original_df)
-    cleaned_profile  = profile_dataframe(cleaned_df)
+    # ─── RUNTIME TIMEOUT GUARD FOR MASSIVE PROFILING ───
+    # Computing complete matrices on huge frames causes Render gateway timeouts.
+    # Downsample to a statistically accurate pool slice (15,000 rows max) if too heavy.
+    MAX_PROFILE_ROWS = 15000
+    
+    if len(original_df) > MAX_PROFILE_ROWS:
+        original_df_sample = original_df.sample(n=MAX_PROFILE_ROWS, random_state=42)
+    else:
+        original_df_sample = original_df
+
+    if len(cleaned_df) > MAX_PROFILE_ROWS:
+        cleaned_df_sample = cleaned_df.sample(n=MAX_PROFILE_ROWS, random_state=42)
+    else:
+        cleaned_df_sample = cleaned_df
+
+    original_profile = profile_dataframe(original_df_sample)
+    cleaned_profile  = profile_dataframe(cleaned_df_sample)
 
     content  = to_markdown_report(
         original_filename=body.original_filename,
