@@ -1,37 +1,37 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// src/services/api.ts — DATA PILOT UNIFIED AXIOS SERVICE WRAPPER
+// src/services/api.ts — RESPONSIVE & MOBILE-OPTIMIZED VERSION
 // ─────────────────────────────────────────────────────────────────────────────
 
 import axios from "axios"
 
+// Define a reasonable timeout (e.g., 30s) so mobile devices don't hang infinitely
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:8000/api",
-  timeout: 600000, // 10 minutes for intensive backend operations
+  timeout: 240000, 
   headers: {
     "Content-Type": "application/json",
   },
 })
 
+// Global interceptor to handle mobile network errors cleanly
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error("Data Pilot Network Exception:", error);
-
-    if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
+    // If the network request was aborted or timed out
+    if (error.code === "ECONNABORTED" || !error.response) {
       return Promise.reject({
         response: {
           data: {
-            detail: "The pipeline execution timed out while computing complex metrics. Consider optimizing sparse target frames.",
+            detail: "Network timeout or weak connection. Please check your signal and try again.",
           },
         },
-      });
+      })
     }
-
-    return Promise.reject(error);
+    return Promise.reject(error)
   }
-);
+)
 
-// Ingest Vector Source File Matrix
+// Upload File (multipart/form-data)
 export const uploadFile = (file: File) => {
   const form = new FormData()
   form.append("file", file)
@@ -39,30 +39,31 @@ export const uploadFile = (file: File) => {
     headers: {
       "Content-Type": "multipart/form-data",
     },
+    // Optional: add onUploadProgress here if you want real progress percentages on mobile
   })
 }
 
-// Fetch Active Data Profile
+// Profile Diagnostics
 export const getProfile = (sessionId: string) =>
   api.get(`/profile/${sessionId}`)
 
-// Fetch Automatic Pipeline Suggestions
+// Fetch AI Remediation Suggestions
 export const getSuggestions = (sessionId: string) =>
   api.get(`/suggestions/${sessionId}`)
 
-// Apply Linear Cleaning Sequence Operations Matrix
+// Apply Single or Bulk Clean Operations
 export const applyClean = (sessionId: string, operations: object[]) =>
   api.post(`/clean/${sessionId}`, { operations })
 
-// Visual Analytics Distribution Data
+// Visual Analytics Data
 export const getAnalytics = (sessionId: string) =>
   api.get(`/analytics/${sessionId}`)
 
-// Comparative Analytics Target Metrics (Before / After Delta Profiles)
+// Comparative Analytics Data (Before/After)
 export const getComparison = (originalId: string, cleanedId: string) =>
   api.get(`/analytics/compare/${originalId}/${cleanedId}`)
 
-// Export Target Matrix Output Blob Stream
+// Export Clean Output Blobs
 export const exportDataset = (sessionId: string, format: "csv" | "xlsx" | "json") =>
   api.get(`/export/${sessionId}?format=${format}`, { responseType: "blob" })
 
