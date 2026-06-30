@@ -60,12 +60,15 @@ export default function Dashboard() {
   const [celebrate, setCelebrate]     = useState(false)
   const [mobileMenu, setMobileMenu]   = useState(false)
 
-  // Inbound landing page trust-routing state listener loop
+  // Inbound landing page trust-routing state listener loop with view reset fix
   useEffect(() => {
     if (location.state && (location.state as any).targetLegalView) {
       const target = (location.state as any).targetLegalView as View
       setPreviousView("upload")
       setView(target)
+      
+      // Fixes the scroll depth lock when transferring paths from the landing footer
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" })
     }
   }, [location])
 
@@ -73,6 +76,7 @@ export default function Dashboard() {
     setPreviousView(view)
     setView(targetView)
     setMobileMenu(false)
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" })
   }
 
   const handleUpload = async (file: File) => {
@@ -121,6 +125,7 @@ export default function Dashboard() {
 
   const hasSession  = !!sessionId
   const hasCleaned  = !!cleanedId
+  const isLegalView = ["about", "terms", "contact", "privacy"].includes(view)
 
   return (
     <div className="min-h-screen bg-[#0a0b0f] flex flex-col lg:flex-row text-gray-100">
@@ -303,7 +308,7 @@ export default function Dashboard() {
       </aside>
 
       {/* ── Main Content Area Grid Container ──────────────────────────────────── */}
-      <div className="flex-1 min-w-0 flex flex-col min-h-screen lg:h-screen overflow-y-auto">
+      <div className="flex-1 min-w-0 flex flex-col min-h-screen">
         {/* Success Alert Toast with Manual View Button */}
         <AnimatePresence>
           {celebrate && (
@@ -428,8 +433,8 @@ export default function Dashboard() {
           </div>
         </main>
 
-        {/* ── AdSense Compliant Footer Anchor Row ── */}
-        <footer className="w-full text-center py-5 border-t border-white/5 bg-[#0e1014]/30 text-[11px] text-gray-600 mt-auto shrink-0">
+        {/* ── AdSense Compliant Footer Anchor Row (Always sits nested context properly at bottom) ── */}
+        <footer className="w-full text-center py-5 border-t border-white/5 bg-[#0e1014]/30 text-[11px] text-gray-600 mt-auto shrink-0 z-30">
           <p>© 2026 CleanFlow AI. Free, secure data cleaning for everyone.</p>
           <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-1.5 text-gray-500">
             <button onClick={() => openLegalView("about")} className="hover:text-indigo-400 transition-colors focus:outline-none">About Tool</button>
