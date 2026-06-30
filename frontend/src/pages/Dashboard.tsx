@@ -60,15 +60,25 @@ export default function Dashboard() {
   const [celebrate, setCelebrate]     = useState(false)
   const [mobileMenu, setMobileMenu]   = useState(false)
 
-  // Inbound landing page trust-routing state listener loop with view reset fix
+  // Inbound landing page trust-routing and direct browser URL state listener loop
   useEffect(() => {
+    // 1. Check if navigating internally using state references
     if (location.state && (location.state as any).targetLegalView) {
       const target = (location.state as any).targetLegalView as View
       setPreviousView("upload")
       setView(target)
-      
-      // Fixes the scroll depth lock when transferring paths from the landing footer
       window.scrollTo({ top: 0, left: 0, behavior: "instant" })
+    } 
+    // 2. Fallback check: Read the path directly out of the browser configuration window bar
+    else {
+      const path = window.location.pathname.replace("/", "") as View
+      const legalPaths: View[] = ["about", "terms", "contact", "privacy"]
+      
+      if (legalPaths.includes(path)) {
+        setPreviousView("upload")
+        setView(path)
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" })
+      }
     }
   }, [location])
 
@@ -125,7 +135,6 @@ export default function Dashboard() {
 
   const hasSession  = !!sessionId
   const hasCleaned  = !!cleanedId
-  //const isLegalView = ["about", "terms", "contact", "privacy"].includes(view)
 
   return (
     <div className="min-h-screen bg-[#0a0b0f] flex flex-col lg:flex-row text-gray-100">
