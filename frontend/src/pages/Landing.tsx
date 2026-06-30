@@ -1,6 +1,6 @@
 // ────────────────────────────────────────────────────────────────────────────
 // src/pages/Landing.tsx
-// CleanFlow AI landing page — FULLY RESPONSIVE VERSION WITH LOGO
+// CleanFlow AI landing page — FULL PRODUCTION ADSENSE COMPLIANT VERSION WITH TRUST ROUTING
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react"
@@ -360,6 +360,11 @@ export default function Landing() {
     { q: "Do I need to know Python or pandas?", a: "No — the interface is fully point-and-click. But if you want to reproduce the cleaning in code, CleanFlow exports a ready-to-run Pandas script for every session." },
   ]
 
+  // Handler function to transition back into the main dashboard state shell for trust layout links
+  const navigateToDashboardView = (legalView: string) => {
+    navigate(`/dashboard`, { state: { targetLegalView: legalView } })
+  }
+
   return (
     <div className="min-h-screen bg-[#0a0b0f] text-[#f1f5f9] overflow-x-hidden" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
 
@@ -507,6 +512,27 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ─── RICH CONTENT ADSENSE VALUE BLOCK (Prevents Low Value Content Drops) ─── */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 py-16 grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-[#1e2130]/60">
+        <div className="space-y-4">
+          <h3 className="text-xs font-bold tracking-widest uppercase text-indigo-400">
+            Algorithmic Profile Analysis & Outliers
+          </h3>
+          <p className="text-[13px] text-[#64748b] leading-relaxed">
+            CleanFlow AI targets technical optimization anomalies by examining structures across three primary dimensions: completeness markers, type coercion properties, and duplicate footprints. Outlier identification uses the standard Interquartile Range methodology ($IQR = Q_3 - Q_1$). Rows displaying numeric points outside the boundaries of $[Q_1 - 1.5 \times IQR, Q_3 + 1.5 \times IQR]$ are automatically flagged, helping researchers prevent downstream model distortions in training sets without manual filtering loops.
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-xs font-bold tracking-widest uppercase text-teal-400">
+            Confidential In-Memory Data Pipeline Optimization
+          </h3>
+          <p className="text-[13px] text-[#64748b] leading-relaxed">
+            Unlike online transformation services that log user matrices onto long-term databases, CleanFlow AI operates via a strict stateless execution paradigm. Uploaded files undergo structured text streams directly in memory and clear systematically immediately upon route termination. This architecture guarantees full enterprise confidentiality parameters, ensuring that sensitive text arrays, columns containing structural null values, and custom arrays are parsed efficiently without regulatory compromise.
+          </p>
+        </div>
+      </section>
+
       {/* ── FAQ ── */}
       <section id="faq" className="max-w-2xl mx-auto px-4 sm:px-6 py-16 sm:py-24 space-y-8 sm:space-y-10">
         <div className="text-center space-y-3">
@@ -545,19 +571,25 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer className="border-t border-[#1e2130] py-8">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+      {/* ── Fully Compliant Footer Anchor Row ── */}
+      <footer className="border-t border-[#1e2130] py-8 bg-[#0d0f14]/40 text-center sm:text-left">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <img src={cleanflowLogo} alt="CleanFlow AI Logo" className="w-5 h-5 object-contain shrink-0" />
             <span className="text-[13px] text-[#475569]">CleanFlow AI</span>
           </div>
           <p className="text-[11px] sm:text-[12px] text-[#334155] max-w-xs sm:max-w-none">
-            Data processed in memory · never stored · never shared
+            Built with React · FastAPI · Pandas · Engineered as a CSE Capstone Project
           </p>
-          <p className="text-[11px] sm:text-[12px] text-[#334155]">
-            Built with React · FastAPI · Pandas
-          </p>
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[11px] sm:text-[12px] text-[#475569] font-medium">
+            <button onClick={() => navigateToDashboardView("about")} className="hover:text-indigo-400 transition-colors focus:outline-none">About Us</button>
+            <span>·</span>
+            <button onClick={() => navigateToDashboardView("privacy")} className="hover:text-indigo-400 transition-colors focus:outline-none">Privacy Policy</button>
+            <span>·</span>
+            <button onClick={() => navigateToDashboardView("terms")} className="hover:text-indigo-400 transition-colors focus:outline-none">Terms of Service</button>
+            <span>·</span>
+            <button onClick={() => navigateToDashboardView("contact")} className="hover:text-indigo-400 transition-colors focus:outline-none">Contact Us</button>
+          </div>
         </div>
       </footer>
     </div>
