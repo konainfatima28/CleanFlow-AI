@@ -1,5 +1,5 @@
 // ────────────────────────────────────────────────────────────────────────────
-// src/pages/Dashboard.tsx — RESPONSIVE VERSION WITH NULL-SAFE PROFILE GUARDS
+// src/pages/Dashboard.tsx — FULL SAFE PRODUCTION VERSION WITH VALIDATION GUARDS
 // ────────────────────────────────────────────────────────────────────────────
 
 import { useState } from "react"
@@ -63,7 +63,21 @@ export default function Dashboard() {
       setProfile(prof)
       setView("profile")
     } catch (e: any) {
-      setUploadError(e?.response?.data?.detail ?? "Upload failed. Please try again.")
+      // ─── SAFELY PARSE STRINGS OR OBJECT ARRAYS TO PREVENT BLANK SCREEN CRASHES ───
+      const rawDetail = e?.response?.data?.detail
+      
+      if (!rawDetail) {
+        setUploadError("Upload failed. Connection or server context anomaly.")
+      } else if (typeof rawDetail === "string") {
+        setUploadError(rawDetail)
+      } else if (Array.isArray(rawDetail) && rawDetail[0]?.msg) {
+        // Extracts the clean validation text from FastAPI's 422 object layout securely
+        setUploadError(`Validation Error: ${rawDetail[0].msg} (${rawDetail[0].loc.join(" -> ")})`)
+      } else if (typeof rawDetail === "object") {
+        setUploadError(JSON.stringify(rawDetail))
+      } else {
+        setUploadError("Upload failed due to an unhandled exception matrix.")
+      }
     } finally {
       setLoading(false)
     }
@@ -175,7 +189,7 @@ export default function Dashboard() {
                   ${active
                     ? "bg-indigo-600/20 text-indigo-300 border border-indigo-500/20"
                     : disabled
-                      ? "text-gray-700 cursor-not-allowed"
+                      ? "text-gray-700 cursor-not-allowed opacity-40"
                       : "text-gray-500 hover:text-gray-200 hover:bg-white/[0.04]"
                   }`}
               >
@@ -231,7 +245,7 @@ export default function Dashboard() {
             <p className="text-[10px] font-mono text-gray-600 break-all leading-relaxed">
               {sessionId.slice(0, 18)}…
             </p>
-            <p className="text-[10px] font-mono text-gray-400 break-all truncate" title={filename}>
+            <p className="text-[10px] font-mono text-gray-700 break-all truncate" title={filename}>
               {filename}
             </p>
           </div>
@@ -286,12 +300,12 @@ export default function Dashboard() {
                   transition={{ duration: 0.25 }}>
                   <FileUploader onUpload={handleUpload} loading={loading} />
                   {uploadError && (
-                    <p className="mt-4 text-sm text-red-400 text-center">{uploadError}</p>
+                    <p className="mt-4 text-sm text-red-400 text-center max-w-xl mx-auto font-mono bg-red-500/5 border border-red-500/10 p-3 rounded-xl">{uploadError}</p>
                   )}
                 </motion.div>
               )}
 
-              {/* ─── ENHANCED NULL-SAFE DEFENSIVE CONTAINER GUARDS ─── */}
+              {/* ─── TYPE-SAFE DEFENSIVE CONTAINER MAPPING GUARD ─── */}
               {view === "profile" && profile && typeof profile === "object" && sessionId && (
                 <motion.div key="profile"
                   initial={{ opacity: 0, y: 8 }}
