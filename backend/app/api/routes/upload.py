@@ -25,14 +25,15 @@ async def upload_file(file: UploadFile = File(...)):
             detail="Only CSV and XLSX supported",
         )
 
-    MAX_SIZE = 25 * 1024 * 1024  # 25 MB
-
+    # Maximum upload size: 50 MB
+    MAX_SIZE = 50 * 1024 * 1024  # 50 MB
+    
     contents = await file.read()
     
     if len(contents) > MAX_SIZE:
         raise HTTPException(
             status_code=413,
-            detail="File too large. Maximum supported size is 25 MB. Please upload a CSV or a smaller Excel file.",
+            detail="File too large. Maximum supported size is 50 MB.",
         )
 
     try:
