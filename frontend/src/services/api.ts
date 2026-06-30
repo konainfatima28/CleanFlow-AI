@@ -1,29 +1,27 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// src/services/api.ts — RESPONSIVE & MOBILE-OPTIMIZED VERSION
+// src/services/api.ts — DATA PILOT UNIFIED AXIOS SERVICE WRAPPER
 // ─────────────────────────────────────────────────────────────────────────────
 
 import axios from "axios"
 
-// Define a reasonable timeout (e.g., 30s) so mobile devices don't hang infinitely
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:8000/api",
-  timeout: 600000, 
+  timeout: 600000, // 10 minutes for intensive backend operations
   headers: {
     "Content-Type": "application/json",
   },
 })
 
-// Global interceptor to handle mobile network errors cleanly
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error("Axios Error:", error);
+    console.error("Data Pilot Network Exception:", error);
 
-    if (error.code === "ECONNABORTED") {
+    if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
       return Promise.reject({
         response: {
           data: {
-            detail: "Upload timed out. Try using a CSV file or a smaller Excel file.",
+            detail: "The pipeline execution timed out while computing complex metrics. Consider optimizing sparse target frames.",
           },
         },
       });
@@ -33,7 +31,7 @@ api.interceptors.response.use(
   }
 );
 
-// Upload File (multipart/form-data)
+// Ingest Vector Source File Matrix
 export const uploadFile = (file: File) => {
   const form = new FormData()
   form.append("file", file)
@@ -41,31 +39,30 @@ export const uploadFile = (file: File) => {
     headers: {
       "Content-Type": "multipart/form-data",
     },
-    // Optional: add onUploadProgress here if you want real progress percentages on mobile
   })
 }
 
-// Profile Diagnostics
+// Fetch Active Data Profile
 export const getProfile = (sessionId: string) =>
   api.get(`/profile/${sessionId}`)
 
-// Fetch AI Remediation Suggestions
+// Fetch Automatic Pipeline Suggestions
 export const getSuggestions = (sessionId: string) =>
   api.get(`/suggestions/${sessionId}`)
 
-// Apply Single or Bulk Clean Operations
+// Apply Linear Cleaning Sequence Operations Matrix
 export const applyClean = (sessionId: string, operations: object[]) =>
   api.post(`/clean/${sessionId}`, { operations })
 
-// Visual Analytics Data
+// Visual Analytics Distribution Data
 export const getAnalytics = (sessionId: string) =>
   api.get(`/analytics/${sessionId}`)
 
-// Comparative Analytics Data (Before/After)
+// Comparative Analytics Target Metrics (Before / After Delta Profiles)
 export const getComparison = (originalId: string, cleanedId: string) =>
   api.get(`/analytics/compare/${originalId}/${cleanedId}`)
 
-// Export Clean Output Blobs
+// Export Target Matrix Output Blob Stream
 export const exportDataset = (sessionId: string, format: "csv" | "xlsx" | "json") =>
   api.get(`/export/${sessionId}?format=${format}`, { responseType: "blob" })
 
