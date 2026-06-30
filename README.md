@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![CleanFlow AI Banner](https://img.shields.io/badge/CleanFlow-AI-6366f1?style=for-the-badge&logo=sparkles&logoColor=white)
+<img src="https://raw.githubusercontent.com/konainfatima28/CleanFlow-AI/main/frontend/src/assets/cleanflow.png" alt="CleanFlow AI" width="200"/>
 
 **Transform messy datasets into ML-ready data in seconds — no Python required.**
 
