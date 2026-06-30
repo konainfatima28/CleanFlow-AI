@@ -1,7 +1,8 @@
 <div align="center">
 # CleanFlow AI — AI-Powered Data Cleaning Platform
+</div>
 
-
+<div align="center">
 
 <img src="https://raw.githubusercontent.com/konainfatima28/CleanFlow-AI/main/frontend/src/assets/cleanflow.png" alt="CleanFlow AI" width="180"/>
 
