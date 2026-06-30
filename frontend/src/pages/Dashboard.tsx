@@ -2,7 +2,8 @@
 // src/pages/Dashboard.tsx — FULL SAFE PRODUCTION VERSION WITH TRUST ROUTING
 // ────────────────────────────────────────────────────────────────────────────
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useLocation } from "react-router-dom"
 import { Menu, X, Coffee, Heart } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import FileUploader   from "../components/FileUploader"
@@ -42,10 +43,10 @@ const NAV_ITEMS: {
   { key: "export",    label: "Export",    icon: "↓", alwaysOn: false, needsCleaned: true },
 ]
 
-// Updated hosted support route parameter constants
 const DONATION_URL = "https://github.com/sponsors/konainfatima28"
 
 export default function Dashboard() {
+  const location = useLocation()
   const [view, setView]               = useState<View>("upload")
   const [previousView, setPreviousView] = useState<View>("upload")
   const [sessionId, setSessionId]     = useState<string | null>(null)
@@ -58,6 +59,15 @@ export default function Dashboard() {
   const [log, setLog]                 = useState<object[]>([])
   const [celebrate, setCelebrate]     = useState(false)
   const [mobileMenu, setMobileMenu]   = useState(false)
+
+  // Inbound landing page trust-routing state listener loop
+  useEffect(() => {
+    if (location.state && (location.state as any).targetLegalView) {
+      const target = (location.state as any).targetLegalView as View
+      setPreviousView("upload")
+      setView(target)
+    }
+  }, [location])
 
   const openLegalView = (targetView: View) => {
     setPreviousView(view)
@@ -113,328 +123,326 @@ export default function Dashboard() {
   const hasCleaned  = !!cleanedId
 
   return (
-    <div className="min-h-screen bg-[#0a0b0f] flex flex-col text-gray-100">
+    <div className="min-h-screen bg-[#0a0b0f] flex flex-col lg:flex-row text-gray-100">
       
-      <div className="flex flex-col lg:flex-row flex-1">
-        {/* ── Mobile Top Header ────────────────────────────────────────────────── */}
-        <div className="lg:hidden sticky top-0 z-50 w-full bg-[#111318] border-b border-white/5 px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img src={cleanflowLogo} alt="CleanFlow AI Logo" className="w-6 h-6 object-contain shrink-0" />
-            <span className="text-white font-bold text-sm tracking-wide">CleanFlow AI</span>
-          </div>
-
-          <button 
-            onClick={() => setMobileMenu(!mobileMenu)}
-            className="text-gray-400 hover:text-white transition-colors focus:outline-none"
-          >
-            {mobileMenu ? <X size={22} /> : <Menu size={22} />}
-          </button>
+      {/* ── Mobile Top Header ────────────────────────────────────────────────── */}
+      <div className="lg:hidden sticky top-0 z-50 w-full bg-[#111318] border-b border-white/5 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <img src={cleanflowLogo} alt="CleanFlow AI Logo" className="w-6 h-6 object-contain shrink-0" />
+          <span className="text-white font-bold text-sm tracking-wide">CleanFlow AI</span>
         </div>
 
-        {/* ── Mobile Dropdown Menu ────────────────────────────────────────────── */}
+        <button 
+          onClick={() => setMobileMenu(!mobileMenu)}
+          className="text-gray-400 hover:text-white transition-colors focus:outline-none"
+        >
+          {mobileMenu ? <X size={22} /> : <Menu size={22} />}
+        </button>
+      </div>
+
+      {/* ── Mobile Dropdown Menu ────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {mobileMenu && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="lg:hidden w-full bg-[#111318] border-b border-white/5 overflow-hidden sticky top-[49px] z-40 flex flex-col justify-between"
+          >
+            <div className="px-2 py-3 space-y-1">
+              {NAV_ITEMS.map((item) => {
+                const disabled = (!item.alwaysOn && !hasSession) || (item.needsCleaned && !hasCleaned)
+                const active   = view === item.key
+
+                return (
+                  <button
+                    key={item.key}
+                    disabled={disabled}
+                    onClick={() => {
+                      setView(item.key)
+                      setMobileMenu(false)
+                    }}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors text-left
+                      ${active 
+                        ? "bg-indigo-600/20 text-indigo-300 border border-indigo-500/20" 
+                        : disabled 
+                          ? "text-gray-700 cursor-not-allowed opacity-40" 
+                          : "text-gray-400 hover:text-gray-200 hover:bg-white/[0.02]"
+                      }`}
+                  >
+                    <span className="text-[12px] opacity-60 shrink-0">{item.icon}</span>
+                    <span className="flex-1">{item.label}</span>
+                    
+                    {item.key === "export" && hasCleaned && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                    )}
+                    {item.key === "cleaning" && hasCleaned && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+
+            <div className="p-3 border-t border-white/5 bg-[#0e1014]">
+              <a
+                href={DONATION_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-semibold text-gray-400 hover:text-teal-400 bg-white/[0.01] hover:bg-teal-500/5 border border-white/5 hover:border-teal-500/20 transition-all"
+              >
+                <Coffee size={14} className="text-gray-400" />
+                <span>Sponsor Creator</span>
+              </a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Desktop Sidebar ─────────────────────────────────────────────────── */}
+      <aside className="hidden lg:flex w-64 shrink-0 bg-[#111318] border-r border-white/5 flex-col py-6 px-4 gap-6 sticky top-0 h-screen overflow-y-auto">
+        {/* Logo */}
+        <div className="flex items-center gap-2 px-1">
+          <img src={cleanflowLogo} alt="CleanFlow AI Logo" className="w-6 h-6 object-contain shrink-0" />
+          <div>
+            <p className="text-[11px] text-indigo-400 font-semibold leading-none">CleanFlow</p>
+            <p className="text-[10px] text-gray-600 leading-none mt-0.5">AI</p>
+          </div>
+        </div>
+
+        {/* Nav */}
+        <nav className="space-y-0.5">
+          {NAV_ITEMS.map(n => {
+            const disabled = (!n.alwaysOn && !hasSession) || (n.needsCleaned && !hasCleaned)
+            const active   = view === n.key
+
+            return (
+              <button
+                key={n.key}
+                disabled={disabled}
+                onClick={() => !disabled && setView(n.key)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-colors
+                  ${active
+                    ? "bg-indigo-600/20 text-indigo-300 border border-indigo-500/20"
+                    : disabled
+                      ? "text-gray-700 cursor-not-allowed opacity-40"
+                      : "text-gray-500 hover:text-gray-200 hover:bg-white/[0.04]"
+                  }`}
+              >
+                <span className="text-[11px] opacity-60 shrink-0">{n.icon}</span>
+                {n.label}
+
+                {n.key === "export" && hasCleaned && (
+                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-green-400 shrink-0" />
+                )}
+                {n.key === "cleaning" && hasCleaned && (
+                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />
+                )}
+              </button>
+            )
+          })}
+        </nav>
+
+        {/* Progress steps */}
+        {hasSession && (
+          <div className="space-y-2">
+            <p className="text-[9px] uppercase tracking-widest text-gray-700 font-semibold px-1">
+              Progress
+            </p>
+            {[
+              { label: "Uploaded",  done: true },
+              { label: "Profiled",  done: !!profile },
+              { label: "Cleaned",   done: hasCleaned },
+              { label: "Exported",  done: false },
+            ].map(step => (
+              <div key={step.label} className="flex items-center gap-2 px-1">
+                <div className={`w-3 h-3 rounded-full border flex items-center justify-center shrink-0 transition-colors
+                  ${step.done ? "bg-green-500 border-green-400" : "bg-transparent border-gray-700"}`}>
+                  {step.done && (
+                    <svg width="7" height="7" viewBox="0 0 12 12" fill="none">
+                      <polyline points="2 6 5 9 10 3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
+                </div>
+                <span className={`text-[11px] transition-colors ${step.done ? "text-gray-400" : "text-gray-700"}`}>
+                  {step.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Session badge */}
+        {sessionId && (
+          <div className="px-1 space-y-1">
+            <p className="text-[9px] uppercase tracking-widest text-gray-700 font-semibold">
+              Session
+            </p>
+            <p className="text-[10px] font-mono text-gray-600 break-all leading-relaxed">
+              {sessionId.slice(0, 18)}…
+            </p>
+            <p className="text-[10px] font-mono text-gray-700 break-all truncate" title={filename}>
+              {filename}
+            </p>
+          </div>
+        )}
+
+        {/* Desktop Sidebar Bottom Persistent Sponsor Trigger */}
+        <div className="mt-auto pt-4 border-t border-white/5">
+          <a
+            href={DONATION_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] font-medium text-gray-500 hover:text-teal-400 hover:bg-white/[0.02] border border-transparent hover:border-teal-500/10 transition-all duration-200 group"
+          >
+            <Coffee size={14} className="text-gray-600 group-hover:text-teal-400 transition-colors" />
+            <span>Sponsor Project</span>
+            <Heart size={10} className="ml-auto text-transparent group-hover:text-rose-500 group-hover:fill-rose-500 transition-all shrink-0" />
+          </a>
+        </div>
+      </aside>
+
+      {/* ── Main Content Area Grid Container ──────────────────────────────────── */}
+      <div className="flex-1 min-w-0 flex flex-col min-h-screen lg:h-screen overflow-y-auto">
+        {/* Success Alert Toast with Manual View Button */}
         <AnimatePresence>
-          {mobileMenu && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden bg-[#111318] border-b border-white/5 overflow-hidden sticky top-[49px] z-40 flex flex-col justify-between"
+          {celebrate && (
+            <motion.div
+              initial={{ opacity: 0, y: -20, x: "50%" }}
+              animate={{ opacity: 1, y: 0, x: "0%" }}
+              exit={{ opacity: 0, y: -20 }}
+              className="fixed top-4 right-4 left-4 sm:left-auto sm:w-96 z-50 bg-[#111318] border border-green-500/30 backdrop-blur-xl rounded-xl px-6 py-4 shadow-2xl flex flex-col gap-3"
             >
-              <div className="px-2 py-3 space-y-1">
-                {NAV_ITEMS.map((item) => {
-                  const disabled = (!item.alwaysOn && !hasSession) || (item.needsCleaned && !hasCleaned)
-                  const active   = view === item.key
-
-                  return (
-                    <button
-                      key={item.key}
-                      disabled={disabled}
-                      onClick={() => {
-                        setView(item.key)
-                        setMobileMenu(false)
-                      }}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors text-left
-                        ${active 
-                          ? "bg-indigo-600/20 text-indigo-300 border border-indigo-500/20" 
-                          : disabled 
-                            ? "text-gray-700 cursor-not-allowed opacity-40" 
-                            : "text-gray-400 hover:text-gray-200 hover:bg-white/[0.02]"
-                        }`}
-                    >
-                      <span className="text-[12px] opacity-60 shrink-0">{item.icon}</span>
-                      <span className="flex-1">{item.label}</span>
-                      
-                      {item.key === "export" && hasCleaned && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
-                      )}
-                      {item.key === "cleaning" && hasCleaned && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
-                      )}
-                    </button>
-                  )
-                })}
-              </div>
-
-              <div className="p-3 border-t border-white/5 bg-[#0e1014]">
-                <a
-                  href={DONATION_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-semibold text-gray-400 hover:text-teal-400 bg-white/[0.01] hover:bg-teal-500/5 border border-white/5 hover:border-teal-500/20 transition-all"
+              <div className="flex items-start justify-between w-full">
+                <div>
+                  <h2 className="text-base font-bold text-green-300">🎉 Cleaning Complete</h2>
+                  <p className="text-xs text-gray-400 mt-0.5">Your dataset has been cleaned successfully.</p>
+                </div>
+                <button 
+                  onClick={() => setCelebrate(false)}
+                  className="text-gray-500 hover:text-gray-300 text-xs font-mono p-1"
                 >
-                  <Coffee size={14} className="text-gray-400" />
-                  <span>Sponsor Creator</span>
-                </a>
+                  ✕
+                </button>
               </div>
+
+              <button
+                onClick={() => {
+                  setView("analytics")
+                  setCelebrate(false)
+                }}
+                className="w-full text-center py-2 px-3 rounded-lg text-xs font-semibold bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/20 transition-all shadow-md"
+              >
+                View Interactive Analytics →
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* ── Desktop Sidebar ─────────────────────────────────────────────────── */}
-        <aside className="hidden lg:flex w-64 shrink-0 bg-[#111318] border-r border-white/5 flex-col py-6 px-4 gap-6 sticky top-0 h-screen overflow-y-auto">
-          {/* Logo */}
-          <div className="flex items-center gap-2 px-1">
-            <img src={cleanflowLogo} alt="CleanFlow AI Logo" className="w-6 h-6 object-contain shrink-0" />
-            <div>
-              <p className="text-[11px] text-indigo-400 font-semibold leading-none">CleanFlow</p>
-              <p className="text-[10px] text-gray-600 leading-none mt-0.5">AI</p>
-            </div>
-          </div>
-
-          {/* Nav */}
-          <nav className="space-y-0.5">
-            {NAV_ITEMS.map(n => {
-              const disabled = (!n.alwaysOn && !hasSession) || (n.needsCleaned && !hasCleaned)
-              const active   = view === n.key
-
-              return (
-                <button
-                  key={n.key}
-                  disabled={disabled}
-                  onClick={() => !disabled && setView(n.key)}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-colors
-                    ${active
-                      ? "bg-indigo-600/20 text-indigo-300 border border-indigo-500/20"
-                      : disabled
-                        ? "text-gray-700 cursor-not-allowed opacity-40"
-                        : "text-gray-500 hover:text-gray-200 hover:bg-white/[0.04]"
-                    }`}
-                >
-                  <span className="text-[11px] opacity-60 shrink-0">{n.icon}</span>
-                  {n.label}
-
-                  {n.key === "export" && hasCleaned && (
-                    <span className="ml-auto w-1.5 h-1.5 rounded-full bg-green-400 shrink-0" />
+        <main className="flex-1 w-full">
+          <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20">
+            <AnimatePresence mode="wait">
+              {view === "upload" && (
+                <motion.div key="upload"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.25 }}>
+                  <FileUploader onUpload={handleUpload} loading={loading} />
+                  {uploadError && (
+                    <p className="mt-4 text-sm text-red-400 text-center max-w-xl mx-auto font-mono bg-red-500/5 border border-red-500/10 p-3 rounded-xl">{uploadError}</p>
                   )}
-                  {n.key === "cleaning" && hasCleaned && (
-                    <span className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />
-                  )}
-                </button>
-              )
-            })}
-          </nav>
+                </motion.div>
+              )}
 
-          {/* Progress steps */}
-          {hasSession && (
-            <div className="space-y-2">
-              <p className="text-[9px] uppercase tracking-widest text-gray-700 font-semibold px-1">
-                Progress
-              </p>
-              {[
-                { label: "Uploaded",  done: true },
-                { label: "Profiled",  done: !!profile },
-                { label: "Cleaned",   done: hasCleaned },
-                { label: "Exported",  done: false },
-              ].map(step => (
-                <div key={step.label} className="flex items-center gap-2 px-1">
-                  <div className={`w-3 h-3 rounded-full border flex items-center justify-center shrink-0 transition-colors
-                    ${step.done ? "bg-green-500 border-green-400" : "bg-transparent border-gray-700"}`}>
-                    {step.done && (
-                      <svg width="7" height="7" viewBox="0 0 12 12" fill="none">
-                        <polyline points="2 6 5 9 10 3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    )}
-                  </div>
-                  <span className={`text-[11px] transition-colors ${step.done ? "text-gray-400" : "text-gray-700"}`}>
-                    {step.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
+              {view === "profile" && profile && typeof profile === "object" && sessionId && (
+                <motion.div key="profile"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.25 }}>
+                  <ProfilePanel
+                    profile={profile}
+                    sessionId={sessionId}
+                    onStartCleaning={() => setView("cleaning")}
+                  />
+                </motion.div>
+              )}
 
-          {/* Session badge */}
-          {sessionId && (
-            <div className="px-1 space-y-1">
-              <p className="text-[9px] uppercase tracking-widest text-gray-700 font-semibold">
-                Session
-              </p>
-              <p className="text-[10px] font-mono text-gray-600 break-all leading-relaxed">
-                {sessionId.slice(0, 18)}…
-              </p>
-              <p className="text-[10px] font-mono text-gray-700 break-all truncate" title={filename}>
-                {filename}
-              </p>
-            </div>
-          )}
+              {view === "cleaning" && sessionId && (
+                <motion.div key="cleaning"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.25 }}>
+                  <CleaningPanel
+                    sessionId={sessionId}
+                    onCleanComplete={handleCleanComplete}
+                  />
+                </motion.div>
+              )}
 
-          {/* Desktop Sidebar Bottom Persistent Tip Button */}
-          <div className="mt-auto pt-4 border-t border-white/5">
-            <a
-              href={DONATION_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] font-medium text-gray-500 hover:text-teal-400 hover:bg-white/[0.02] border border-transparent hover:border-teal-500/10 transition-all duration-200 group"
-            >
-              <Coffee size={14} className="text-gray-600 group-hover:text-teal-400 transition-colors" />
-              <span>Sponsor Project</span>
-              <Heart size={10} className="ml-auto text-transparent group-hover:text-rose-500 group-hover:fill-rose-500 transition-all shrink-0" />
-            </a>
+              {view === "analytics" && sessionId && (
+                <motion.div key="analytics"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.25 }}>
+                  <AnalyticsPanel
+                    sessionId={sessionId}
+                    cleanedSessionId={cleanedId ?? undefined}
+                  />
+                </motion.div>
+              )}
+
+              {view === "export" && sessionId && cleanedId && (
+                <motion.div key="export"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.25 }}>
+                  <ExportPanel
+                    sessionId={sessionId}
+                    cleanedSessionId={cleanedId}
+                    originalFilename={filename}
+                    operations={operations}
+                    log={log}
+                  />
+                </motion.div>
+              )}
+
+              {/* Trust Page Render Mappings */}
+              {view === "about" && (
+                <AboutUs onBack={() => setView(previousView)} />
+              )}
+              {view === "terms" && (
+                <TermsOfService onBack={() => setView(previousView)} />
+              )}
+              {view === "contact" && (
+                <ContactUs onBack={() => setView(previousView)} />
+              )}
+              {view === "privacy" && (
+                <PrivacyPolicy onBack={() => setView(previousView)} />
+              )}
+            </AnimatePresence>
           </div>
-        </aside>
+        </main>
 
-        {/* ── Main Content Area ───────────────────────────────────────────────── */}
-        <div className="flex-1 min-w-0 flex flex-col h-auto lg:h-screen overflow-y-auto">
-          {/* Success Alert Toast with Manual View Button */}
-          <AnimatePresence>
-            {celebrate && (
-              <motion.div
-                initial={{ opacity: 0, y: -20, x: "50%" }}
-                animate={{ opacity: 1, y: 0, x: "0%" }}
-                exit={{ opacity: 0, y: -20 }}
-                className="fixed top-4 right-4 left-4 sm:left-auto sm:w-96 z-50 bg-[#111318] border border-green-500/30 backdrop-blur-xl rounded-xl px-6 py-4 shadow-2xl flex flex-col gap-3"
-              >
-                <div className="flex items-start justify-between w-full">
-                  <div>
-                    <h2 className="text-base font-bold text-green-300">🎉 Cleaning Complete</h2>
-                    <p className="text-xs text-gray-400 mt-0.5">Your dataset has been cleaned successfully.</p>
-                  </div>
-                  <button 
-                    onClick={() => setCelebrate(false)}
-                    className="text-gray-500 hover:text-gray-300 text-xs font-mono p-1"
-                  >
-                    ✕
-                  </button>
-                </div>
+        {/* ── AdSense Compliant Footer Anchor Row (Inside the content grid box container) ── */}
+        <footer className="w-full text-center py-5 border-t border-white/5 bg-[#0e1014]/30 text-[11px] text-gray-600 mt-auto shrink-0">
+          <p>© 2026 CleanFlow AI. Engineered as a B.Tech CSE Capstone Project.</p>
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-1.5 text-gray-500">
+            <button onClick={() => openLegalView("about")} className="hover:text-indigo-400 transition-colors focus:outline-none">About Tool</button>
+            <span>·</span>
+            <button onClick={() => openLegalView("privacy")} className="hover:text-indigo-400 transition-colors focus:outline-none">Privacy Policy</button>
+            <span>·</span>
+            <button onClick={() => openLegalView("terms")} className="hover:text-indigo-400 transition-colors focus:outline-none">Terms of Service</button>
+            <span>·</span>
+            <button onClick={() => openLegalView("contact")} className="hover:text-indigo-400 transition-colors focus:outline-none">Contact Us</button>
+          </div>
+        </footer>
 
-                <button
-                  onClick={() => {
-                    setView("analytics")
-                    setCelebrate(false)
-                  }}
-                  className="w-full text-center py-2 px-3 rounded-lg text-xs font-semibold bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/20 transition-all shadow-md"
-                >
-                  View Interactive Analytics →
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <main className="flex-1 w-full">
-            <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20">
-              <AnimatePresence mode="wait">
-                {view === "upload" && (
-                  <motion.div key="upload"
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.25 }}>
-                    <FileUploader onUpload={handleUpload} loading={loading} />
-                    {uploadError && (
-                      <p className="mt-4 text-sm text-red-400 text-center max-w-xl mx-auto font-mono bg-red-500/5 border border-red-500/10 p-3 rounded-xl">{uploadError}</p>
-                    )}
-                  </motion.div>
-                )}
-
-                {view === "profile" && profile && typeof profile === "object" && sessionId && (
-                  <motion.div key="profile"
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.25 }}>
-                    <ProfilePanel
-                      profile={profile}
-                      sessionId={sessionId}
-                      onStartCleaning={() => setView("cleaning")}
-                    />
-                  </motion.div>
-                )}
-
-                {view === "cleaning" && sessionId && (
-                  <motion.div key="cleaning"
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.25 }}>
-                    <CleaningPanel
-                      sessionId={sessionId}
-                      onCleanComplete={handleCleanComplete}
-                    />
-                  </motion.div>
-                )}
-
-                {view === "analytics" && sessionId && (
-                  <motion.div key="analytics"
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.25 }}>
-                    <AnalyticsPanel
-                      sessionId={sessionId}
-                      cleanedSessionId={cleanedId ?? undefined}
-                    />
-                  </motion.div>
-                )}
-
-                {view === "export" && sessionId && cleanedId && (
-                  <motion.div key="export"
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.25 }}>
-                    <ExportPanel
-                      sessionId={sessionId}
-                      cleanedSessionId={cleanedId}
-                      originalFilename={filename}
-                      operations={operations}
-                      log={log}
-                    />
-                  </motion.div>
-                )}
-
-                {/* Trust Page Render Mappings */}
-                {view === "about" && (
-                  <AboutUs onBack={() => setView(previousView)} />
-                )}
-                {view === "terms" && (
-                  <TermsOfService onBack={() => setView(previousView)} />
-                )}
-                {view === "contact" && (
-                  <ContactUs onBack={() => setView(previousView)} />
-                )}
-                {view === "privacy" && (
-                  <PrivacyPolicy onBack={() => setView(previousView)} />
-                )}
-              </AnimatePresence>
-            </div>
-          </main>
-        </div>
-      </div>
-
-      {/* ── AdSense Compliant Footer Anchor Row ── */}
-      <footer className="w-full text-center py-4 border-t border-white/5 bg-[#0e1014] text-[11px] text-gray-600 z-30">
-        <p>© 2026 CleanFlow AI. Engineered as a B.Tech CSE Capstone Project.</p>
-        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-1.5 text-gray-500">
-          <button onClick={() => openLegalView("about")} className="hover:text-indigo-400 transition-colors focus:outline-none">About Tool</button>
-          <span>·</span>
-          <button onClick={() => openLegalView("privacy")} className="hover:text-indigo-400 transition-colors focus:outline-none">Privacy Policy</button>
-          <span>·</span>
-          <button onClick={() => openLegalView("terms")} className="hover:text-indigo-400 transition-colors focus:outline-none">Terms of Service</button>
-          <span>·</span>
-          <button onClick={() => openLegalView("contact")} className="hover:text-indigo-400 transition-colors focus:outline-none">Contact Us</button>
-        </div>
-      </footer>
-      
+      </div> {/* ── End Main Content Area Grid Container ── */}
     </div>
   )
 }
